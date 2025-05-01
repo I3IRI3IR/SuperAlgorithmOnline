@@ -1,13 +1,13 @@
 from flask import Flask, redirect, request, session, url_for, jsonify
 import requests
 import os
+from SECRET import CLIENT_SECRET
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # 設定你的 Discord 應用資訊
 CLIENT_ID = '1366650439910821888'
-CLIENT_SECRET = 't1AIn-3IT4mzuVXnY7Qld6qh9zLd6r4W'
 REDIRECT_URI = 'http://localhost:5000/callback'
 API_BASE_URL = 'https://discord.com/api'
 SCOPE = 'identify'
