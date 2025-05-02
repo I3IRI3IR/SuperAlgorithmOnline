@@ -1,0 +1,53 @@
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .information {
+    padding: 10px;
+    background-color: #f4f4f4;
+    flex: 1;
+  }
+  
+  .main-content {
+    display: flex;
+    flex: 8;
+    height: 80%;
+  }
+  
+  .boardgen-container {
+    flex: 4;
+    background-color: #e8e8e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .msgbox-container {
+    flex: 1;
+    background-color: #d1d1d1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+  }
+  
+  .msg {
+    flex: 1;
+    margin-bottom: 10px;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    word-wrap: break-word; 
+    white-space: pre-wrap; 
+  }
+  
+  .msg-input {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  
+  .msg-send {
+    width: 100%;
+  }
