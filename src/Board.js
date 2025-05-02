@@ -1,6 +1,6 @@
-import './App.css';
+import './Board.css';
 
-function App() {
+function Board() {
   const boardSize = 10; // 棋盤尺寸
   const cells = Array.from({ length: boardSize * boardSize }, (_, index) => {
     const row = Math.floor(index / boardSize);
@@ -20,25 +20,7 @@ function App() {
 
   return (
     <div>
-      {/* 狀態欄 */}
-      <div className="status-bar">
-        <div className="player-info">
-          <img
-            src="https://via.placeholder.com/50"
-            alt="Player Avatar"
-            className="avatar"
-          />
-          <div className="stats">
-            <p>速度: 10</p>
-            <p>攻擊: 50</p>
-          </div>
-        </div>
-        <div className="boss-info">
-          <p>BOSS 血量: 1000</p>
-        </div>
-      </div>
-
-      {/* 棋盤 */}
+      
       <div className="board">
         {cells.map((cell, index) =>
           cell ? (
@@ -54,4 +36,4 @@ function App() {
   );
 }
 
-export default App;
+export default Board;
