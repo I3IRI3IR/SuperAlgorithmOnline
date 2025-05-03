@@ -1,4 +1,6 @@
-import './Board.css';
+import React, { useState, useEffect } from "react";
+import "./Board.css";
+import diceImage from './image/dice.jpg'
 
 function Board() {
   const boardSize = 10; // 棋盤尺寸
@@ -13,25 +15,33 @@ function Board() {
       col === 0 || // 左邊
       col === boardSize - 1 // 右邊
     ) {
-      return index + 1; // 返回格子編號
+      return true; // 是邊緣格子
     }
-    return null; // 內部格子留空
+    return false; // 內部格子
   });
 
+  const rollDice = () => {
+    fetch("get/rolldice")
+    .then((response) => response.json())
+    .then((data) =>{
+      alert(data);
+    })
+  };
+
   return (
-    <div>
-      
+    <div className="board-container">
       <div className="board">
-        {cells.map((cell, index) =>
-          cell ? (
-            <div key={index} className="cell">
-              {cell}
-            </div>
+        {cells.map((isEdge, index) =>
+          isEdge ? (
+            <div key={index} className="cell" />
           ) : (
             <div key={index} className="empty-cell" />
           )
         )}
       </div>
+      <button className="dice-button" onClick={rollDice}>
+        <img src={diceImage} alt="骰子" className="dice-image" />
+      </button>
     </div>
   );
 }
