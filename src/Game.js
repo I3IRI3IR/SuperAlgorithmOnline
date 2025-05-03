@@ -49,7 +49,7 @@ const Game = () => {
   const [total_atk, setTotal_atk] = useState(0);
 
   useEffect(() => {
-    fetch("/load/game-data")
+    fetch("/get/game-data")
       .then((response) => response.json())
       .then((data) => {
         setPlayer_name(data.player_name);
