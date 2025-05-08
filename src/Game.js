@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Game.css";
 import Board from './Board';
 
-const Msgbox = ({setMsgList, setMsg}) => {
+const Msgbox = ({msgList, setMsgList, msg, setMsg}) => {
   const sendMsg = () => {
-    setMsgList(msgList => [...msgList, msg]);
+    setMsgList((msgList) => [...msgList, msg]);
     setMsg(""); // 清空輸入框
   };
 
@@ -78,7 +78,7 @@ const Game = () => {
         <div className="boardgen-container">
             <Board setMsgList={setMsgList}/>
         </div>
-        <Msgbox setMsgList={setMsgList} setMsg={setMsg}/>
+        <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>
     </div>
   );
