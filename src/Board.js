@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Board.css";
 import diceImage from './image/dice.jpg'
 
-function Board() {
+const Board = ({setMsgList}) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = Array.from({ length: boardSize * boardSize }, (_, index) => {
     const row = Math.floor(index / boardSize);
@@ -25,6 +25,18 @@ function Board() {
     .then((response) => response.json())
     .then((data) =>{
       alert(data);
+      setMsgList(msgList => [...msgList, data.event]);
+      if(data.type==="question"){
+        //同商店強制彈窗答完 fetch，但我不知道怎麼處理他要是故意不答做別的事
+        //答完同底下 useEffect 更新
+      }
+      else if(data.type==="shop"){
+        //不知道你打算怎麼觸發商店，顯示個隱藏 div 之類的嗎，後端記得紀錄現在是可購買的狀態，避免有人自己不合法的偷戳商店
+        //然後我覺得商店的內容物一開始初始化就要傳好，所以這裡只有在決定要購物的時候才會 fetch
+      }
+      /*else if(data.typ=== 獎勵或事件或戰鬥){
+        這裡應該不會真的更新東西，直接掛 useEffect 讓他自己更新
+      }*/
     })
   };
 

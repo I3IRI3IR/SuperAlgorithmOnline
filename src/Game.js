@@ -2,20 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Game.css";
 import Board from './Board';
 
-const Boardgen = () => {
-  return (
-    <div className="boardgen-container">
-      {Board()}
-    </div>
-  );
-};
-
-const Msgbox = () => {
-  const [msg, setMsg] = useState("");
-  const [msgList, setMsgList] = useState([]);
-
+const Msgbox = ({setMsgList, setMsg}) => {
   const sendMsg = () => {
-    setMsgList([...msgList, msg]);
+    setMsgList(msgList => [...msgList, msg]);
     setMsg(""); // 清空輸入框
   };
 
@@ -62,6 +51,9 @@ const Game = () => {
       .catch((error) => console.error("Error loading game data:", error));
   }, []);
 
+  const [msg, setMsg] = useState("");
+  const [msgList, setMsgList] = useState([]);
+
   return (
     <div className="game-container">
       <div className="information">
@@ -83,8 +75,10 @@ const Game = () => {
         <p>目前所在層數：{level}     Boss 血量：{boss_hp}      玩家累計傷害：{total_atk}</p>
       </div>
       <div className="main-content">
-        <Boardgen />
-        <Msgbox />
+        <div className="boardgen-container">
+            <Board setMsgList={setMsgList}/>
+        </div>
+        <Msgbox setMsgList={setMsgList} setMsg={setMsg}/>
       </div>
     </div>
   );
