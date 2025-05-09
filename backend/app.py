@@ -1,5 +1,6 @@
 from flask import Flask, redirect, request, session, url_for, jsonify
 import requests
+import random
 import os
 from SECRET import CLIENT_SECRET
 
@@ -61,6 +62,44 @@ def dashboard():
     if not user:
         return redirect(url_for('login'))
     return jsonify(user)
+
+#todo
+
+#todo
+@app.route('/get/game_data')
+def get_game_data():
+    response = {}
+    
+    return jsonify(response)
+
+#todo
+@app.route('/get/rolldice')
+def get_rolldice():
+    
+    
+    #下面這段是我為了測試前端功能寫的，你可以註解掉
+    
+    #test start
+    
+    dice = random.randint(1, 6)
+    #todo : new_position 
+
+    #test end
+
+
+    response = {
+        "dice": dice,
+        #"position": new_position,
+        "type": "event",
+    }
+    """
+    {
+        用session知道是誰丟的,自己在後端處理完,最後把走到的格子種類丟回去,如果是問答之類的把問題內容也一起丟回去,其他需要附屬資源的格子種類同理
+    }
+    """
+    
+    
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
