@@ -1,12 +1,14 @@
 .board-container {
   position: relative;
-  display: inline-block;
+  width: 750px; /* 棋盤總寬度 */
+  height: 750px; /* 棋盤總高度 */
 }
 
 .board {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(10, 75px); /* 棋盤寬度 */
-  grid-template-rows: repeat(10, 75px); /* 棋盤高度 */
+  grid-template-columns: repeat(10, 75px); /* 格子寬度 */
+  grid-template-rows: repeat(10, 75px); /* 格子高度 */
   gap: 1px;
   background-color: #000;
 }
@@ -14,36 +16,43 @@
 .cell {
   width: 75px;
   height: 75px;
-  background-color: #6c757d; /* 邊緣格子顏色 */
+  background-color: #6c757d; 
 }
 
 .empty-cell {
   width: 75px;
   height: 75px;
-  background-color: #f8f9fa; /* 內部格子顏色 */
+  background-color: #000000; 
+}
+
+.piece {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: red;
+  border-radius: 50%;
+  transition: top 0.3s ease, left 0.3s ease; /* 平滑移動效果 */
 }
 
 .dice-button {
   position: absolute;
-  bottom: 0px; /* 適配新的格子尺寸，距棋盤底部適當距離 */
-  right: -150px; /* 對齊棋盤右側 */
-  width: 100px; /* 按鈕寬度適應棋盤比例 */
-  height: 100px; /* 按鈕高度適應棋盤比例 */
+  bottom: 0px;
+  right: -150px;
+  width: 100px;
+  height: 100px;
   background-color: #007bff;
   border: none;
-  border-radius: 50%; /* 圓形按鈕 */
+  border-radius: 50%;
   cursor: pointer;
+  overflow: hidden; /* 確保圖片不會超出按鈕範圍 */
   display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  align-items: center; /* 水平置中圖片 */
+  justify-content: center; /* 垂直置中圖片 */
 }
 
-.dice-button:hover {
-  background-color: #0056b3;
-}
-
-.dice-image {
-  width: 60px; /* 圖片尺寸相對按鈕大小縮小些 */
-  height: 60px;
+.dice-button img {
+  max-width: 100%; /* 圖片最大寬度為按鈕寬度 */
+  max-height: 100%; /* 圖片最大高度為按鈕高度 */
+  object-fit: cover; /* 確保圖片內容被裁剪適配按鈕 */
+  border-radius: 50%; /* 確保圖片形狀與按鈕一致 */
 }
