@@ -1,7 +1,7 @@
 .board-container {
   position: relative;
-  width: 750px; /* 棋盤總寬度 */
-  height: 750px; /* 棋盤總高度 */
+  width: 759px; /* 棋盤總寬度 */
+  height: 759px; /* 棋盤總高度 */
 }
 
 .board {
@@ -10,13 +10,17 @@
   grid-template-columns: repeat(10, 75px); /* 格子寬度 */
   grid-template-rows: repeat(10, 75px); /* 格子高度 */
   gap: 1px;
-  background-color: #000;
+  background-color: #821515;
 }
 
 .cell {
   width: 75px;
   height: 75px;
   background-color: #6c757d; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
 .empty-cell {
@@ -31,7 +35,7 @@
   height: 50px;
   background-color: red;
   border-radius: 50%;
-  transition: top 0.3s ease, left 0.3s ease; /* 平滑移動效果 */
+  transition: top 0.5s ease, left 0.5s ease; /* 平滑移動效果 */
 }
 
 .dice-button {
