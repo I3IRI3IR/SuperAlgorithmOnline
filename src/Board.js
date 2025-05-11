@@ -22,15 +22,27 @@ const Board = ({ setMsgList }) => {
 
         // 根據事件類型處理邏輯
         if (data.type === "question") {
-          // 問題事件
-        } else if (data.type === "shop") {
-          // 商店事件
-        } else if (data.type === "reward") {
-          // 獎勵事件
-        } else if (data.type === "battle") {
-          // 戰鬥事件
-        } else if (data.type === "event") {
-          // 其他事件
+          // 問題事件，待討論
+        } 
+        else if (data.type === "shop") {
+          // 商店事件，待討論
+        } 
+        else if (data.type === "reward") {
+          if(data.rewardtype === "dice"){
+
+          }
+          else if(data.rewardtype === "item"){
+
+          }
+          else if(data.rewardtype === "ability"){
+          
+          } 
+        }
+        else if (data.type === "battle") {
+          // 戰鬥事件，待討論
+        } 
+        else if (data.type === "event") {
+          // 其他事件，待討論
         }
       });
   };
