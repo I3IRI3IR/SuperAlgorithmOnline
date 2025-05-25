@@ -82,6 +82,32 @@ def get_rolldice():
     #test start
     
     dice = random.randint(1, 6)
+    type, msg, other_param = random.choice([
+        ["question",
+            *random.choice([
+                ["問題A", ["選項1", "選項2"]],
+                ["問題B", ["選項1", "選項2"]],
+            ])
+        ],
+        ["shop",None,None],
+        ["rest","休息",None],
+        ["reward",
+            *random.choice([
+                ["獎勵A", {"屬性1": 10, "屬性2": -5}],
+            ])
+        ],
+        ["battle", "boss A 的一串戰鬥過程之類的", {"屬性1": 8}],
+        ["event",
+            *random.choice([
+                ["特殊事件A", {"屬性1": 998244353, "骰子券": 1}],
+            ])
+        ],
+    ])
+    if type == "reward":
+        #todo : 在這裡更新資料庫裡的玩家屬性
+        pass
+    #todo : 其他事件也要記得更新資料庫
+
     #todo : new_position 
 
     #test end
@@ -90,7 +116,9 @@ def get_rolldice():
     response = {
         "dice": dice,
         #"position": new_position,
-        "type": "event",
+        "type": type,
+        **({"msg": msg} if msg else {}),
+        **({"other_param": other_param} if other_param else {}),
     }
     """
     {
