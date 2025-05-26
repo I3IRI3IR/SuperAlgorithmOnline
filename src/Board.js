@@ -2,7 +2,19 @@ import React, { useState } from "react";
 import "./Board.css";
 import diceImage from './image/dice.jpg';
 
-const Board = ({ setMsgList }) => {
+const Backpack = ({ option }) => {
+  return (<></>);
+};
+
+const Shop = () => {
+  return (<></>);
+};
+
+const Equipment = ({ option }) => {
+  return (<></>);
+};
+
+const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attributes}) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [currentPosition, setCurrentPosition] = useState(0);
@@ -11,6 +23,7 @@ const Board = ({ setMsgList }) => {
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
   const [eventParam, setEventParam] = useState("");
+  const [openBackpack, setOpenBackpack] = useState(false);
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -30,9 +43,7 @@ const Board = ({ setMsgList }) => {
         setEventType(data.type);
         setEventParam(data.other_param);
         if (data.type === "reward" || data.type === "battle" || data.type === "event") {
-          Object.entries(data.other_param).forEach(([key, value]) => {
-            //對所有屬性 key 更新 value，建議不要用加減的，用設定的，避免奇怪 racing 讓值變怪
-          });
+          setPlayer_attributes(data.other_param);
         }
       });
   };
@@ -60,6 +71,20 @@ const Board = ({ setMsgList }) => {
     return { top: `${row * 75}px`, left: `${col * 75}px` };
   };
 
+  const answerQuestion = (index) => {
+    setIsEvent(false);
+    console.log(index);
+    fetch("response/question", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"select": index}),
+    })
+      .then((response) => response.json())
+      .then((data) => setPlayer_attributes(data));
+  };
+
   return (
     <div className="board-container">
       {isEvent && (
@@ -67,24 +92,48 @@ const Board = ({ setMsgList }) => {
           { eventType === "question" ? (
             <ul className="question-options">
               {eventParam.map((option, index) => (
-                <button key={index} className="question-option" onClick={()=>{setIsEvent(false);/*在這裡把 index 當選項送回去*/}}>
+                <button key={index} className="question-option" onClick={() => answerQuestion(index)}>
                   {option}
                 </button>
               ))}
             </ul>
           ) : eventType === "shop" ? (
-            <button className="shop" onClick={()=>setIsEvent(false)}>待加入獨立畫面</button>
+            <>
+              <div style={{ display: 'flex' }}>
+                <>
+                  <Shop></Shop>
+                  <Equipment option={"sell"}></Equipment>
+                </>
+                <Backpack option={"sell"}></Backpack>
+              </div>
+              <button className="close-shop" onClick={() => setIsEvent(false)}>離開商店</button>
+            </>
           ) : eventType === "rest" ? (
-            <button className="rest" onClick={()=>setIsEvent(false)}>待處理調整裝備和使用道具，應該會跟商店重疊很多</button>
+            <>
+              <div style={{ display: 'flex' }}>
+                <Equipment option={"adjust"}></Equipment>
+                <Backpack option={"adjust"}></Backpack>
+              </div>
+              <button className="rest" onClick={() => setIsEvent(false)}>結束休息</button>
+            </>
           ) : (
             <>
               <p className="event-msg"> { eventMsg } </p>
-              <button className="close-event" onClick={()=>setIsEvent(false)}>
+              <button className="close-event" onClick={() => setIsEvent(false)}>
                 確定
               </button>
             </>
           )}
         </div>
+      )}
+      {openBackpack &&(
+        <>
+          <div style={{ display: 'flex' }}>
+            <Equipment option={"forbid"}></Equipment>
+            <Backpack option={"forbid"}></Backpack>
+          </div>
+          <button className="rest" onClick={() => setOpenBackpack(false)}>退出背包</button>
+        </>
       )}
       <div className="board">
         {Array.from({ length: boardSize * boardSize }, (_, index) => (
