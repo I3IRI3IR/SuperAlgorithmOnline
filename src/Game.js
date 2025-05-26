@@ -31,11 +31,21 @@ const Msgbox = ({msgList, setMsgList, msg, setMsg}) => {
 
 const Game = () => {
   const [player_name, setPlayer_name] = useState("");
-  const [player_attributes, setPlayer_attributes] = useState([]);
+  const [player_attributes, setPlayer_attributes] = useState({});
   const [items, setItems] = useState([]);
   const [level, setLevel] = useState(0);
   const [boss_hp, setBoss_hp] = useState(0);
   const [total_atk, setTotal_atk] = useState(0);
+
+  /* 測試用 */
+  useEffect(() => {
+    setPlayer_name("封弊者");
+    setPlayer_attributes({"HP": 11, "ATK": 45, "DEF": 14, "SPD": 19, "EXP": 19, "LV": 810});
+    setLevel(998244353);
+    setBoss_hp(1e6+3);
+    setTotal_atk(1e9+7);
+  }, []);
+  /* 測試用 */
 
   useEffect(() => {
     fetch("/get/game-data")
@@ -58,25 +68,18 @@ const Game = () => {
     <div className="game-container">
       <div className="information">
         <div className="player-name">{player_name}</div>
+        <p style={{whiteSpace: "pre"}}>目前所在層數：{level}     Boss 血量：{boss_hp}      玩家累計傷害：{total_atk}</p>
         <ul className="player-attributes">
-          {player_attributes.map((attr, index) => (
-            <li key={index} className="player-attribute">
-              {attr.name}: {attr.val}
+          {Object.entries(player_attributes).map(([name,val]) => (
+            <li key={name} className="player-attribute">
+              {name}: {val}
             </li>
           ))}
         </ul>
-        <ul className="items">
-          {items.map((item, index) => (
-            <li key={index} className="item">
-              {item.name}: {item.num}
-            </li>
-          ))}
-        </ul>
-        <p>目前所在層數：{level}     Boss 血量：{boss_hp}      玩家累計傷害：{total_atk}</p>
       </div>
       <div className="main-content">
         <div className="boardgen-container">
-            <Board setMsgList={setMsgList}/>
+            <Board setMsgList={setMsgList} items={items} setItems={setItems} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes}/>
         </div>
         <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>
