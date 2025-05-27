@@ -1,6 +1,7 @@
 from flask import Flask, redirect, request, session, url_for, jsonify
 import requests
 import random
+import json
 import os
 from SECRET import CLIENT_SECRET
 
@@ -43,12 +44,43 @@ def callback():
     token_data = r.json()
     access_token = token_data['access_token']
 
+
     # 用 access token 取得使用者資料
     user_info = requests.get(f"{API_BASE_URL}/users/@me", headers={
         'Authorization': f'Bearer {access_token}'
     }).json()
     session['user'] = user_info
     
+    with open("MongoDB.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+
+    if user_info['id'] not in db:
+        new_player = {
+            'name' : user_info['global_name'] ,
+            'damage' : 0,
+            'pos' : 0,
+            'lv' : 1,
+            'hp' : 100,
+            'atk' : 10,
+            'def' : 10,
+            'spd' : 6,
+            'exp' : 0,
+            'item' : {},
+            'dice' : 10,
+        }
+        db[user_info['id']] = new_player
+
+        # 寫回檔案
+        with open("MongoDB.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+    else:
+        db[user_info['id']]['name'] = user_info['global_name']
+
+        # 寫回檔案
+        with open("MongoDB.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
 
     user = session.get('user')
     if not user:
@@ -68,7 +100,26 @@ def dashboard():
 #todo
 @app.route('/get/game_data')
 def get_game_data():
-    response = {}
+    id = session['user']['id']
+    with open("MongoDB.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    response = {
+        'player_name' : db[id]['name'],
+        'item' : db[id]['item'],
+        'player_attributes' : {
+            'LV' : db[id]['lv'],
+            'pos' : db[id]['dict'],
+            'HP' : db[id]['hp'],
+            'ATK' : db[id]['atk'],
+            'DEF' : db[id]['def'],
+            'SPD' : db[id]['spd'],
+            'EXP' : db[id]['exp'],
+        },
+        'level' : db[id]['lv'],
+        'boss_hp' : 114514,
+        'total_atk' : db[id]['damage'],
+    }
     
     return jsonify(response)
 
@@ -78,7 +129,7 @@ def get_rolldice():
     
     
     #下面這段是我為了測試前端功能寫的，你可以註解掉
-    
+    print(session['user'])
     #test start
     
     dice = random.randint(1, 6)
@@ -132,3 +183,27 @@ def get_rolldice():
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
 
+"""
+session['user']
+
+{
+  "accent_color": null,
+  "avatar": "4da5f349600536dbcf3c242adcc78099",
+  "avatar_decoration_data": null,
+  "banner": null,
+  "banner_color": null,
+  "clan": null,
+  "collectibles": null,
+  "discriminator": "0",
+  "flags": 0,
+  "global_name": "BIR",
+  "id": "852064504846352394",
+  "locale": "zh-TW",
+  "mfa_enabled": false,
+  "premium_type": 0,
+  "primary_guild": null,
+  "public_flags": 0,
+  "username": "brian142857"
+}
+
+"""
