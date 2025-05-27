@@ -109,15 +109,15 @@ def get_game_data():
         'item' : db[id]['item'],
         'player_attributes' : {
             'LV' : db[id]['lv'],
-            'pos' : db[id]['dict'],
+            'POS' : db[id]['pos'],
             'HP' : db[id]['hp'],
             'ATK' : db[id]['atk'],
             'DEF' : db[id]['def'],
             'SPD' : db[id]['spd'],
             'EXP' : db[id]['exp'],
         },
-        'level' : db[id]['lv'],
-        'boss_hp' : 114514,
+        'level' : db['level'],
+        'boss_hp' : db['boss_hp'],
         'total_atk' : db[id]['damage'],
     }
     
@@ -127,12 +127,15 @@ def get_game_data():
 @app.route('/get/rolldice')
 def get_rolldice():
     
+    id = session['user']['id']
+    with open("MongoDB.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
     
     #下面這段是我為了測試前端功能寫的，你可以註解掉
-    print(session['user'])
     #test start
     
-    dice = random.randint(1, 6)
+    dice = random.randint(1, db[id]['spd'])
+
     type, msg, other_param = random.choice([
         ["question",
             *random.choice([
@@ -163,7 +166,6 @@ def get_rolldice():
 
     #test end
 
-
     response = {
         "dice": dice,
         #"position": new_position,
@@ -171,13 +173,6 @@ def get_rolldice():
         **({"msg": msg} if msg else {}),
         **({"other_param": other_param} if other_param else {}),
     }
-    """
-    {
-        用session知道是誰丟的,自己在後端處理完,最後把走到的格子種類丟回去,如果是問答之類的把問題內容也一起丟回去,其他需要附屬資源的格子種類同理
-    }
-    """
-    
-    
     return jsonify(response)
 
 if __name__ == '__main__':

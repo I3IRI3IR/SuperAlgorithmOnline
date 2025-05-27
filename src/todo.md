@@ -14,12 +14,12 @@
 後端
     1. 
     get/game-data 不吃輸入，回傳 {"player_name": string, "items": 所有物品的 dict, "player_attributes": dict, "items": dict, "level": int, "boss_hp": int, "total_atk": int}
-        "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int}
+        "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
     
     bir:已完成,加新東西記得說
     
     2.
-    get/rolldice 不吃輸入，回傳 {"dice": int(這次走幾步), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
+    get/rolldice 不吃輸入，回傳 {"dice": int(這次走幾步),"pos": int(起點格子編號), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
         "other_param"=switch(type){
             "reward" || "battle" || "event": "player_attributes"
             "question": 一堆選項字串的 list
