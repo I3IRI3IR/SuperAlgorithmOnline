@@ -9,10 +9,16 @@
     6. 裝備格要有左右手，可以拿雙劍，也可以拿劍盾。我猜可以拿雙盾，不知道能不能靠彈反或被動魔攻打架，然後回血量夠高，接著說這就是等級制
        MMO 的不合理之處。還要有其他防具欄位
     7. 遇到格子是 battle 的時候還沒判斷 other_param 要長怎樣
+    8.走越遠走越快
 
 後端
+    1. 
     get/game-data 不吃輸入，回傳 {"player_name": string, "items": 所有物品的 dict, "player_attributes": dict, "items": dict, "level": int, "boss_hp": int, "total_atk": int}
         "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int}
+    
+    bir:已完成,加新東西記得說
+    
+    2.
     get/rolldice 不吃輸入，回傳 {"dice": int(這次走幾步), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
         "other_param"=switch(type){
             "reward" || "battle" || "event": "player_attributes"
@@ -23,4 +29,5 @@
         }
     response/question 吃一個 POST，輸入是 {"select": index}，其中 index 是 [0, 該次選項數量) 的 int，回傳一個 "player_attributes"
 
+    3.
     shop 和 items 的 dict 應該要是有圖片和描述和價格和屬性的

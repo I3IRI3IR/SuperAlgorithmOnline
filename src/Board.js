@@ -38,12 +38,14 @@ const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attrib
         movePiece(targetPosition);
 
         // 根據事件類型處理邏輯
+
         setIsEvent(true);
         setEventMsg(data.msg);
         setEventType(data.type);
         setEventParam(data.other_param);
         if (data.type === "reward" || data.type === "battle" || data.type === "event") {
           setPlayer_attributes(data.other_param);
+
         }
       });
   };
