@@ -8,6 +8,8 @@ from SECRET import CLIENT_SECRET
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
+
 # 設定你的 Discord 應用資訊
 CLIENT_ID = '1366650439910821888'
 REDIRECT_URI = 'http://localhost:5000/callback'
@@ -51,7 +53,7 @@ def callback():
     }).json()
     session['user'] = user_info
     
-    with open("MongoDB.json", "r", encoding="utf-8") as file:
+    with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
     
 
@@ -72,13 +74,13 @@ def callback():
         db[user_info['id']] = new_player
 
         # 寫回檔案
-        with open("MongoDB.json", "w", encoding="utf-8") as file:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
     else:
         db[user_info['id']]['name'] = user_info['global_name']
 
         # 寫回檔案
-        with open("MongoDB.json", "w", encoding="utf-8") as file:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
 
@@ -95,13 +97,20 @@ def dashboard():
         return redirect(url_for('login'))
     return jsonify(user)
 
-#todo
 
-#todo
 @app.route('/get/game_data')
 def get_game_data():
     id = session['user']['id']
-    with open("MongoDB.json", "r", encoding="utf-8") as file:
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    response = get_playerattribute(id)
+    
+    return jsonify(response)
+
+def get_playerattribute(id):
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
 
     response = {
@@ -120,21 +129,28 @@ def get_game_data():
         'boss_hp' : db['boss_hp'],
         'total_atk' : db[id]['damage'],
     }
-    
-    return jsonify(response)
+    return response
 
 #todo
 @app.route('/get/rolldice')
 def get_rolldice():
     
     id = session['user']['id']
-    with open("MongoDB.json", "r", encoding="utf-8") as file:
+    with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
     
+    with open("Map.json", "r", encoding="utf-8") as file:
+        mapdb = json.load(file)
+    map = mapdb[str(db["level"])]
+    
+
     #下面這段是我為了測試前端功能寫的，你可以註解掉
     #test start
     
-    dice = random.randint(1, db[id]['spd'])
+    
+
+    '''
+    
 
     type, msg, other_param = random.choice([
         ["question",
@@ -163,17 +179,41 @@ def get_rolldice():
     #todo : 其他事件也要記得更新資料庫
 
     #todo : new_position 
-
+    '''
     #test end
+    
+    dice = random.randint(1, db[id]['spd'])
+    type = mapdecode(map,db[id]['pos'],dice)[1]
+    other_param = {}
 
+    if type == "rest":
+        other_param = None
+    elif type == "reward"  or type == "event":
+        other_param = get_playerattribute(id)
+    elif type == "question":
+        other_param = ["A","B","C","D"]
+    elif type == "shop":
+        other_param = None
+    elif type == "battle":
+        other_param = None
     response = {
         "dice": dice,
-        #"position": new_position,
+        "pos": db[id]['pos'],#起點
         "type": type,
-        **({"msg": msg} if msg else {}),
-        **({"other_param": other_param} if other_param else {}),
+        "msg": "msg",
+        "other_param": other_param,
     }
+    db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
+    db[id]['dice']-=1
+
     return jsonify(response)
+
+def mapdecode(map, start, step):
+    for i in range(36):
+        if map[i][0] == start :
+            return map[(i+step)%36]
+            
+
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
