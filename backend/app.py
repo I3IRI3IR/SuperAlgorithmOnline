@@ -108,28 +108,7 @@ def get_game_data():
     
     return jsonify(response)
 
-def get_playerattribute(id):
-    id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
 
-    response = {
-        'player_name' : db[id]['name'],
-        'item' : db[id]['item'],
-        'player_attributes' : {
-            'LV' : db[id]['lv'],
-            'POS' : db[id]['pos'],
-            'HP' : db[id]['hp'],
-            'ATK' : db[id]['atk'],
-            'DEF' : db[id]['def'],
-            'SPD' : db[id]['spd'],
-            'EXP' : db[id]['exp'],
-        },
-        'level' : db['level'],
-        'boss_hp' : db['boss_hp'],
-        'total_atk' : db[id]['damage'],
-    }
-    return response
 
 #todo
 @app.route('/get/rolldice')
@@ -143,15 +122,10 @@ def get_rolldice():
         mapdb = json.load(file)
     map = mapdb[str(db["level"])]
     
-
     #下面這段是我為了測試前端功能寫的，你可以註解掉
     #test start
     
-    
-
     '''
-    
-
     type, msg, other_param = random.choice([
         ["question",
             *random.choice([
@@ -212,10 +186,7 @@ def get_rolldice():
 
     return jsonify(response)
 
-def mapdecode(map, start, step):
-    for i in range(36):
-        if map[i][0] == start :
-            return map[(i+step)%36]
+
             
 
 
@@ -246,3 +217,31 @@ session['user']
 }
 
 """
+
+def get_playerattribute(id):
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    response = {
+        'player_name' : db[id]['name'],
+        'item' : db[id]['item'],
+        'player_attributes' : {
+            'LV' : db[id]['lv'],
+            'POS' : db[id]['pos'],
+            'HP' : db[id]['hp'],
+            'ATK' : db[id]['atk'],
+            'DEF' : db[id]['def'],
+            'SPD' : db[id]['spd'],
+            'EXP' : db[id]['exp'],
+        },
+        'level' : db['level'],
+        'boss_hp' : db['boss_hp'],
+        'total_atk' : db[id]['damage'],
+    }
+    return response
+
+def mapdecode(map, start, step):
+    for i in range(36):
+        if map[i][0] == start :
+            return map[(i+step)%36]
