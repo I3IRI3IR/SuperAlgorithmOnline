@@ -39,6 +39,15 @@ def get_playerattribute(id):
        
     return response
 
+def get_question():
+    with open("Question.json", "r", encoding="utf-8") as file:
+        question_db = json.load(file)
+    q_num = str(random.randint(1,2))
+    response = question_db[q_num]
+    response['q_num'] = q_num
+    return response
+
+
 def mapdecode(map, start, step):
     for i in range(36):
         if map[i][0] == start :
@@ -113,6 +122,11 @@ def callback():
                 'exp': 0,
                 'item': {},
                 'dice': 10,
+                'battleflag': 0,
+                'questionflag': 0,
+                'eventflag': 0,
+                'restflag': 0,
+                'shopflag': 0,
             }
             db[user_id] = new_player
         else:
@@ -168,6 +182,12 @@ def get_rolldice():
         mapdb = json.load(file)
     map = mapdb[str(db["level"])]
     
+    db[id]['battleflag']=0
+    db[id]['eventflag']=0
+    db[id]['questionflag']=0
+    db[id]['restflag']=0
+    db[id]['shopflag']=0
+
     #下面這段是我為了測試前端功能寫的，你可以註解掉
     #test start
     
@@ -204,25 +224,33 @@ def get_rolldice():
     
     dice = random.randint(1, db[id]['spd'])
     type = mapdecode(map,db[id]['pos'],dice)[1]
+    msg=""
     other_param = {}
 
-    if type == "rest":
-        other_param = None
-    elif type == "reward"  or type == "event":
+    if type == "reward":
         other_param = get_playerattribute(id)
+        msg = "reward_msg"
     elif type == "question":
+        question = get_question()
+        msg = question['Statements']
+        other_param = question['Options']
+        db[id]['questionflag'] = question['q_num']
+    elif type == "event":
         other_param = ["A","B","C","D"]
     elif type == "shop":
+        other_param = {}
+    elif type == "rest":
         other_param = None
     elif type == "battle":
-        other_param = None
+        other_param = {}
     response = {
         "dice": dice,
         "pos": db[id]['pos'],#起點
         "type": type,
-        "msg": "msg",
-        "other_param": other_param,
+        "msg": msg,
+        "other_param": other_param
     }
+
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
     db[id]['dice']-=1
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -233,7 +261,31 @@ def get_rolldice():
     return jsonify(response)
 
 
-            
+@app.route('/response/question',methods=['POST'])
+def response_question():
+    data = request.get_json()
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+
+    with open("QuestionAns.json", "r", encoding="utf-8") as file:
+        ansdb = json.load(file)
+    
+    if ansdb[str(db[id]['questionflag'])]['ans'] == data['selete']:
+        #do something
+        pass
+    else:
+        #do something
+        pass
+    
+    response = get_playerattribute(id)
+    db[id]['questionflag'] = 0
+
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
+    return response
 
 
 if __name__ == '__main__':

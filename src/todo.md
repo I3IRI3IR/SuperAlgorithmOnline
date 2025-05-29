@@ -24,8 +24,8 @@
     2.
     get/rolldice 不吃輸入，回傳 {"dice": int(這次走幾步),"pos": int(起點格子編號), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
         "other_param"=switch(type){
-            "reward" || "battle" || "event": "player_attributes"
-            "question": 一堆選項字串的 list
+            "reward": "player_attributes"
+            "question"||"event": 一堆選項字串的 list
             "shop": 賣的東西的 dict
             "rest": None
             "battle": 還沒想
