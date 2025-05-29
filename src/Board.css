@@ -82,42 +82,21 @@
   z-index: 1001;
 }
 
-.question-options {
+.question-options, .question-option, .event-options, .event-option {
   background: white;
   padding: 20px;
   border-radius: 8px;
   z-index: 1001;
 }
 
-.question-option {
+.shop, .backpack {
   background: white;
   padding: 20px;
   border-radius: 8px;
   z-index: 1001;
 }
 
-.shop {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 1001;
-}
-
-.close-shop {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 1002;
-}
-
-.rest {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 1001;
-}
-
-.close-event {
+.close-shop, .rest, .leave-backpack, .close-event {
   background: white;
   padding: 20px;
   border-radius: 8px;

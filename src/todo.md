@@ -1,40 +1,44 @@
 前端
     1. 請求廣告，播廣告
-    2. 做好純的背包界面，裝備界面，商店界面
-       再用這三個拼出真正觸發時的界面
-       背包是半頁寬整頁高，剩下兩個是半頁寬半頁高，右邊固定是背包，左邊沒商店時裝備整個置中
-    3. 滑鼠放在背包的東西上要顯示說明和價格和屬性
-    4. 寫個打開背包的按鈕，然後 setOpenBackpack(true);
-    5. 背包和裝備的參數，在商店是賣東西，休息是穿脫裝備或使用道具，平常開背包是不能操作
-    6. 裝備格要有左右手，可以拿雙劍，也可以拿劍盾。我猜可以拿雙盾，不知道能不能靠彈反或被動魔攻打架，然後回血量夠高，接著說這就是等級制
-       MMO 的不合理之處。還要有其他防具欄位
-    7. 遇到格子是 battle 的時候還沒判斷 other_param 要長怎樣
-    8. 走越遠走越快
-    9. 串登入介面
-    10.可以查看決賽之碑的按鈕
+    2. 補完裝備界面
+    3. 滑鼠放在背包裝備商店的東西上要顯示說明和價格和屬性
+    4. 寫個打開背包的按鈕，然後 setOpenBackpack(true); 並且要求裝備和物品表
+    5. 走越遠走越快
+    6. 可以查看決賽之碑的按鈕
+    7. setItem 還沒寫，寫了會向後端送這是 index 多少的物品，後端自行判斷現在的 flag 是要買賣還是裝備，或其實都不是所以操作無效
+    8. buyItem 還沒寫，寫了會向後端送這是 index 多少的商品
 
 
 後端
-    1. 
-    get/game-data 不吃輸入，回傳 {"player_name": string, "items": 所有物品的 dict, "player_attributes": dict, "level": int, "boss_hp": int, "total_atk": int}
-        "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
-    
-    bir:已完成,加新東西記得說
-    
-    2.
-    get/rolldice 不吃輸入，回傳 {"dice": int(這次走幾步),"pos": int(起點格子編號), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
-        "other_param"=switch(type){
-            "reward": "player_attributes"
-            "question": 一堆選項字串的 list
-            "event": 一堆選項字串的 list
-            "shop": 賣的東西的 dict
-            "rest": None
-            "battle": 還沒想
-        }
+    1. get/game_data 的 items 刪掉
+    2. response/event，一切同 response/question，但是看起來你需要開一個不同的路徑才能決定用 q_num 或是去撈 event 的表
+    3. get/rolldice 只剩 other_param 還沒好，event 看起來是你那邊建表而已，前端完全當作 question 做了
+       shop 要給我商品表跟背包表跟裝備表
+       rest 要給我背包表跟裝備表
+       battle 要給我一堆要照順序做的操作的 dict list(講 list 不講 array 是因為比較 python)
+    4. 有空可以在底下定一下 get/rolldice 裡面 battle 回傳的打架過程要長怎樣，我不完全確定你想呈現啥還有呈現他需要哪些參數
+    5. equipment 同上一點，不是很知道你需要多少格子和哪些格子，同時因為這點不知道裝備要不要被包在 items 裡面
+    6. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補
+    7. 要給我兩個網址吐出全部的商品和全部的物品和裝備
 
-    3.
-    response/question 吃一個 POST，輸入是 {"select": index}，其中 index 是 [0, 該次選項數量) 的 int，回傳一個 "player_attributes"
-    bir:已完成
-
-    4.
-    shop 和 items 的 dict 應該要是有圖片和描述和價格和屬性的
+api 長相（雖然這好像不是 todo）
+"item"={"icon": string(那張圖片的 url), "descript": string(那個物品的文字敘述), "price": int(價格), /*這裡不知道要不要顯示一些裝備屬性*/}
+"player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
+get/game_data(){
+    return {"player_name": string, "player_attributes": dict, "level": int, "boss_hp": int, "total_atk": int, "pos": int};
+}
+POST response/question({"select": index(其中 index 是 [0, 該次選項數量) 的 int)}){
+    return "player_attributes": dict
+}
+get/rolldice(){
+    打架過程={還沒定，你定，我沒想好要長怎樣}
+    "other_param"=switch(type){
+        "reward": "player_attributes"
+        "question": list[string](一堆選項字串的 list)
+        "event": list[string](一堆選項字串的 list)
+        "shop": {"products": dict{item}(商品們), "items": dict{item}(物品們), "equipment": dict{item}(裝備們)}
+        "rest": {"items": dict{item}(物品們), "equipment": dict{item}(裝備們)}
+        "battle": {"log": list[打架過程](打架過程們), "player_attributes": dict(戰鬥結束後玩家的最終屬性)}
+    }
+    return {"dice": int(這次走幾步),"pos": int(起點格子編號), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
+}

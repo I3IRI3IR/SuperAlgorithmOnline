@@ -2,28 +2,45 @@ import React, { useState } from "react";
 import "./Board.css";
 import diceImage from './image/dice.jpg';
 
-const Backpack = ({ option }) => {
+const Equipment = () => {
   return (<></>);
 };
 
-const Shop = () => {
-  return (<></>);
+const Backpack = ({items, setItem}) => {
+  return (
+    <>
+      <Equipment></Equipment>
+      <ul className="backpack">
+        {items.map((item, index) => (
+          <img key={index} src={item.icon} className="item" onClick={() => setItem(index)}></img>
+        ))}
+      </ul>
+    </>
+  );
 };
 
-const Equipment = ({ option }) => {
-  return (<></>);
+const Shop = ({products, buyItem}) => {
+  return (
+    <ul className="shop">
+      {products.map((product, index) => (
+        <img key={index} src={product.icon} className="item" onClick={() => buyItem(index)}></img>
+      ))}
+    </ul>
+  );
 };
 
-const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attributes}) => {
+const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition}) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
-  const [currentPosition, setCurrentPosition] = useState(0);
   const [isMoving, setIsMoving] = useState(false);
   const [isEvent, setIsEvent] = useState(false);
+  const [items, setItems] = useState([]);
+  const [products, setProducts] = useState([]);
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
   const [eventParam, setEventParam] = useState("");
   const [openBackpack, setOpenBackpack] = useState(false);
+  const [switchToShop, setSwitchToShop] = useState(true);
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -31,11 +48,8 @@ const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attrib
     fetch("get/rolldice")
       .then((response) => response.json())
       .then((data) => {
-        const diceRoll = data.dice;
-        const targetPosition = (currentPosition + diceRoll) % cells.length;
-
-        setMsgList(msgList => [...msgList, `骰子點數: ${diceRoll}, 目標位置: ${cells[targetPosition]}, 事件類型: ${data.type}`]);
-        movePiece(targetPosition);
+        setMsgList(msgList => [...msgList, `骰子點數: ${data.dice}, 起始位置: ${data.pos}, 事件類型: ${data.type}`]);
+        movePiece(data.dice, data.pos);
 
         // 根據事件類型處理邏輯
 
@@ -43,24 +57,28 @@ const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attrib
         setEventMsg(data.msg);
         setEventType(data.type);
         setEventParam(data.other_param);
-        if (data.type === "reward" || data.type === "battle" || data.type === "event") {
-          setPlayer_attributes(data.other_param);
+        if (data.type === "reward") {
+          setPlayer_attributes(data.other_param[0]);
+        } else if (data.type === "battle") {
 
+        } else if (data.type === "event") {
+          
         }
       });
   };
 
-  const movePiece = (targetPosition) => {
+  const movePiece = (step, pos) => {
     setIsMoving(true);
 
     const stepDelay = 300; // 每步移動的延遲時間 (毫秒)
     let currentIndex = currentPosition;
 
     const interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % cells.length; // 下一格的位置
-      setCurrentPosition(currentIndex);
+      pos = (pos + 1) % cells.length; // 下一格的位置
+      --step;
+      setCurrentPosition(pos);
 
-      if (currentIndex === targetPosition) {
+      if (step<=0) {
         clearInterval(interval);
         setIsMoving(false); // 移動完成
       }
@@ -84,7 +102,29 @@ const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attrib
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data));
+      .then((data) => setPlayer_attributes(data[0]));
+  };
+
+  const answerEvent = (index) => {
+    setIsEvent(false);
+    console.log(index);
+    fetch("response/event", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"select": index}),
+    })
+      .then((response) => response.json())
+      .then((data) => setPlayer_attributes(data[0]));
+  };
+
+  const setItem = (index) => {
+
+  };
+
+  const buyItem = (index) => {
+
   };
 
   return (
@@ -101,40 +141,30 @@ const Board = ({ setMsgList, items, setItem, player_attributes, setPlayer_attrib
             </ul>
           ) : eventType === "shop" ? (
             <>
-              <div style={{ display: 'flex' }}>
-                <>
-                  <Shop></Shop>
-                  <Equipment option={"sell"}></Equipment>
-                </>
-                <Backpack option={"sell"}></Backpack>
-              </div>
+              { switchToShop ? (<Shop products={products} buyItem={buyItem}></Shop>) : (<Backpack items={items} setItem={setItem}></Backpack>) }
+              <button className="switch-shop" onClick={() => setSwitchToShop(!switchToShop)}>切換商店或背包</button>
               <button className="close-shop" onClick={() => setIsEvent(false)}>離開商店</button>
             </>
           ) : eventType === "rest" ? (
             <>
-              <div style={{ display: 'flex' }}>
-                <Equipment option={"adjust"}></Equipment>
-                <Backpack option={"adjust"}></Backpack>
-              </div>
+              <Backpack items={items} setItem={setItem}></Backpack>
               <button className="rest" onClick={() => setIsEvent(false)}>結束休息</button>
             </>
           ) : (
-            <>
-              <p className="event-msg"> { eventMsg } </p>
-              <button className="close-event" onClick={() => setIsEvent(false)}>
-                確定
-              </button>
-            </>
+            <ul className="event-options">
+              {eventParam.map((option, index) => (
+                <button key={index} className="event-option" onClick={() => answerEvent(index)}>
+                  {option}
+                </button>
+              ))}
+            </ul>
           )}
         </div>
       )}
       {openBackpack &&(
         <>
-          <div style={{ display: 'flex' }}>
-            <Equipment option={"forbid"}></Equipment>
-            <Backpack option={"forbid"}></Backpack>
-          </div>
-          <button className="rest" onClick={() => setOpenBackpack(false)}>退出背包</button>
+          <Backpack items={items} setItem={setItem}></Backpack>
+          <button className="leave-backpack" onClick={() => setOpenBackpack(false)}>退出背包</button>
         </>
       )}
       <div className="board">
