@@ -25,12 +25,16 @@
     get/rolldice 不吃輸入，回傳 {"dice": int(這次走幾步),"pos": int(起點格子編號), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
         "other_param"=switch(type){
             "reward": "player_attributes"
-            "question"||"event": 一堆選項字串的 list
+            "question": 一堆選項字串的 list
+            "event": 一堆選項字串的 list
             "shop": 賣的東西的 dict
             "rest": None
             "battle": 還沒想
         }
-    response/question 吃一個 POST，輸入是 {"select": index}，其中 index 是 [0, 該次選項數量) 的 int，回傳一個 "player_attributes"
 
     3.
+    response/question 吃一個 POST，輸入是 {"select": index}，其中 index 是 [0, 該次選項數量) 的 int，回傳一個 "player_attributes"
+    bir:已完成
+
+    4.
     shop 和 items 的 dict 應該要是有圖片和描述和價格和屬性的
