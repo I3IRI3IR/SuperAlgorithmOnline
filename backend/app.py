@@ -4,9 +4,12 @@ import random
 import json
 import os
 from SECRET import CLIENT_SECRET
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+CORS(app, supports_credentials=True)
 
 
 
@@ -16,6 +19,34 @@ REDIRECT_URI = 'http://localhost:5000/callback'
 API_BASE_URL = 'https://discord.com/api'
 SCOPE = 'identify'
 
+
+
+
+def get_playerattribute(id):
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    response = {
+            'LV' : db[id]['lv'],
+            'POS' : db[id]['pos'],
+            'HP' : db[id]['hp'],
+            'ATK' : db[id]['atk'],
+            'DEF' : db[id]['def'],
+            'SPD' : db[id]['spd'],
+            'EXP' : db[id]['exp'],
+        },
+       
+    return response
+
+def mapdecode(map, start, step):
+    for i in range(36):
+        if map[i][0] == start :
+            return map[(i+step)%36]
+        
+
+        
+
 # 點登入時導向 Discord OAuth2
 @app.route('/auth/discord')
 def login():
@@ -24,71 +55,79 @@ def login():
         f"&redirect_uri={REDIRECT_URI}&response_type=code&scope={SCOPE}"
     )
 
-# Discord 登入回傳的處理（callback）
+@app.route('/session-check', methods=['GET'])
+def session_check():
+    user = session.get('user')
+    if user:
+        return jsonify({'user': user})
+    return jsonify({'user': None})
+
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
     if not code:
-        return '錯誤：沒有拿到 code'
-    # 用 code 拿 access token
-    data = {
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': REDIRECT_URI,
-        'scope': SCOPE
-    }
+        return '錯誤：沒有拿到 code', 400
 
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    r = requests.post(f"{API_BASE_URL}/oauth2/token", data=data, headers=headers)
-    r.raise_for_status()
-    token_data = r.json()
-    access_token = token_data['access_token']
-
-
-    # 用 access token 取得使用者資料
-    user_info = requests.get(f"{API_BASE_URL}/users/@me", headers={
-        'Authorization': f'Bearer {access_token}'
-    }).json()
-    session['user'] = user_info
-    
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
-    
-
-    if user_info['id'] not in db:
-        new_player = {
-            'name' : user_info['global_name'] ,
-            'damage' : 0,
-            'pos' : 0,
-            'lv' : 1,
-            'hp' : 100,
-            'atk' : 10,
-            'def' : 10,
-            'spd' : 6,
-            'exp' : 0,
-            'item' : {},
-            'dice' : 10,
+    try:
+        # 用 code 拿 access token
+        data = {
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': REDIRECT_URI,
+            'scope': SCOPE
         }
-        db[user_info['id']] = new_player
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        token_response = requests.post(f"{API_BASE_URL}/oauth2/token", data=data, headers=headers)
+        token_response.raise_for_status()
+        token_data = token_response.json()
+        access_token = token_data['access_token']
 
-        # 寫回檔案
+        # 用 access token 取得使用者資料
+        user_info_response = requests.get(
+            f"{API_BASE_URL}/users/@me",
+            headers={'Authorization': f'Bearer {access_token}'}
+        )
+        user_info_response.raise_for_status()
+        user_info = user_info_response.json()
+
+        # 儲存使用者資料到 session
+        session['user'] = user_info
+
+        # 檢查或新增玩家資料
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
+
+        user_id = user_info['id']
+        if user_id not in db:
+            new_player = {
+                'name': user_info['global_name'],
+                'damage': 0,
+                'pos': 0,
+                'lv': 1,
+                'hp': 100,
+                'atk': 10,
+                'def': 10,
+                'spd': 6,
+                'exp': 0,
+                'item': {},
+                'dice': 10,
+            }
+            db[user_id] = new_player
+        else:
+            db[user_id]['name'] = user_info['global_name']
+
+        # 更新檔案
         with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
-    else:
-        db[user_info['id']]['name'] = user_info['global_name']
 
-        # 寫回檔案
-        with open("GameControl.json", "w", encoding="utf-8") as file:
-            json.dump(db, file, ensure_ascii=False, indent=2)
+        # 成功後重定向到遊戲頁面
+        return redirect("http://localhost:3000")  # 假設前端應用的遊戲頁面 URL
 
-
-    user = session.get('user')
-    if not user:
-        return jsonify({'error': 'not logged in'}), 401
-    return jsonify(user)
-    #return redirect(url_for('dashboard'))
+    except requests.exceptions.RequestException as e:
+        print(f"登入過程中出現錯誤: {e}")
+        return '登入過程中出現錯誤，請稍後再試。', 500
 
 @app.route('/dashboard')
 def dashboard():
@@ -225,24 +264,3 @@ session['user']
 
 """
 
-def get_playerattribute(id):
-    id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
-
-    response = {
-            'LV' : db[id]['lv'],
-            'POS' : db[id]['pos'],
-            'HP' : db[id]['hp'],
-            'ATK' : db[id]['atk'],
-            'DEF' : db[id]['def'],
-            'SPD' : db[id]['spd'],
-            'EXP' : db[id]['exp'],
-        },
-       
-    return response
-
-def mapdecode(map, start, step):
-    for i in range(36):
-        if map[i][0] == start :
-            return map[(i+step)%36]
