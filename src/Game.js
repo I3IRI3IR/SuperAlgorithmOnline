@@ -32,31 +32,21 @@ const Msgbox = ({msgList, setMsgList, msg, setMsg}) => {
 const Game = () => {
   const [player_name, setPlayer_name] = useState("");
   const [player_attributes, setPlayer_attributes] = useState({});
-  const [items, setItems] = useState([]);
   const [level, setLevel] = useState(0);
   const [boss_hp, setBoss_hp] = useState(0);
   const [total_atk, setTotal_atk] = useState(0);
-
-  /* 測試用 */
-  useEffect(() => {
-    setPlayer_name("封弊者");
-    setPlayer_attributes({"HP": 11, "ATK": 45, "DEF": 14, "SPD": 19, "EXP": 19, "LV": 810});
-    setLevel(998244353);
-    setBoss_hp(1e6+3);
-    setTotal_atk(1e9+7);
-  }, []);
-  /* 測試用 */
+  const [currentPosition, setCurrentPosition] = useState(0);
 
   useEffect(() => {
-    fetch("/get/game-data")
+    fetch("/get/game_data")
       .then((response) => response.json())
       .then((data) => {
         setPlayer_name(data.player_name);
-        setPlayer_attributes(data.player_attributes);
-        setItems(data.items);
+        setPlayer_attributes(data.player_attributes[0]);
         setLevel(data.level);
         setBoss_hp(data.boss_hp);
         setTotal_atk(data.total_atk);
+        setCurrentPosition(data.pos);
       })
       .catch((error) => console.error("Error loading game data:", error));
   }, []);
@@ -79,7 +69,7 @@ const Game = () => {
       </div>
       <div className="main-content">
         <div className="boardgen-container">
-            <Board setMsgList={setMsgList} items={items} setItems={setItems} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes}/>
+            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition}/>
         </div>
         <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>
