@@ -104,8 +104,15 @@ def get_game_data():
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
 
-    response = get_playerattribute(id)
-    
+    playerattribute = get_playerattribute(id)
+    response = {
+        "player_name":db['id']['name'],
+        "item":db['id']['item'],
+        "player_attributes":playerattribute,
+        "level":db['level'],
+        "boss_hp":db['boss_hp'],
+        "total_atk":db['id']['damage']
+    }
     return jsonify(response)
 
 
@@ -224,9 +231,6 @@ def get_playerattribute(id):
         db = json.load(file)
 
     response = {
-        'player_name' : db[id]['name'],
-        'item' : db[id]['item'],
-        'player_attributes' : {
             'LV' : db[id]['lv'],
             'POS' : db[id]['pos'],
             'HP' : db[id]['hp'],
@@ -235,10 +239,7 @@ def get_playerattribute(id):
             'SPD' : db[id]['spd'],
             'EXP' : db[id]['exp'],
         },
-        'level' : db['level'],
-        'boss_hp' : db['boss_hp'],
-        'total_atk' : db[id]['damage'],
-    }
+       
     return response
 
 def mapdecode(map, start, step):

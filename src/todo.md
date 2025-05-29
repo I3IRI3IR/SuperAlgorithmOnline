@@ -11,10 +11,12 @@
     7. 遇到格子是 battle 的時候還沒判斷 other_param 要長怎樣
     8. 走越遠走越快
     9. 串登入介面
+    10.可以查看決賽之碑的按鈕
+
 
 後端
     1. 
-    get/game-data 不吃輸入，回傳 {"player_name": string, "items": 所有物品的 dict, "player_attributes": dict, "items": dict, "level": int, "boss_hp": int, "total_atk": int}
+    get/game-data 不吃輸入，回傳 {"player_name": string, "items": 所有物品的 dict, "player_attributes": dict, "level": int, "boss_hp": int, "total_atk": int}
         "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
     
     bir:已完成,加新東西記得說
