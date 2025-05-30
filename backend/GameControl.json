@@ -18,5 +18,23 @@
     "eventflag": 0,
     "restflag": 0,
     "shopflag": 0
+  },
+  "852064504846352394": {
+    "name": "BIR",
+    "damage": 0,
+    "pos": 22,
+    "lv": 1,
+    "hp": 100,
+    "atk": 10,
+    "def": 10,
+    "spd": 6,
+    "exp": 0,
+    "item": {},
+    "dice": -17,
+    "battleflag": 0,
+    "questionflag": 0,
+    "eventflag": 0,
+    "restflag": 0,
+    "shopflag": 0
   }
 }

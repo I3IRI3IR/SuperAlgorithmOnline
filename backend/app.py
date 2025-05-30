@@ -35,7 +35,7 @@ def get_playerattribute(id):
             'DEF' : db[id]['def'],
             'SPD' : db[id]['spd'],
             'EXP' : db[id]['exp'],
-        },
+        }
        
     return response
 
@@ -126,7 +126,7 @@ def callback():
                 'questionflag': 0,
                 'eventflag': 0,
                 'restflag': 0,
-                'shopflag': 0,
+                'shopflag': 0
             }
             db[user_id] = new_player
         else:
@@ -159,16 +159,12 @@ def get_game_data():
 
     playerattribute = get_playerattribute(id)
     response = {
-        # "player_name":db['id']['name'],
-        "player_name":db[id]['name'], #164253flag 這裡應該是 db[id] 而不是 db['id']
-        # "item":db['id']['item'],
-        "item":db[id]['item'], #164253flag 這裡應該是 db[id] 而不是 db['id']
+        "player_name":db[id]['name'], 
         "player_attributes":playerattribute,
         "level":db['level'],
         "boss_hp":db['boss_hp'],
-        # "total_atk":db['id']['damage']
-        "total_atk":db[id]['damage'], #164253flag 這裡應該是 db[id] 而不是 db['id']
-        "pos":db[id]['pos'] #164253flag 發現初始化需要吃起始位置，所以我先寫了
+        "total_atk":db[id]['damage'], 
+        "pos":db[id]['pos'] 
     }
     return jsonify(response)
 
@@ -260,8 +256,6 @@ def get_rolldice():
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
-
-
     return jsonify(response)
 
 
@@ -276,8 +270,8 @@ def response_question():
     with open("QuestionAns.json", "r", encoding="utf-8") as file:
         ansdb = json.load(file)
     
-    # if ansdb[str(db[id]['questionflag'])]['ans'] == data['selete']:
-    if ansdb[str(db[id]['questionflag'])]['ans'] == data['select']: #164253flag 這裡 select 拼錯字了吧
+    
+    if ansdb[str(db[id]['questionflag'])]['ans'] == data['select']: 
         #do something
         pass
     else:
@@ -290,8 +284,8 @@ def response_question():
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
-    # return response
-    return jsonify(response) #164253flag 忘記 jsonify
+    
+    return jsonify(response) 
 
 
 if __name__ == '__main__':
