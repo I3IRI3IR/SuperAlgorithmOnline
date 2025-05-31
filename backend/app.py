@@ -228,8 +228,8 @@ def get_rolldice():
     other_param = {}
 
     if type == "reward":
-        other_param = get_playerattribute(id)
         msg = "reward_msg"
+        other_param = get_playerattribute(id)
     elif type == "question":
         question = get_question()
         msg = question['Statements']

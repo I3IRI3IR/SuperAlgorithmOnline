@@ -22,7 +22,7 @@
   "852064504846352394": {
     "name": "BIR",
     "damage": 0,
-    "pos": 22,
+    "pos": 10,
     "lv": 1,
     "hp": 100,
     "atk": 10,
@@ -30,7 +30,7 @@
     "spd": 6,
     "exp": 0,
     "item": {},
-    "dice": -17,
+    "dice": -27,
     "battleflag": 0,
     "questionflag": 0,
     "eventflag": 0,

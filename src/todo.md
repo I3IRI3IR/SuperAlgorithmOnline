@@ -10,7 +10,7 @@
 
 
 後端
-    1. get/game_data 的 items 刪掉
+    
     2. response/event，一切同 response/question，但是看起來你需要開一個不同的路徑才能決定用 q_num 或是去撈 event 的表
     3. get/rolldice 只剩 other_param 還沒好，event 看起來是你那邊建表而已，前端完全當作 question 做了
        shop 要給我商品表跟背包表跟裝備表
