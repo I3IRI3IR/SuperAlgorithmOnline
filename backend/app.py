@@ -47,6 +47,13 @@ def get_question():
     response['q_num'] = q_num
     return response
 
+def get_event(e_num):
+    with open("Event.json", "r", encoding="utf-8") as file:
+        event_db = json.load(file)
+    response = event_db[e_num]
+    response['e_num'] = e_num
+    return response
+
 
 def mapdecode(map, start, step):
     for i in range(36):
@@ -122,6 +129,7 @@ def callback():
                 'exp': 0,
                 'item': {},
                 'dice': 10,
+                'eventcode': 1,
                 'battleflag': 0,
                 'questionflag': 0,
                 'eventflag': 0,
@@ -236,7 +244,10 @@ def get_rolldice():
         other_param = question['Options']
         db[id]['questionflag'] = question['q_num']
     elif type == "event":
-        other_param = ["A","B","C","D"]
+        event = get_event(db[id]['eventcode'])
+        msg = event['Statements']
+        other_param = event['Options']
+        db[id]['eventflag'] = event['e_num']
     elif type == "shop":
         other_param = {}
     elif type == "rest":
@@ -285,6 +296,34 @@ def response_question():
             json.dump(db, file, ensure_ascii=False, indent=2)
 
     
+    return jsonify(response) 
+
+
+@app.route('/response/event',methods=['POST'])
+def response_event():
+    data = request.get_json()
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+
+    with open("EventAns.json", "r", encoding="utf-8") as file:
+        ansdb = json.load(file)
+    
+    
+    for i in range(4):
+        if i == data['select']: 
+            #do something
+            db[id]['eventcode'] = ansdb[str(db[id]['eventflag'])]['nextevent'][i]
+            break
+    
+    
+    response = get_playerattribute(id)
+    db[id]['eventflag'] = 0
+
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
     return jsonify(response) 
 
 
