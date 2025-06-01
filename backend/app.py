@@ -35,7 +35,7 @@ def get_playerattribute(id):
             'DEF' : db[id]['def'],
             'SPD' : db[id]['spd'],
             'EXP' : db[id]['exp'],
-        },
+        }
        
     return response
 
@@ -45,6 +45,13 @@ def get_question():
     q_num = str(random.randint(1,2))
     response = question_db[q_num]
     response['q_num'] = q_num
+    return response
+
+def get_event(e_num):
+    with open("Event.json", "r", encoding="utf-8") as file:
+        event_db = json.load(file)
+    response = event_db[e_num]
+    response['e_num'] = e_num
     return response
 
 
@@ -122,11 +129,12 @@ def callback():
                 'exp': 0,
                 'item': {},
                 'dice': 10,
+                'eventcode': 1,
                 'battleflag': 0,
                 'questionflag': 0,
                 'eventflag': 0,
                 'restflag': 0,
-                'shopflag': 0,
+                'shopflag': 0
             }
             db[user_id] = new_player
         else:
@@ -159,16 +167,12 @@ def get_game_data():
 
     playerattribute = get_playerattribute(id)
     response = {
-        # "player_name":db['id']['name'],
-        "player_name":db[id]['name'], #164253flag 這裡應該是 db[id] 而不是 db['id']
-        # "item":db['id']['item'],
-        "item":db[id]['item'], #164253flag 這裡應該是 db[id] 而不是 db['id']
+        "player_name":db[id]['name'], 
         "player_attributes":playerattribute,
         "level":db['level'],
         "boss_hp":db['boss_hp'],
-        # "total_atk":db['id']['damage']
-        "total_atk":db[id]['damage'], #164253flag 這裡應該是 db[id] 而不是 db['id']
-        "pos":db[id]['pos'] #164253flag 發現初始化需要吃起始位置，所以我先寫了
+        "total_atk":db[id]['damage'], 
+        "pos":db[id]['pos'] 
     }
     return jsonify(response)
 
@@ -232,15 +236,18 @@ def get_rolldice():
     other_param = {}
 
     if type == "reward":
-        other_param = get_playerattribute(id)
         msg = "reward_msg"
+        other_param = get_playerattribute(id)
     elif type == "question":
         question = get_question()
         msg = question['Statements']
         other_param = question['Options']
         db[id]['questionflag'] = question['q_num']
     elif type == "event":
-        other_param = ["A","B","C","D"]
+        event = get_event(db[id]['eventcode'])
+        msg = event['Statements']
+        other_param = event['Options']
+        db[id]['eventflag'] = event['e_num']
     elif type == "shop":
         other_param = {}
     elif type == "rest":
@@ -260,8 +267,6 @@ def get_rolldice():
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
-
-
     return jsonify(response)
 
 
@@ -276,8 +281,8 @@ def response_question():
     with open("QuestionAns.json", "r", encoding="utf-8") as file:
         ansdb = json.load(file)
     
-    # if ansdb[str(db[id]['questionflag'])]['ans'] == data['selete']:
-    if ansdb[str(db[id]['questionflag'])]['ans'] == data['select']: #164253flag 這裡 select 拼錯字了吧
+    
+    if ansdb[str(db[id]['questionflag'])]['ans'] == data['select']: 
         #do something
         pass
     else:
@@ -290,8 +295,36 @@ def response_question():
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
-    # return response
-    return jsonify(response) #164253flag 忘記 jsonify
+    
+    return jsonify(response) 
+
+
+@app.route('/response/event',methods=['POST'])
+def response_event():
+    data = request.get_json()
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+
+    with open("EventAns.json", "r", encoding="utf-8") as file:
+        ansdb = json.load(file)
+    
+    
+    for i in range(4):
+        if i == data['select']: 
+            #do something
+            db[id]['eventcode'] = ansdb[str(db[id]['eventflag'])]['nextevent'][i]
+            break
+    
+    
+    response = get_playerattribute(id)
+    db[id]['eventflag'] = 0
+
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
+    return jsonify(response) 
 
 
 if __name__ == '__main__':

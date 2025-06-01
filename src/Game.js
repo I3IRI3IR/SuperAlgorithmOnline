@@ -42,7 +42,7 @@ const Game = () => {
       .then((response) => response.json())
       .then((data) => {
         setPlayer_name(data.player_name);
-        setPlayer_attributes(data.player_attributes[0]);
+        setPlayer_attributes(data.player_attributes);
         setLevel(data.level);
         setBoss_hp(data.boss_hp);
         setTotal_atk(data.total_atk);

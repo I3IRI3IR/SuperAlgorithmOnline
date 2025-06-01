@@ -58,7 +58,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         setEventType(data.type);
         setEventParam(data.other_param);
         if (data.type === "reward") {
-          setPlayer_attributes(data.other_param[0]);
+          setPlayer_attributes(data.other_param);
         } else if (data.type === "battle") {
 
         } else if (data.type === "event") {
@@ -102,7 +102,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data[0]));
+      .then((data) => setPlayer_attributes(data));
   };
 
   const answerEvent = (index) => {
@@ -116,7 +116,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data[0]));
+      .then((data) => setPlayer_attributes(data));
   };
 
   const setItem = (index) => {
