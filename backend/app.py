@@ -128,6 +128,7 @@ def callback():
                 'spd': 6,
                 'exp': 0,
                 'item': {},
+                'coin': 0,
                 'dice': 10,
                 'eventcode': 1,
                 'battleflag': 0,

@@ -8,6 +8,7 @@
     7. setItem 還沒寫，寫了會向後端送這是 index 多少的物品，後端自行判斷現在的 flag 是要買賣還是裝備，或其實都不是所以操作無效
     8. buyItem 還沒寫，寫了會向後端送這是 index 多少的商品
     9. response/question||event 應該還要有返回的訊息顯示結果，目前只有player_attr
+    10.item類道具在背包介面要可以被使用然後消耗
 
 後端
     2. response/event，一切同 response/question，但是看起來你需要開一個不同的路徑才能決定用 q_num 或是去撈 event 的表 //bir:完成一部分，剩下result的格式未定
@@ -24,8 +25,14 @@
     7. 要給我兩個網址吐出全部的商品和全部的物品和裝備
 
 api 長相（雖然這好像不是 todo）
-"item"={"icon": string(那張圖片的 url), "descript": string(那個物品的文字敘述), "price": int(價格), "type": str(必為"weapon"||"chest"||"item")}
-    //bir:之後可能會修改descript的結構，用以描述武器的屬性
+"item"={
+    "icon": string(那張圖片的 url),
+    "descript": string(那個物品的文字敘述),
+    "price": int(價格),
+    "type": str(必為"weapon"||"chest"||"item"),
+    "name": str(物品名字，作為判斷道具效果的flag)
+    }
+    //bir:item類道具在背包介面要可以被使用然後消耗
 
 
 "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
@@ -44,7 +51,7 @@ get/rolldice(){
 
     fight = {
         "defender": str,必為"player"||"enemy"，表示誰受到傷害
-        "damage_type": str,必為"burn"||"bleed"||"spell"||"knife"||"heal"，代表四種不同的攻擊或治療，使用對應的特效
+        "damage_type": str,必為"burn"||"bleed"||"spell"||"knife"||"heal"||"fatigue"，代表四種不同的攻擊或治療或疲勞傷害，使用對應的特效
         "damage": int,表示傷害量
         "effect_def":list,必為[int,int]，表示defender目前的"burn"值及"bleed"值，因為有可能因各種效果使前兩個值發生變化，只有當type不是burn||bleed時才可能發生改變
         "effect_enemy":list，同上，表示defender的對手的狀態
