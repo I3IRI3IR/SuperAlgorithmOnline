@@ -65,6 +65,7 @@ def getItemByName(name):
     for i in item_list:
         if i["name"]==name:
             return i
+    return None
         
 def getRandItem():
     item_list = [{"name":"sword","icon":"","descript":"","price":1,"type":"weapon","equipped":False}]
@@ -386,6 +387,80 @@ def response_event():
             json.dump(db, file, ensure_ascii=False, indent=2)
 
     return jsonify(response) 
+
+@app.route('/shopexit')
+def shopexit():
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    db[id]["shopflag"]=0
+
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+    return '',200
+
+@app.route('/restexit')
+def shopexit():
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    db[id]["restflag"]=0
+
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+    return '',200
+
+@app.route('/buyItem')
+def shopexit():
+    data = request.get_json()
+    id = session['user']['id']
+    returnflag=0
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+
+    name = data["name"]
+    item = getItemByName(name)
+    if db[id]["shopflag"]==1:
+        if name in db[id]["shop"]:
+            if db[id]["coin"] >= item["price"]:
+                db[id]["coin"] -= item["price"]
+                db[id]["shop"].remove(name)
+                db[id]["shop"].append("empty")
+                db[id]["backpack"][str(len(db[id]["backpack"]))]=item
+                returnflag=1
+                
+
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+    if returnflag==1:
+        return '',200
+    else:
+        return '',204
+
+@app.route('/get/allItem')
+def getallItem():
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+    response = db[id]["backpack"]
+    return jsonify(response)
+
+
+@app.route('/get/allCommodity')
+def getallCommodity():
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+    response = {
+        "1":getItemByName(db[id]["shop"][0]),
+        "2":getItemByName(db[id]["shop"][1]),
+        "3":getItemByName(db[id]["shop"][2])
+    }
+    return jsonify(response)
 
 
 if __name__ == '__main__':
