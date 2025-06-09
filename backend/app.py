@@ -60,6 +60,48 @@ def mapdecode(map, start, step):
         if map[i][0] == start :
             return map[(i+step)%36]
         
+def getItemByName(name):
+    item_list = [{"name":"sword","icon":"","descript":"","price":1,"type":"weapon","equipped":False}]
+    for i in item_list:
+        if i["name"]==name:
+            return i
+        
+def getRandItem():
+    item_list = [{"name":"sword","icon":"","descript":"","price":1,"type":"weapon","equipped":False}]
+    return random.choice(item_list)
+        
+def get_reward(r_num,player_attr):
+    msg=""
+    def num_0():
+        #do
+        #write msg
+        pass
+    def num_1():
+        #do reward
+        #write msg
+        pass
+    reward_list = [num_0,num_1]
+    reward_list[r_num]()
+    response = [player_attr,msg]
+    return response
+
+def get_equipment(id):
+    response = {
+        "weapon1":None,
+        "weapon2":None,
+        "chest":None
+    }
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
+    for i in db[id]["backpack"]:
+        if i["equipped"] and i["type"]=="weapon":
+            if response["weapon1"]==None:
+                response["weapon1"]=i
+            else:
+                response["weapon2"]=i
+        elif i["equipped"] and i["type"]=="chest":
+            response["chest"]=i
+    return response
 
         
 
@@ -127,7 +169,8 @@ def callback():
                 'def': 10,
                 'spd': 6,
                 'exp': 0,
-                'item': {},
+                'backpack': {},
+                'shop':["sword","sword","sword"],
                 'coin': 0,
                 'dice': 10,
                 'eventcode': 1,
@@ -237,7 +280,10 @@ def get_rolldice():
     other_param = {}
 
     if type == "reward":
-        msg = "reward_msg"
+        r_num = random.randint(0,1)
+        res = get_reward(r_num,db[id])
+        db[id] = res[0]
+        msg = res[1]
         other_param = get_playerattribute(id)
     elif type == "question":
         question = get_question()
@@ -250,9 +296,23 @@ def get_rolldice():
         other_param = event['Options']
         db[id]['eventflag'] = event['e_num']
     elif type == "shop":
-        other_param = {}
+        products = {
+            "1":getRandItem(),
+            "2":getRandItem(),
+            "3":getRandItem()
+        }
+        db[id]["shop"]=[products["1"]["name"],products["2"]["name"],products["3"]["name"]]
+        db[id]["shop_flag"]=1
+        other_param = {
+            "products" : products,
+            "items" : db[id]["backpack"],
+            "equipped" : get_equipment(id)
+        }
     elif type == "rest":
-        other_param = None
+        other_param = {
+            "items" : db[id]["backpack"],
+            "equipped" : get_equipment(id)
+        }
     elif type == "battle":
         other_param = {}
     response = {

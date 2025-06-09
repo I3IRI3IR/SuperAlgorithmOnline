@@ -5,10 +5,15 @@
     4. 寫個打開背包的按鈕，然後 setOpenBackpack(true); 並且要求裝備和物品表
     5. 走越遠走越快
     6. 可以查看決賽之碑的按鈕
-    7. setItem 還沒寫，寫了會向後端送這是 index 多少的物品，後端自行判斷現在的 flag 是要買賣還是裝備，或其實都不是所以操作無效
-    8. buyItem 還沒寫，寫了會向後端送這是 index 多少的商品
+    7. setItem 還沒寫，寫了會向後端送這是 index 多少的物品，後端自行判斷現在的 flag 是要買賣還是裝備，或其實都不是所以操作無效 //bir:不可以是買賣，一樣送名字(str)
+    8. buyItem 還沒寫，寫了會向後端送這是 index 多少的商品 //bir:改成傳回商品的名字(str)，後端知道所有事情以及合不合法
     9. response/question||event 應該還要有返回的訊息顯示結果，目前只有player_attr
     10.item類道具在背包介面要可以被使用然後消耗
+    11.sellItem 還沒寫，寫了會向後端送物品的名字，後端做事
+    12.shopexit 還沒寫，不需要內容
+    13.restexit 還沒寫，不需要內容
+    14.
+    //bir:所有不合法請求後端都只會回一個204 No connect，請忽略並不要訪問response.data，你如果想要200我可以輕鬆地改
 
 後端
     2. response/event，一切同 response/question，但是看起來你需要開一個不同的路徑才能決定用 q_num 或是去撈 event 的表 //bir:完成一部分，剩下result的格式未定
@@ -22,17 +27,28 @@
        //bir:裝備會占用背包空間，也就是不用檢查裝備脫不脫得下來，格子就只有武器格*2和胸甲(防裝)格
 
     6. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補
+
     7. 要給我兩個網址吐出全部的商品和全部的物品和裝備
 
 api 長相（雖然這好像不是 todo）
+
 "item"={
     "icon": string(那張圖片的 url),
     "descript": string(那個物品的文字敘述),
     "price": int(價格),
     "type": str(必為"weapon"||"chest"||"item"),
     "name": str(物品名字，作為判斷道具效果的flag)
+    "equipped": bool(表示此物品有沒有被裝備)
     }
     //bir:item類道具在背包介面要可以被使用然後消耗
+
+"equipment"={
+    "weapon1":"item",
+    "weapon2":"item",
+    "chest":"item",
+
+    //以上皆可為null
+}
 
 
 "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
@@ -58,6 +74,16 @@ get/rolldice(){
     }
 
 
+    以下怪物屬性為戰鬥開始時的，要隨著之後的fight改變前端顯示
+    mob_attributes = {
+        "HP":int,
+        "ATK":int,
+        "DEF":int,
+        "name":str,
+        "img":str,(圖片url)
+        "msg":str,(屬標移到怪物圖片上時要跳出的說明，做不完的話可以不理這個)
+    }
+
 
 
 
@@ -67,7 +93,7 @@ get/rolldice(){
         "event": list[string](一堆選項字串的 list)
         "shop": {"products": dict{item}(商品們), "items": dict{item}(物品們), "equipment": dict{item}(裝備們)}
         "rest": {"items": dict{item}(物品們), "equipment": dict{item}(裝備們)}
-        "battle": {"log": list[dict](dict的結構為"fight"), "player_attributes": dict(戰鬥結束後玩家的最終屬性)}
+        "battle": {"log": list[dict](dict的結構為"fight"), "player_attributes": dict(戰鬥結束後玩家的最終屬性), "mob_attributes":dict(怪物的各種屬性)}
     }
 
     return {"dice": int(這次走幾步),"pos": int(起點格子編號), "type": string(該格類型), "msg": string(事件內容), "other_param": dict}
