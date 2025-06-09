@@ -35,6 +35,8 @@
 
     8. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
+    9. '/sellItem'還沒做
+
 api 長相（雖然這好像不是 todo）
 
 "item"={
