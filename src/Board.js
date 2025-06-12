@@ -59,6 +59,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         setEventParam(data.other_param);
         if (data.type === "reward") {
           setPlayer_attributes(data.other_param);
+          setIsEvent(false);
         } else if (data.type === "battle") {
 
         } else if (data.type === "event") {
@@ -133,6 +134,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <div className="event-box">
           { eventType === "question" ? (
             <ul className="question-options">
+              <p>{eventMsg}</p>
               {eventParam.map((option, index) => (
                 <button key={index} className="question-option" onClick={() => answerQuestion(index)}>
                   {option}
@@ -150,14 +152,24 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
               <Backpack items={items} setItem={setItem}></Backpack>
               <button className="rest" onClick={() => setIsEvent(false)}>結束休息</button>
             </>
-          ) : (
-            <ul className="event-options">
-              {eventParam.map((option, index) => (
-                <button key={index} className="event-option" onClick={() => answerEvent(index)}>
-                  {option}
-                </button>
-              ))}
-            </ul>
+          ) : eventType === "event" ? (
+            <div className="event-popup">
+              {console.log(eventMsg)}
+              <p style={{textAlign:"center"}}>{eventMsg}</p>
+              <ul className="event-options">
+                {eventParam.map((option, index) => (
+                  <button key={index} className="event-option" onClick={() => answerEvent(index)}>
+                    {option}
+                  </button>
+                ))}
+              </ul>
+            </div>
+          ) : (//eventType === "battle"
+            <>
+              <button className="rest" onClick={() => setIsEvent(false)}>離開戰鬥</button>
+              {/*上面只是暫時用來可以退出用的按鈕*/}
+              {/*還沒做，要照 todo 做*/}
+            </>
           )}
         </div>
       )}

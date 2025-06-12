@@ -16,18 +16,7 @@
     //bir:所有不合法請求後端都只會回一個'',204 (No connect)，請忽略並不要訪問response.data，你如果想要200我可以輕鬆地改
 
 後端
-    2. response/event，一切同 response/question，但是看起來你需要開一個不同的路徑才能決定用 q_num 或是去撈 event 的表 //bir:已完成
-    3. get/rolldice 只剩 other_param 還沒好，event 看起來是你那邊建表而已，前端完全當作 question 做了
-
-       shop 要給我商品表跟背包表跟裝備表 //bir:已完成
-       rest 要給我背包表跟裝備表        //bir:已完成
-       battle 要給我一堆要照順序做的操作的 dict list(講 list 不講 array 是因為比較 python)
-
-
-    4. 有空可以在底下定一下 get/rolldice 裡面 battle 回傳的打架過程要長怎樣，我不完全確定你想呈現啥還有呈現他需要哪些參數 //bir:已完成
-
-    5. equipment 同上一點，不是很知道你需要多少格子和哪些格子，同時因為這點不知道裝備要不要被包在 items 裡面 
-       //bir:裝備會占用背包空間，也就是不用檢查裝備脫不脫得下來，格子就只有武器格*2和胸甲(防裝)格
+    3. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下
 
     6. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
 

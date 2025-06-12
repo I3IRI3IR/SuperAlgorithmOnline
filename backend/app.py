@@ -50,7 +50,7 @@ def get_question():
 def get_event(e_num):
     with open("Event.json", "r", encoding="utf-8") as file:
         event_db = json.load(file)
-    response = event_db[e_num]
+    response = event_db[str(e_num)] #164253flag 打成 event_db[e_num]
     response['e_num'] = e_num
     return response
 
@@ -323,7 +323,6 @@ def get_rolldice():
         "msg": msg,
         "other_param": other_param
     }
-
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
     db[id]['dice']-=1
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -401,7 +400,7 @@ def shopexit():
     return '',200
 
 @app.route('/restexit')
-def shopexit():
+def restexit():
     id = session['user']['id']
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
@@ -413,7 +412,7 @@ def shopexit():
     return '',200
 
 @app.route('/buyItem')
-def shopexit():
+def buyItem():
     data = request.get_json()
     id = session['user']['id']
     returnflag=0
