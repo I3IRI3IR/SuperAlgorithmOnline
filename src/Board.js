@@ -6,13 +6,13 @@ const Equipment = () => {
   return (<></>);
 };
 
-const Backpack = ({items, setItem}) => {
+const Backpack = ({items, setItems}) => {
   return (
     <>
       <Equipment></Equipment>
       <ul className="backpack">
         {items.map((item, index) => (
-          <img key={index} src={item.icon} className="item" onClick={() => setItem(index)}></img>
+          <img key={index} src={item.icon} className="item" onClick={() => setItems(index)}></img>
         ))}
       </ul>
     </>
@@ -36,6 +36,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [isEvent, setIsEvent] = useState(false);
   const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [equipment, setEquipment] = useState([]);
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
   const [eventParam, setEventParam] = useState("");
@@ -59,10 +60,13 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         setEventParam(data.other_param);
         if (data.type === "reward") {
           setPlayer_attributes(data.other_param);
+          setIsEvent(false);
         } else if (data.type === "battle") {
 
-        } else if (data.type === "event") {
-          
+        } else if (data.type === "shop") {
+          setProducts(data.other_param['products']);
+          setItems(data.other_param['items']);
+          setEquipment(data.other_param['equipment']);
         }
       });
   };
@@ -129,10 +133,11 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   return (
     <div className="board-container">
-      {isEvent && (
+      {isEvent ? (
         <div className="event-box">
           { eventType === "question" ? (
             <ul className="question-options">
+              <p>{eventMsg}</p>
               {eventParam.map((option, index) => (
                 <button key={index} className="question-option" onClick={() => answerQuestion(index)}>
                   {option}
@@ -141,29 +146,39 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </ul>
           ) : eventType === "shop" ? (
             <>
-              { switchToShop ? (<Shop products={products} buyItem={buyItem}></Shop>) : (<Backpack items={items} setItem={setItem}></Backpack>) }
+              <Shop products={products} buyItem={buyItem}></Shop>
+              <Backpack items={items} setItems={setItems}></Backpack>
               <button className="switch-shop" onClick={() => setSwitchToShop(!switchToShop)}>切換商店或背包</button>
               <button className="close-shop" onClick={() => setIsEvent(false)}>離開商店</button>
             </>
           ) : eventType === "rest" ? (
             <>
-              <Backpack items={items} setItem={setItem}></Backpack>
+              <Backpack items={items} setItems={setItems}></Backpack>
               <button className="rest" onClick={() => setIsEvent(false)}>結束休息</button>
             </>
-          ) : (
-            <ul className="event-options">
-              {eventParam.map((option, index) => (
-                <button key={index} className="event-option" onClick={() => answerEvent(index)}>
-                  {option}
-                </button>
-              ))}
-            </ul>
+          ) : eventType === "event" ? (
+            <div className="event-popup">
+              {console.log(eventMsg)}
+              <p style={{textAlign:"center"}}>{eventMsg}</p>
+              <ul className="event-options">
+                {eventParam.map((option, index) => (
+                  <button key={index} className="event-option" onClick={() => answerEvent(index)}>
+                    {option}
+                  </button>
+                ))}
+              </ul>
+            </div>
+          ) : (//eventType === "battle"
+            <>
+              <button className="rest" onClick={() => setIsEvent(false)}>離開戰鬥</button>
+              {/*上面只是暫時用來可以退出用的按鈕*/}
+              {/*還沒做，要照 todo 做*/}
+            </>
           )}
         </div>
-      )}
-      {openBackpack &&(
+      ) : openBackpack && (
         <>
-          <Backpack items={items} setItem={setItem}></Backpack>
+          <Backpack items={items} setItems={setItems}></Backpack>
           <button className="leave-backpack" onClick={() => setOpenBackpack(false)}>退出背包</button>
         </>
       )}

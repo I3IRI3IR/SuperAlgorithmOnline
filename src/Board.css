@@ -82,7 +82,7 @@
   z-index: 1001;
 }
 
-.question-options, .question-option, .event-options, .event-option {
+.question-options, .question-option, .event-options, .event-option, .event-popup {
   background: white;
   padding: 20px;
   border-radius: 8px;

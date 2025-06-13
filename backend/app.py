@@ -286,7 +286,6 @@ def get_rolldice():
         "msg": msg,
         "other_param": other_param
     }
-
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
     db[id]['dice']-=1
     with open("GameControl.json", "w", encoding="utf-8") as file:
