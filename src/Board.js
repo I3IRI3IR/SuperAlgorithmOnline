@@ -6,13 +6,13 @@ const Equipment = () => {
   return (<></>);
 };
 
-const Backpack = ({items, setItem}) => {
+const Backpack = ({items, setItems}) => {
   return (
     <>
       <Equipment></Equipment>
       <ul className="backpack">
         {items.map((item, index) => (
-          <img key={index} src={item.icon} className="item" onClick={() => setItem(index)}></img>
+          <img key={index} src={item.icon} className="item" onClick={() => setItems(index)}></img>
         ))}
       </ul>
     </>
@@ -36,6 +36,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [isEvent, setIsEvent] = useState(false);
   const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [equipment, setEquipment] = useState([]);
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
   const [eventParam, setEventParam] = useState("");
@@ -62,8 +63,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           setIsEvent(false);
         } else if (data.type === "battle") {
 
-        } else if (data.type === "event") {
-          
+        } else if (data.type === "shop") {
+          setProducts(data.other_param['products']);
+          setItems(data.other_param['items']);
+          setEquipment(data.other_param['equipment']);
         }
       });
   };
@@ -130,7 +133,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   return (
     <div className="board-container">
-      {isEvent && (
+      {isEvent ? (
         <div className="event-box">
           { eventType === "question" ? (
             <ul className="question-options">
@@ -143,13 +146,14 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </ul>
           ) : eventType === "shop" ? (
             <>
-              { switchToShop ? (<Shop products={products} buyItem={buyItem}></Shop>) : (<Backpack items={items} setItem={setItem}></Backpack>) }
+              <Shop products={products} buyItem={buyItem}></Shop>
+              <Backpack items={items} setItems={setItems}></Backpack>
               <button className="switch-shop" onClick={() => setSwitchToShop(!switchToShop)}>切換商店或背包</button>
               <button className="close-shop" onClick={() => setIsEvent(false)}>離開商店</button>
             </>
           ) : eventType === "rest" ? (
             <>
-              <Backpack items={items} setItem={setItem}></Backpack>
+              <Backpack items={items} setItems={setItems}></Backpack>
               <button className="rest" onClick={() => setIsEvent(false)}>結束休息</button>
             </>
           ) : eventType === "event" ? (
@@ -172,10 +176,9 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </>
           )}
         </div>
-      )}
-      {openBackpack &&(
+      ) : openBackpack && (
         <>
-          <Backpack items={items} setItem={setItem}></Backpack>
+          <Backpack items={items} setItems={setItems}></Backpack>
           <button className="leave-backpack" onClick={() => setOpenBackpack(false)}>退出背包</button>
         </>
       )}
