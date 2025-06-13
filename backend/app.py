@@ -50,10 +50,9 @@ def get_question():
 def get_event(e_num):
     with open("Event.json", "r", encoding="utf-8") as file:
         event_db = json.load(file)
-    response = event_db[str(e_num)] #164253flag 打成 event_db[e_num]
+    response = event_db[str(e_num)]
     response['e_num'] = e_num
     return response
-
 
 def mapdecode(map, start, step):
     for i in range(36):
@@ -203,7 +202,6 @@ def dashboard():
         return redirect(url_for('login'))
     return jsonify(user)
 
-
 @app.route('/get/game_data')
 def get_game_data():
     id = session['user']['id']
@@ -221,9 +219,6 @@ def get_game_data():
     }
     return jsonify(response)
 
-
-
-#todo
 @app.route('/get/rolldice')
 def get_rolldice():
     
@@ -241,39 +236,7 @@ def get_rolldice():
     db[id]['restflag']=0
     db[id]['shopflag']=0
 
-    #下面這段是我為了測試前端功能寫的，你可以註解掉
-    #test start
     
-    '''
-    type, msg, other_param = random.choice([
-        ["question",
-            *random.choice([
-                ["問題A", ["選項1", "選項2"]],
-                ["問題B", ["選項1", "選項2"]],
-            ])
-        ],
-        ["shop",None,None],
-        ["rest","休息",None],
-        ["reward",
-            *random.choice([
-                ["獎勵A", {"屬性1": 10, "屬性2": -5}],
-            ])
-        ],
-        ["battle", "boss A 的一串戰鬥過程之類的", {"屬性1": 8}],
-        ["event",
-            *random.choice([
-                ["特殊事件A", {"屬性1": 998244353, "骰子券": 1}],
-            ])
-        ],
-    ])
-    if type == "reward":
-        #todo : 在這裡更新資料庫裡的玩家屬性
-        pass
-    #todo : 其他事件也要記得更新資料庫
-
-    #todo : new_position 
-    '''
-    #test end
     
     dice = random.randint(1, db[id]['spd'])
     type = mapdecode(map,db[id]['pos'],dice)[1]
@@ -330,7 +293,6 @@ def get_rolldice():
 
     return jsonify(response)
 
-
 @app.route('/response/question',methods=['POST'])
 def response_question():
     data = request.get_json()
@@ -358,7 +320,6 @@ def response_question():
 
     
     return jsonify(response) 
-
 
 @app.route('/response/event',methods=['POST'])
 def response_event():
@@ -446,7 +407,6 @@ def getallItem():
     
     response = db[id]["backpack"]
     return jsonify(response)
-
 
 @app.route('/get/allCommodity')
 def getallCommodity():
