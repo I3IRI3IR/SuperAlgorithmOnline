@@ -16,15 +16,14 @@
     //bir:所有不合法請求後端都只會回一個'',204 (No connect)，請忽略並不要訪問response.data，你如果想要200我可以輕鬆地改
 
 後端
-    3. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下
+    1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下
 
-    6. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
+    2. 之後要有 response/setItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
 
-    7. 要給我兩個網址吐出全部的商品和全部的物品和裝備 //bir: '/get/allItem' & '/get/allCommodity' 回傳dict(dict)，已完成
+    3. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
-    8. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
+    4. 怪物設計&事件設計
 
-    9. '/sellItem'還沒做
 
 api 長相（雖然這好像不是 todo）
 
