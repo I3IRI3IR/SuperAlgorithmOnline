@@ -445,7 +445,7 @@ def buyItem():
 def sellItem():
     data = request.get_json()
     id = session['user']['id']
-    returnflag=0
+    
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
     
@@ -488,6 +488,21 @@ def getallCommodity():
 def getallEquipment():
     id = session['user']['id']
     return jsonify(get_equipment(id))
+
+@app.route('/get/setItem',methods=['POST'])
+def setItem():
+    """
+    {
+        "used":{"name":"str","type":"str","equip":"bool"},
+        "change":{"name":"str","type":"str"}
+    }
+    """
+    data = request.get_json()
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+
 
 
 if __name__ == '__main__':
