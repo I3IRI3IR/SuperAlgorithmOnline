@@ -1,29 +1,29 @@
 前端
     1. 請求廣告，播廣告
-    2. 補完裝備界面
-    3. 滑鼠放在背包裝備商店的東西上要顯示說明和價格和屬性
-    4. 寫個打開背包的按鈕
-    5. 走越遠走越快
-    6. 可以查看決賽之碑的按鈕
-    7. setItem 還沒寫，寫了會向後端送，後端自行判斷現在的 flag 是要裝備或使用，或其實都不是所以操作無效 //bir:不可以是買賣，送名字data['name'](str)
-    8. buyItem 還沒寫，寫了會向後端送 //bir:改成傳回data['name'](str)，後端知道所有事情以及合不合法
-    9. response/question||event 應該還要有返回的訊息顯示結果，目前只有player_attr
-    10.item類道具在背包介面要可以被使用然後消耗
-    11.sellItem 還沒寫，寫了會向後端送物品的名字，後端做事，回傳'',200
-    12.shopexit 還沒寫，不需要內容，回傳'',200
-    13.restexit 還沒寫，不需要內容，回傳'',200
-    14.
-    //bir:所有不合法請求後端都只會回一個'',204 (No connect)，請忽略並不要訪問response.data，你如果想要200我可以輕鬆地改
+    2. 還沒處理戰鬥和戰鬥的 flag
+    3. 某天想個辦法解決 board 越界和畫面不好看
 
 後端
+
     1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下
 
-    2. 之後要有 response/setItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
+    2. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
 
-    3. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
+    3. 要給我兩個網址吐出全部的商品和全部的物品和裝備 //bir: '/get/allItem' & '/get/allCommodity' 回傳dict(dict)，已完成
 
-    4. 怪物設計&事件設計
+    4. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
+    5. '/sellItem'還沒做
+
+    6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息}
+
+    7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list
+
+    8. 生個 periodicUpdate 給我 {"boss_hp": boss 的血量}，我會五秒戳一次，之後看你有沒有需要再加更多定期更新的東西
+
+    9. 不知道你說滑鼠在物品要顯示的屬性在哪，是不是後端還沒送給我，是的話你決定塞進 item 裡給我之後我前端一起改，塞在 descript 的話就不用動
+    
+    10. 怪物設計&事件設計
 
 api 長相（雖然這好像不是 todo）
 

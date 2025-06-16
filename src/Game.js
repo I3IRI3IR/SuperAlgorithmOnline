@@ -36,6 +36,7 @@ const Game = () => {
   const [boss_hp, setBoss_hp] = useState(0);
   const [total_atk, setTotal_atk] = useState(0);
   const [currentPosition, setCurrentPosition] = useState(0);
+  const [shopflag, setShopflag] = useState(false);
 
   useEffect(() => {
     fetch("/get/game_data")
@@ -49,6 +50,13 @@ const Game = () => {
         setCurrentPosition(data.pos);
       })
       .catch((error) => console.error("Error loading game data:", error));
+    const interval = setInterval(() => {
+      fetch("/periodicUpdate")
+        .then((response) => response.json())
+        .then((data) => {
+          setBoss_hp(data.boss_hp);
+        })
+    }, 5000);
   }, []);
 
   const [msg, setMsg] = useState("");
@@ -69,7 +77,7 @@ const Game = () => {
       </div>
       <div className="main-content">
         <div className="boardgen-container">
-            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition}/>
+            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag}/>
         </div>
         <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>
