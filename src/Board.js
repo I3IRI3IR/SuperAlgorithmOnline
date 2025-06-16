@@ -1,47 +1,157 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./Board.css";
 import diceImage from './image/dice.jpg';
+// import backpackImage from './image/backpack.jpg' //debugflag 之後要讓它活
+// import finalImage from './image/final.jpg' //debugflag 之後要讓它活
 
-const Equipment = () => {
-  return (<></>);
-};
-
-const Backpack = ({items, setItems}) => {
+const Equipment = ({equipments, doItem, usedItem}) => {
+  const [isHovered, setIsHovered] = useState(false);
   return (
-    <>
-      <Equipment></Equipment>
-      <ul className="backpack">
-        {items.map((item, index) => (
-          <img key={index} src={item.icon} className="item" onClick={() => setItems(index)}></img>
-        ))}
-      </ul>
-    </>
-  );
-};
-
-const Shop = ({products, buyItem}) => {
-  return (
-    <ul className="shop">
-      {products.map((product, index) => (
-        <img key={index} src={product.icon} className="item" onClick={() => buyItem(index)}></img>
+    <ul className="equipment" style={{ position: 'relative' }}>
+      {equipments.map((equipment, index) => equipment ? (
+        <>
+          <img key={index} src={equipment.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => { usedItem['change']={"name": equipment.name, "type": equipment.type}; doItem(usedItem); }}></img>
+          {isHovered && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '-30px',
+                left: '0',
+                width: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                color: 'white',
+                padding: '5px',
+                fontSize: '14px',
+                textAlign: 'center',
+                borderRadius: '4px',
+                pointerEvents: 'none', // 不阻擋滑鼠
+              }}
+            >
+              <p>價格：{equipment.price}</p>
+              <p>物品描述：{equipment.descript}</p>
+            </div>
+          )}
+        </>
+      ) : (
+        <img key={index} /*debugflag 這裡之後要加一張沒東西的照片之類的 src={equipment.icon}*/ className="item" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
       ))}
     </ul>
   );
 };
 
-const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition}) => {
+const Item = ({index, item, isSell, doItem, setUsedItem}) => {
+  const [showButton, setShowButton] = useState(false);
+  const imgRef = useRef(null);
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  return (
+    <div style={{ position: 'relative' }}>
+      <img key={index} src={item.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
+        if (imgRef.current) {
+          const rect = imgRef.current.getBoundingClientRect();
+          setButtonPosition({
+            top: rect.bottom + window.scrollY + 5, // 5px 下移一點點
+            left: rect.left + window.scrollX
+          });
+          setShowButton(!showButton);
+        }
+      }}></img>
+      {isHovered && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '-30px',
+            left: '0',
+            width: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            padding: '5px',
+            fontSize: '14px',
+            textAlign: 'center',
+            borderRadius: '4px',
+            pointerEvents: 'none', // 不阻擋滑鼠
+          }}
+        >
+          <p>價格：{item.price}</p>
+          <p>物品描述：{item.descript}</p>
+        </div>
+      )}
+      {showButton && (
+        <button
+          style={{
+            position: 'absolute',
+            top: buttonPosition.top,
+            left: buttonPosition.left,
+            zIndex: 1008,
+            cursor: 'pointer'
+          }}
+          onClick={ () => isSell ? doItem(item.name) : item.type === "item" ? doItem({"used": {"name": item.name, "type": "item", "equip": false}}) : setUsedItem({"used": {"name": item.name, "type": item.type, "equip": item.equipped}}) }
+        >{isSell ? "賣出" : item.type === "item" ? "使用" : "裝備"}</button>
+      )}
+    </div>
+  )
+}
+
+const Backpack = ({items, isSell, sellItem, doItem, setUsedItem}) => {
+  return (
+    <ul className="backpack">
+      {items.length ? items.map((item, index) => (
+          <Item index={index} item={item} isSell={isSell} doItem={doItem} setUsedItem={setUsedItem}></Item>
+        )) : <p>背包為空</p> //debugflag 這裡之後要加一張沒東西的照片之類的
+      }
+    </ul>
+  );
+};
+
+const Shop = ({products, buyItem}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return (
+    <ul className="shop" style={{ position: 'relative' }}>
+      {products.map((product, index) => (
+        <>
+          <img key={index} src={product.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>
+          {isHovered && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '-30px',
+                left: '0',
+                width: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                color: 'white',
+                padding: '5px',
+                fontSize: '14px',
+                textAlign: 'center',
+                borderRadius: '4px',
+                pointerEvents: 'none', // 不阻擋滑鼠
+              }}
+            >
+              <p>價格：{product.price}</p>
+              <p>物品描述：{product.descript}</p>
+            </div>
+          )}
+        </>
+      ))}
+    </ul>
+  );
+};
+
+const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag}) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [isMoving, setIsMoving] = useState(false);
   const [isEvent, setIsEvent] = useState(false);
   const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
-  const [equipment, setEquipment] = useState([]);
+  const [equipments, setEquipments] = useState([]);
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
   const [eventParam, setEventParam] = useState("");
   const [openBackpack, setOpenBackpack] = useState(false);
-  const [switchToShop, setSwitchToShop] = useState(true);
+  const [openFinal, setOpenFinal] = useState(false);
+  const [usedItem, setUsedItem] = useState({});
+  const [eventResult, setEventResult] = useState(false);
+  const [finallist, setFinallist] = useState([]);
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -58,15 +168,18 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         setEventMsg(data.msg);
         setEventType(data.type);
         setEventParam(data.other_param);
-        if (data.type === "reward") {
-          setPlayer_attributes(data.other_param);
+        if (data.type === "rest") {
+          // setPlayer_attributes(data.other_param);//debugflag 後端做好後要讓它活
           setIsEvent(false);
+        } else if (data.type === "reward") {
+          setPlayer_attributes(data.other_param);
         } else if (data.type === "battle") {
 
         } else if (data.type === "shop") {
           setProducts(data.other_param['products']);
           setItems(data.other_param['items']);
           setEquipment(data.other_param['equipment']);
+          setShopflag(true);
         }
       });
   };
@@ -74,13 +187,16 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const movePiece = (step, pos) => {
     setIsMoving(true);
 
-    const stepDelay = 300; // 每步移動的延遲時間 (毫秒)
+    const stepDelay = 350; // 每步移動的延遲時間 (毫秒)
     let currentIndex = currentPosition;
 
     const interval = setInterval(() => {
       pos = (pos + 1) % cells.length; // 下一格的位置
       --step;
       setCurrentPosition(pos);
+      if (step==1)stepDelay=300;
+      else if(step==2)stepDelay=200;
+      else stepDelay=max(stepDelay-50,50);
 
       if (step<=0) {
         clearInterval(interval);
@@ -96,8 +212,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   };
 
   const answerQuestion = (index) => {
-    setIsEvent(false);
-    console.log(index);
+    setEventResult(true);
     fetch("response/question", {
       method: 'POST',
       headers: {
@@ -106,12 +221,11 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data));
+      .then((data) => {setPlayer_attributes(data.attr);setEventMsg(data.msg);});
   };
 
   const answerEvent = (index) => {
-    setIsEvent(false);
-    console.log(index);
+    setEventResult(true);
     fetch("response/event", {
       method: 'POST',
       headers: {
@@ -120,22 +234,89 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
+      .then((data) => {setPlayer_attributes(data.attr);setEventMsg(data.msg);});
+  };
+
+  const getItems = () => {
+    fetch("get/allItem")
+      .then((response) => response.json())
+      .then((data) => {
+        setItems(data);
+      });
+  };
+
+  const getProducts = () => {
+    fetch("get/allCommodity")
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data);
+      });
+  };
+
+  const doItem = (param) => {
+    fetch("setItem", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(param),
+    })
+      .then((response) => response.json())
       .then((data) => setPlayer_attributes(data));
+    getItems();
   };
 
-  const setItem = (index) => {
-
+  const sellItem = (name) => {
+    fetch("sellItem", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"name": name}),
+    })
+      .then((response) => response.json())
+      .then((data) => setPlayer_attributes(data));
+    getItems();
   };
 
-  const buyItem = (index) => {
+  const buyItem = (name) => {
+    fetch("buyItem", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"name": name}),
+    })
+      .then((response) => response.json())
+      .then((data) => setPlayer_attributes(data));
+    getItems();
+    getProducts();
+  };
 
+  const leaveShop = (name) => {
+    fetch("shopexit");
+    setShopflag(false);
+    setIsEvent(false);
+  };
+
+  const getFinallist = () => {
+    fetch("get/finallist")
+      .then((response) => response.json())
+      .then((data) => {
+        setFinallist(data);
+      });
   };
 
   return (
     <div className="board-container">
       {isEvent ? (
         <div className="event-box">
-          { eventType === "question" ? (
+          { eventResult ? (
+            <>
+              <p>{eventMsg}</p>
+              <button className="close-event" onClick={() => { setIsEvent(false);setEventResult(false); }}>確定</button>
+            </>
+          ) : eventType === "question" ? (
             <ul className="question-options">
               <p>{eventMsg}</p>
               {eventParam.map((option, index) => (
@@ -145,20 +326,13 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
               ))}
             </ul>
           ) : eventType === "shop" ? (
-            <>
+            <div className="shop-box">
               <Shop products={products} buyItem={buyItem}></Shop>
-              <Backpack items={items} setItems={setItems}></Backpack>
-              <button className="switch-shop" onClick={() => setSwitchToShop(!switchToShop)}>切換商店或背包</button>
-              <button className="close-shop" onClick={() => setIsEvent(false)}>離開商店</button>
-            </>
-          ) : eventType === "rest" ? (
-            <>
-              <Backpack items={items} setItems={setItems}></Backpack>
-              <button className="rest" onClick={() => setIsEvent(false)}>結束休息</button>
-            </>
+              <Backpack items={items} isSell={() => true} doItem={sellItem} setUsedItem={setUsedItem}></Backpack>
+              <button className="close-shop" onClick={() => leaveShop()}>離開商店</button>
+            </div>
           ) : eventType === "event" ? (
             <div className="event-popup">
-              {console.log(eventMsg)}
               <p style={{textAlign:"center"}}>{eventMsg}</p>
               <ul className="event-options">
                 {eventParam.map((option, index) => (
@@ -168,7 +342,13 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                 ))}
               </ul>
             </div>
-          ) : (//eventType === "battle"
+          ) : eventType === "reward" ? (
+            <div className="event-popup">
+              <p style={{textAlign:"center"}}>恭喜你在寶箱獲得以下東西：</p>
+              <p style={{textAlign:"center"}}>{eventMsg}</p>
+              <button className="close-event" onClick={() => setIsEvent(false)}>確定</button>
+            </div>
+          ) : eventType === "battle" && (
             <>
               <button className="rest" onClick={() => setIsEvent(false)}>離開戰鬥</button>
               {/*上面只是暫時用來可以退出用的按鈕*/}
@@ -176,11 +356,25 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </>
           )}
         </div>
-      ) : openBackpack && (
-        <>
-          <Backpack items={items} setItems={setItems}></Backpack>
-          <button className="leave-backpack" onClick={() => setOpenBackpack(false)}>退出背包</button>
-        </>
+      ) : openBackpack ? (
+        <div className="backpack-box">
+          <div className="backpack">
+            <Equipment equipments={equipments} doItem={doItem} usedItem={usedItem}></Equipment>
+            <Backpack items={items} isSell={() => false} doItem={doItem} setUsedItem={setUsedItem}></Backpack>
+            <button className="close-backpack" onClick={() => { getItems();setOpenBackpack(false); }}>退出背包</button>
+          </div>
+        </div>
+      ) : openFinal && (
+        <div className="final-box">
+          <div className="final">
+            <div className="finallist">
+              {finallist.map((team, index) => (
+                <p key={index}>{team}</p>
+              ))}
+            </div>
+            <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出背包</button>
+          </div>
+        </div>
       )}
       <div className="board">
         {Array.from({ length: boardSize * boardSize }, (_, index) => (
@@ -198,6 +392,16 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       </div>
       <button className="dice-button" onClick={rollDice}>
         <img src={diceImage} alt="骰子" className="dice-image" />
+      </button>
+      <button className="backpack-button" onClick={() => setOpenBackpack(true)}>
+        {/* <img src={backpackImage} alt="背包" className="backpack-image" /> */}
+        {/*//debugflag 之後要讓它活*/}
+        <img alt="背包" className="backpack-image" />
+      </button>
+      <button className="final-button" onClick={() => { setOpenFinal(true);getFinallist(); }}>
+        {/* <img src={finalImage} alt="決賽之碑" className="final-image" /> */}
+        {/*//debugflag 之後要讓它活*/}
+        <img alt="決賽之碑" className="final-image" />
       </button>
     </div>
   );

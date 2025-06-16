@@ -38,6 +38,38 @@
   transition: top 0.5s ease, left 0.5s ease; /* 平滑移動效果 */
 }
 
+.final-button{
+  position: absolute;
+  top: 0px;
+  right: -150px;
+  width: 100px;
+  height: 100px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden; /* 確保圖片不會超出按鈕範圍 */
+  display: flex;
+  align-items: center; /* 水平置中圖片 */
+  justify-content: center; /* 垂直置中圖片 */
+}
+
+.backpack-button{
+  position: absolute;
+  top: 0px;
+  left: -150px;
+  width: 100px;
+  height: 100px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden; /* 確保圖片不會超出按鈕範圍 */
+  display: flex;
+  align-items: center; /* 水平置中圖片 */
+  justify-content: center; /* 垂直置中圖片 */
+}
+
 .dice-button {
   position: absolute;
   bottom: 0px;
@@ -54,14 +86,14 @@
   justify-content: center; /* 垂直置中圖片 */
 }
 
-.dice-button img {
+.backpack-image, .dice-image, .final-image {
   max-width: 100%; /* 圖片最大寬度為按鈕寬度 */
   max-height: 100%; /* 圖片最大高度為按鈕高度 */
   object-fit: cover; /* 確保圖片內容被裁剪適配按鈕 */
   border-radius: 50%; /* 確保圖片形狀與按鈕一致 */
 }
 
-.event-box {
+.event-box, .backpack-box, .shop-box, .final-box {
   position: fixed;       /* 讓它浮在螢幕上方，不隨滾動移動 */
   top: 0;
   left: 0;
@@ -89,16 +121,29 @@
   z-index: 1001;
 }
 
-.shop, .backpack {
+.shop, .backpack, .equipment, .final {
   background: white;
   padding: 20px;
   border-radius: 8px;
   z-index: 1001;
 }
 
-.close-shop, .rest, .leave-backpack, .close-event {
+.close-shop, .rest, .close-backpack, .close-event, .close-final {
   background: white;
   padding: 20px;
   border-radius: 8px;
   z-index: 1001;
+}
+
+.finallist {
+  flex: 1;
+  margin-bottom: 10px;
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  word-wrap: break-word; 
+  white-space: pre-wrap; 
+}
+
+.item {
+  cursor: 'pointer'
 }
