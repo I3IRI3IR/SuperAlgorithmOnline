@@ -28,13 +28,20 @@ def get_playerattribute(id):
         db = json.load(file)
 
     response = {
-            'LV' : db[id]['lv'],
+            'LV'  : db[id]['lv'],
             'POS' : db[id]['pos'],
-            'HP' : db[id]['hp'],
+            'HP'  : db[id]['hp'],
             'ATK' : db[id]['atk'],
             'DEF' : db[id]['def'],
             'SPD' : db[id]['spd'],
             'EXP' : db[id]['exp'],
+            "COIN": db[id]['coin'],
+            "DICE": db[id]['dice'],
+            "BATTLEFLAG" : db[id]['battleflag'],
+            "QUESTIONFLAG":db[id]['questionflag'],
+            "EVENTFLAG":db[id]['eventflag'],
+            "RESTFLAG":db[id]["restflag"],
+            "SHOPFLAG":db[id]["shopflag"]
         }
        
     return response
@@ -60,14 +67,48 @@ def mapdecode(map, start, step):
             return map[(i+step)%36]
         
 def getItemByName(name):
-    item_list = [{"name":"sword","icon":"","descript":"","price":1,"type":"weapon","equipped":False}]
+    item_list = [
+        {"name":"小劍","icon":"image/小劍.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+        {"name":"青銅劍","icon":"","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
+        {"name":"韌煉之劍","icon":"","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
+        {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
+        {"name":"逐闇者","icon":"","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
+        {"name":"闡釋者","icon":"","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
+        {"name":"閃爍之光","icon":"","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,使你的攻擊無視敵方防禦","price":99999,"type":"weapon","equipped":False},
+        {"name":"疾風擊劍","icon":"","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
+        {"name":"騎士輕劍","icon":"","descript":"由疾風擊劍融煉而成的武器,有5%的機會再攻擊一次","price":5678,"type":"weapon","equipped":False},
+        {"name":"銀線甲","icon":"","descript":"","price":100,"type":"chest","equipped":False},
+        {"name":"午夜大衣","icon":"","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闇釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
+        {"name":"治療水晶","icon":"","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
+        {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
+        {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
+        {"name":"防禦光環水晶","icon":"","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
+        {"name":"骰子包","icon":"image/骰子包.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+        ]
     for i in item_list:
         if i["name"]==name:
             return i
     return None
         
 def getRandItem():
-    item_list = [{"name":"sword","icon":"","descript":"","price":1,"type":"weapon","equipped":False}]
+    item_list = [
+        {"name":"小劍","icon":"image/小劍.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+        {"name":"青銅劍","icon":"","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
+        {"name":"韌煉之劍","icon":"","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
+        {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
+        {"name":"逐闇者","icon":"","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
+        {"name":"闡釋者","icon":"","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
+        {"name":"閃爍之光","icon":"","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,使你的攻擊無視敵方防禦","price":99999,"type":"weapon","equipped":False},
+        {"name":"疾風擊劍","icon":"","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
+        {"name":"騎士輕劍","icon":"","descript":"由疾風擊劍融煉而成的武器,有5%的機會再攻擊一次","price":5678,"type":"weapon","equipped":False},
+        {"name":"銀線甲","icon":"","descript":"","price":100,"type":"chest","equipped":False},
+        {"name":"午夜大衣","icon":"","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闇釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
+        {"name":"治療水晶","icon":"","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
+        {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
+        {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
+        {"name":"防禦光環水晶","icon":"","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
+        {"name":"骰子包","icon":"image/骰子包.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+        ]
     return random.choice(item_list)
         
 def get_reward(r_num,player_attr):
@@ -169,7 +210,10 @@ def callback():
                 'def': 10,
                 'spd': 6,
                 'exp': 0,
-                'backpack': {},
+                'backpack': {
+                    "0":{"name":"小劍","icon":"image/小劍.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+                    "1":{"name":"骰子包","icon":"image/骰子包.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+                },
                 'shop':["sword","sword","sword"],
                 'coin': 0,
                 'dice': 10,
@@ -210,7 +254,7 @@ def get_game_data():
 
     playerattribute = get_playerattribute(id)
     response = {
-        "player_name":db[id]['name'], 
+        "player_name":db[id]['name'],
         "player_attributes":playerattribute,
         "level":db['level'],
         "boss_hp":db['boss_hp'],
@@ -389,15 +433,34 @@ def buyItem():
                 db[id]["shop"].remove(name)
                 db[id]["shop"].append("empty")
                 db[id]["backpack"][str(len(db[id]["backpack"]))]=item
-                returnflag=1
+                
                 
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
-    if returnflag==1:
-        return '',200
-    else:
-        return '',204
+
+    return '',200
+
+@app.route('/sellItem')
+def sellItem():
+    data = request.get_json()
+    id = session['user']['id']
+    
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+    name = data["name"]
+    item = getItemByName(name)
+    if db[id]["shopflag"]==1:
+        for i in range(len(db[id]['backpack'])):
+            if db[id]['backpack'][str(i)]['name']==name:
+                db[id]['coin'] += item['price']
+                db[id]['backpack'][str(i)] = db[id]['backpack'].pop([str(len(db[id]['backpack'])-1)])
+    
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+    
+    return '',200
 
 @app.route('/get/allItem')
 def getallItem():
@@ -420,6 +483,26 @@ def getallCommodity():
         "3":getItemByName(db[id]["shop"][2])
     }
     return jsonify(response)
+
+@app.route('/get/allEquipment')
+def getallEquipment():
+    id = session['user']['id']
+    return jsonify(get_equipment(id))
+
+@app.route('/get/setItem',methods=['POST'])
+def setItem():
+    """
+    {
+        "used":{"name":"str","type":"str","equip":"bool"},
+        "change":{"name":"str","type":"str"}
+    }
+    """
+    data = request.get_json()
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    
+
 
 
 if __name__ == '__main__':
