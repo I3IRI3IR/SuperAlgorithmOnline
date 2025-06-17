@@ -217,6 +217,7 @@ def callback():
                 'shop':["sword","sword","sword"],
                 'coin': 0,
                 'dice': 10,
+                'cd':0,
                 'eventcode': 1,
                 'battleflag': 0,
                 'questionflag': 0,
@@ -455,7 +456,9 @@ def sellItem():
         for i in range(len(db[id]['backpack'])):
             if db[id]['backpack'][str(i)]['name']==name:
                 db[id]['coin'] += item['price']
-                db[id]['backpack'][str(i)] = db[id]['backpack'].pop([str(len(db[id]['backpack'])-1)])
+                last_key = str(len(db[id]['backpack']) - 1)
+                db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
+                db[id]['backpack'].pop(last_key)
     
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
@@ -501,7 +504,92 @@ def setItem():
     id = session['user']['id']
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
+        
     
+    if data["used"]['type'] == "weapon" or data["used"]["type"] == "chest":
+        if data["used"]['equip'] == True:
+            if data["used"]["name"]=="午夜大衣":
+                for i in db[id]["backpack"]:
+                    if i["name"]==data["used"]["name"] and i["equipped"]:
+                        i["equipped"]=False
+                    elif i["name"]=="闇釋者" or i["name"]=="逐闇者":
+                        i["equipped"]=False 
+            else:
+                for i in db[id]["backpack"]:
+                    if i["name"]==data["used"]["name"] and i["equipped"]:
+                        i["equipped"]=False
+                        break
+        else:
+            if data["used"]["name"]=="闇釋者" or data["used"]["name"]=="逐闇者":
+                flag=0
+                for i in db[id]["backpack"]:
+                    if i["name"]=="午夜大衣" and i["equipped"]:
+                        flag=1
+                        break
+                if flag==1:
+                    for i in db[id]["backpack"]:
+                        if i["name"]==data["used"]["name"] and not i["equipped"]:
+                            i["equipped"]=True
+                            break
+                    for i in db[id]["backpack"]:
+                        if i["name"]==data["change"]["name"] and i["equipped"]:
+                            i["equipped"]=False
+                            break
+                else:
+                    pass
+            else:
+                for i in db[id]["backpack"]:
+                    if i["name"]==data["used"]["name"] and not i["equipped"]:
+                        i["equipped"]=True
+                        break
+                for i in db[id]["backpack"]:
+                    if i["name"]==data["change"]["name"] and  i["equipped"]:
+                        i["equipped"]=False
+                        break
+        weapon=0
+        chest=0
+        for i in db[id]["backpack"]:
+            if i["equipped"] and i["type"]=="weapon":
+                weapon+=1
+            elif i["equipped"] and i["type"]=="chest":
+                chest+=1
+        if weapon<=2 and chest<=1:
+            with open("GameControl.json", "w", encoding="utf-8") as file:
+                json.dump(db, file, ensure_ascii=False, indent=2)
+                
+    elif data["used"]["type"]=="item":
+        for i in db[id]["backpack"]:
+            if i["name"]==db["used"]["name"]:
+                if i["name"]=="治療水晶":
+                    db[id]["hp"]+=(db[id]["lv"]**2)*100
+                    last_key = str(len(db[id]['backpack']) - 1)
+                    db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
+                    db[id]['backpack'].pop(last_key)
+                elif i["name"]=="還瑰之聖水晶":
+                    db[id]["cd"]=0
+                    last_key = str(len(db[id]['backpack']) - 1)
+                    db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
+                    db[id]['backpack'].pop(last_key)
+                elif i["name"]=="攻擊光環水晶":
+                    db["atkbuff"]+=1
+                    last_key = str(len(db[id]['backpack']) - 1)
+                    db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
+                    db[id]['backpack'].pop(last_key)
+                elif i["name"]=="防禦光環水晶":
+                    db["defbuff"]+=1
+                    last_key = str(len(db[id]['backpack']) - 1)
+                    db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
+                    db[id]['backpack'].pop(last_key)
+                elif i["name"]=="骰子包":
+                    db[id]["dice"]+=10
+                    last_key = str(len(db[id]['backpack']) - 1)
+                    db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
+                    db[id]['backpack'].pop(last_key)
+                with open("GameControl.json", "w", encoding="utf-8") as file:
+                    json.dump(db, file, ensure_ascii=False, indent=2)
+                break
+    return '',200
+
 
 
 
