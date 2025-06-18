@@ -5,7 +5,7 @@
 
 後端
 
-    1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下
+    1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下 //bir:已完成但很抖
 
     2. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
 
@@ -19,11 +19,11 @@
 
     7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list
 
-    8. 生個 periodicUpdate 給我 {"boss_hp": boss 的血量}，我會五秒戳一次，之後看你有沒有需要再加更多定期更新的東西
+    8. 生個 periodicUpdate 給我 {"boss_hp": boss 的血量,"cd":玩家的死亡cd}，我會五秒戳一次，之後看你有沒有需要再加更多定期更新的東西 //bir:已完成，新增"cd"
 
     9. 不知道你說滑鼠在物品要顯示的屬性在哪，是不是後端還沒送給我，是的話你決定塞進 item 裡給我之後我前端一起改，塞在 descript 的話就不用動 //bir:是descript沒錯
     
-    10. 怪物設計&事件設計 //bir:燒起來了
+    10. 怪物設計&事件設計 //bir:燒起來了，丟包給顏羅王
 
 api 長相（雖然這好像不是 todo）
 

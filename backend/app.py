@@ -557,6 +557,17 @@ def sellItem():
     
     return '',200
 
+@app.route('/periodicUpdate')
+def periodicUpdate():
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    response = {
+        "bosshp":db["bosshp"],
+        "cd":db[id]["cd"]
+    }
+    return jsonify(response)
+
 @app.route('/get/allItem')
 def getallItem():
     id = session['user']['id']
