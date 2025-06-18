@@ -98,11 +98,11 @@ def getRandItem():
         {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
         {"name":"逐闇者","icon":"","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
         {"name":"闡釋者","icon":"","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
-        {"name":"閃爍之光","icon":"","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,使你的攻擊無視敵方防禦","price":99999,"type":"weapon","equipped":False},
+        {"name":"閃爍之光","icon":"","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,增加(敵方DEF)點ATK","price":99999,"type":"weapon","equipped":False},
         {"name":"疾風擊劍","icon":"","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
-        {"name":"騎士輕劍","icon":"","descript":"由疾風擊劍融煉而成的武器,有5%的機會再攻擊一次","price":5678,"type":"weapon","equipped":False},
-        {"name":"銀線甲","icon":"","descript":"","price":100,"type":"chest","equipped":False},
-        {"name":"午夜大衣","icon":"","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闇釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
+        {"name":"騎士輕劍","icon":"","descript":"由疾風擊劍融煉而成的武器,使你的攻擊造成的傷害增加1234","price":5678,"type":"weapon","equipped":False},
+        {"name":"銀線甲","icon":"","descript":"只能起到微弱的效果,增加20點DEF","price":100,"type":"chest","equipped":False},
+        {"name":"午夜大衣","icon":"","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闇釋者,增加8763點def,使受到的傷害-50%","price":128463,"type":"chest","equipped":False},
         {"name":"治療水晶","icon":"","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
         {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
         {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
@@ -143,8 +143,81 @@ def get_equipment(id):
         elif i["equipped"] and i["type"]=="chest":
             response["chest"]=i
     return response
-
+    
+def get_battledict(id,mob,playerdict):
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    playeritem = get_equipment(id)
+    Atk = db[id]["atk"]
+    damagerate = 1
+    sheildrate = 1
+    damagetype="slash"
+    directdamage = 0
+    Def = db[id]["def"]
+    for i in playeritem:
+        if i["name"]=="小劍":
+            Atk+=10
+        elif i["name"]=="青銅劍":
+            Atk+=20
+        elif i["name"]=="韌煉之劍":
+            Atk+=20
+            mob["exp"] = round(mob["exp"]*1.15)
+        elif i["name"]=="漆黑短劍":
+            mob["hp"]-=150
+        elif i["name"]=="逐闇者":
+            Atk+=128763
+        elif i["name"]=="闇釋者":
+            damagerate += 15
+        elif i["name"]=="閃爍之光":
+            directdamage+=12345
+            Atk+=mob["def"]
+            damagetype="slash"
+        elif i["name"]=="疾風擊劍":
+            Atk+=123
+        elif i["name"]=="騎士輕劍":
+            directdamage+=1234
+        elif i["name"]=="銀線甲":
+            Def+=20
+        elif i["name"]=="午夜大衣":
+            Def+=8763
+            sheildrate-=0.5
+    Atk = round(Atk*db["atkbuff"]*0.01)
+    Def = round(Def*db["defbuff"]*0.01)
+    turn=0
+    battlelist=[]
+    while db[id]["hp"]>0 and mob["hp"]>0:
+        battlelist.append({
+            "defender": "enemy",
+            "damage_type": damagetype,
+            "damage": round((Atk-mob["atk"])*damagerate)+directdamage,
+        })
+        mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
+        if mob["hp"]<=0:
+            break
+        battlelist.append({
+            "defender": "player",
+            "damage_type": "slash",
+            "damage": round((mob["atk"]-Def)*sheildrate),
+        })
+        db[id]["hp"]-=round((mob["atk"]-Def)*sheildrate)
+        if db[id]["hp"]<=0:
+            break
+        if turn>(db[id]["lv"]*3)+10:
+            battlelist.append({
+            "defender": "player",
+            "damage_type": "fatigue",
+            "damage": (turn - ((db[id]["lv"]*3)+10))**2,
+        })
+    if db[id]["hp"]<=0:
+        db[id]["cd"]=3600
+    else:
+        db[id]["coin"]+=mob["coin"]
+        db[id]["exp"]+=mob["exp"]
+    playerdict = db[id]
+    return [battlelist,playerdict]
         
+
+
 
 # 點登入時導向 Discord OAuth2
 @app.route('/auth/discord')
@@ -271,6 +344,9 @@ def get_rolldice():
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
     
+    if db[id]['dice']<=0:
+        return '',200
+
     with open("Map.json", "r", encoding="utf-8") as file:
         mapdb = json.load(file)
     map = mapdb[str(db["level"])]
@@ -323,7 +399,23 @@ def get_rolldice():
             "equipped" : get_equipment(id)
         }
     elif type == "battle":
-        other_param = {}
+        mobdb_str = "Mob_"+str(db["level"])+".json"
+        with open(mobdb_str, "r", encoding="utf-8") as file:
+            mobdb = json.load(file)
+        
+        mob_key = random.choice(list(mobdb.keys()))
+        mob = mobdb[mob_key]
+        result = get_battledict(id,mob,db[id])
+        db[id] = result[1]
+        other_param = {
+            "log":result[0],
+            "player_attributes":get_playerattribute(id),
+            "mob_attributes":mob
+        }
+        
+
+
+
     response = {
         "dice": dice,
         "pos": db[id]['pos'],#起點
@@ -465,6 +557,17 @@ def sellItem():
     
     return '',200
 
+@app.route('/periodicUpdate')
+def periodicUpdate():
+    id = session['user']['id']
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    response = {
+        "bosshp":db["bosshp"],
+        "cd":db[id]["cd"]
+    }
+    return jsonify(response)
+
 @app.route('/get/allItem')
 def getallItem():
     id = session['user']['id']
@@ -556,7 +659,7 @@ def setItem():
         if weapon<=2 and chest<=1:
             with open("GameControl.json", "w", encoding="utf-8") as file:
                 json.dump(db, file, ensure_ascii=False, indent=2)
-                
+
     elif data["used"]["type"]=="item":
         for i in db[id]["backpack"]:
             if i["name"]==db["used"]["name"]:
