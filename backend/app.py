@@ -493,7 +493,7 @@ def get_rolldice():
             if result[2]["hp"]<=0:
                 db["level"] = result[2]["nextlevel"]
                 db["bosshp"] = result[2]["nexthp"]
-                
+
             
 
         
@@ -533,7 +533,10 @@ def response_question():
         #do something
         pass
     
-    response = get_playerattribute(id)
+    response = {
+        "attr":get_playerattribute(id),
+        "msg":ansdb[str(db[id]['questionflag'])]['msg'][data['select']]
+    }
     db[id]['questionflag'] = 0
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -561,7 +564,10 @@ def response_event():
             break
     
     
-    response = get_playerattribute(id)
+    response = {
+        "attr":get_playerattribute(id),
+        "msg":ansdb[str(db[id]['eventflag'])]['msg'][data["select"]]
+    }
     db[id]['eventflag'] = 0
 
     with open("GameControl.json", "w", encoding="utf-8") as file:

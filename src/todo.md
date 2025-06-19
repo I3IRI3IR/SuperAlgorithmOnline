@@ -7,15 +7,13 @@
 
     1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下 //bir:已完成但很抖
 
-    2. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
-
     3. 要給我兩個網址吐出全部的商品和全部的物品和裝備 //bir: '/get/allItem' & '/get/allCommodity' 回傳dict(dict)，已完成
 
     4. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
     5. '/sellItem'還沒做 //bir:已完成
 
-    6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息}
+    6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息} //bir:已完成
 
     7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list
 
@@ -62,10 +60,8 @@ get/rolldice(){
 
     fight = {
         "defender": str,必為"player"||"enemy"，表示誰受到傷害
-        "damage_type": str,必為"burn"||"bleed"||"spell"||"slash"||"heal"||"fatigue"，代表四種不同的攻擊或治療或疲勞傷害，使用對應的特效
+        "damage_type": str,必為"spell"||"slash"||"fatigue"，代表兩種不同的攻擊或治療或疲勞傷害，使用對應的特效
         "damage": int,表示傷害量
-        "effect_def":list,必為[int,int]，表示defender目前的"burn"值及"bleed"值，因為有可能因各種效果使前兩個值發生變化，只有當type不是burn||bleed時才可能發生改變
-        "effect_enemy":list，同上，表示defender的對手的狀態
     }
 
 
@@ -76,7 +72,7 @@ get/rolldice(){
         "DEF":int,
         "name":str,
         "img":str,(圖片url)
-        "msg":str,(屬標移到怪物圖片上時要跳出的說明，做不完的話可以不理這個)
+        "msg":str,(屬標移到怪物圖片上時要跳出的說明，做不完的話可以不理這個) //bir:現在沒有
     }
 
 
