@@ -8,10 +8,9 @@
 
     1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下 //bir:已完成但很抖
 
-
     4. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
-    6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息}
+    6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息} //bir:已完成
 
     7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list
     
@@ -39,6 +38,7 @@ api 長相（雖然這好像不是 todo）
 
 
 "player_attributes"={"HP": int, "ATK": int, "DEF": int, "SPD": int, "EXP": int, "LV": int, "POS": int}
+
 get/game_data(){
     return {"player_name": string, "player_attributes": dict, "level": int, "boss_hp": int, "total_atk": int, "pos": int};
 }
