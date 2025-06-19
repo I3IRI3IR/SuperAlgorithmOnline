@@ -208,15 +208,85 @@ def get_battledict(id,mob,playerdict):
             "damage_type": "fatigue",
             "damage": (turn - ((db[id]["lv"]*3)+10))**2,
         })
+        turn+=1
     if db[id]["hp"]<=0:
         db[id]["cd"]=3600
     else:
         db[id]["coin"]+=mob["coin"]
         db[id]["exp"]+=mob["exp"]
+    
     playerdict = db[id]
     return [battlelist,playerdict]
         
-
+def bossfight(id,boss,playerdict):
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    playeritem = get_equipment(id)
+    Atk = db[id]["atk"]
+    damagerate = 1
+    sheildrate = 1
+    damagetype="slash"
+    directdamage = 0
+    Def = db[id]["def"]
+    for i in playeritem:
+        if i["name"]=="小劍":
+            Atk+=10
+        elif i["name"]=="青銅劍":
+            Atk+=20
+        elif i["name"]=="韌煉之劍":
+            Atk+=20
+            boss["exp"] = round(boss["exp"]*1.15)
+        elif i["name"]=="漆黑短劍":
+            boss["hp"]-=150
+        elif i["name"]=="逐闇者":
+            Atk+=128763
+        elif i["name"]=="闇釋者":
+            damagerate += 15
+        elif i["name"]=="閃爍之光":
+            directdamage+=12345
+            Atk+=boss["def"]
+            damagetype="slash"
+        elif i["name"]=="疾風擊劍":
+            Atk+=123
+        elif i["name"]=="騎士輕劍":
+            directdamage+=1234
+        elif i["name"]=="銀線甲":
+            Def+=20
+        elif i["name"]=="午夜大衣":
+            Def+=8763
+            sheildrate-=0.5
+    Atk = round(Atk*db["atkbuff"]*0.01)
+    Def = round(Def*db["defbuff"]*0.01)
+    turn=0
+    battlelist=[]
+    while db[id]["hp"]>0 and boss["hp"]>0 and turn<=db[id]["lv"]+5:
+        battlelist.append({
+            "defender": "enemy",
+            "damage_type": damagetype,
+            "damage": round((Atk-boss["atk"])*damagerate)+directdamage,
+        })
+        boss["hp"]-=round((Atk-boss["atk"])*damagerate)+directdamage
+        if boss["hp"]<=0:
+            break
+        battlelist.append({
+            "defender": "player",
+            "damage_type": "slash",
+            "damage": round((boss["atk"]-Def)*sheildrate),
+        })
+        db[id]["hp"]-=round((boss["atk"]-Def)*sheildrate)
+        if db[id]["hp"]<=0:
+            break
+        turn+=1
+    if db[id]["hp"]<=0:
+        db[id]["cd"]=3600
+    elif boss["hp"]<=0:
+        db[id]["coin"]+=boss["coin"]
+        db[id]["exp"]+=boss["exp"]
+    else:
+        pass
+    playerdict = db[id]
+    bossdict = boss
+    return [battlelist,playerdict,bossdict]
 
 
 # 點登入時導向 Discord OAuth2
@@ -399,19 +469,33 @@ def get_rolldice():
             "equipped" : get_equipment(id)
         }
     elif type == "battle":
-        mobdb_str = "Mob_"+str(db["level"])+".json"
-        with open(mobdb_str, "r", encoding="utf-8") as file:
-            mobdb = json.load(file)
-        
-        mob_key = random.choice(list(mobdb.keys()))
-        mob = mobdb[mob_key]
-        result = get_battledict(id,mob,db[id])
-        db[id] = result[1]
-        other_param = {
-            "log":result[0],
-            "player_attributes":get_playerattribute(id),
-            "mob_attributes":mob
-        }
+        if mapdecode(map,db[id]['pos'],dice)[0]!=99:
+            mobdb_str = "Mob_"+str(db["level"])+".json"
+            with open(mobdb_str, "r", encoding="utf-8") as file:
+                mobdb = json.load(file)
+            
+            mob_key = random.choice(list(mobdb.keys()))
+            mob = mobdb[mob_key]
+            result = get_battledict(id,mob,db[id])
+            db[id] = result[1]
+            other_param = {
+                "log":result[0],
+                "player_attributes":get_playerattribute(id),
+                "mob_attributes":mob
+            }
+        else:
+            with open("Boss.json", "r", encoding="utf-8") as file:
+                bossdb = json.load(file)
+            boss_key = random.choice(list(bossdb.keys()))
+            boss = bossdb[boss_key]
+            result = bossfight(id,boss,db[id])
+            
+            if result[2]["hp"]<=0:
+                db["level"] = result[2]["nextlevel"]
+                db["bosshp"] = result[2]["nexthp"]
+                
+            
+
         
 
 
