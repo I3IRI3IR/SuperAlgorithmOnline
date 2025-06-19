@@ -1,27 +1,18 @@
 前端
     1. 請求廣告，播廣告
-    2. 還沒處理戰鬥和戰鬥的 flag
+    2. 還沒寫 mob.img 跟 mob.msg 和每回合大家的血量變動和顯示的那個介面本身（最後一個應該超快寫完）
     3. 某天想個辦法解決 board 越界和畫面不好看
+    4. image 要整個搬到 /public 下不然前端根本讀不到
 
 後端
 
     1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下 //bir:已完成但很抖
 
-    2. 之後要有 response/setItem 跟 response/buyItem 處理買賣東西或穿脫裝備，還沒想好怎麼做，之後補 //bir:我訂，去看你的todo
-
-    3. 要給我兩個網址吐出全部的商品和全部的物品和裝備 //bir: '/get/allItem' & '/get/allCommodity' 回傳dict(dict)，已完成
-
     4. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
-
-    5. '/sellItem'還沒做 //bir:已完成
 
     6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息}
 
     7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list
-
-    8. 生個 periodicUpdate 給我 {"boss_hp": boss 的血量,"cd":玩家的死亡cd}，我會五秒戳一次，之後看你有沒有需要再加更多定期更新的東西 //bir:已完成，新增"cd"
-
-    9. 不知道你說滑鼠在物品要顯示的屬性在哪，是不是後端還沒送給我，是的話你決定塞進 item 裡給我之後我前端一起改，塞在 descript 的話就不用動 //bir:是descript沒錯
     
     10. 怪物設計&事件設計 //bir:燒起來了，丟包給顏羅王
 

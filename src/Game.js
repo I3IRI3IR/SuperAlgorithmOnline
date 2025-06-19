@@ -37,6 +37,7 @@ const Game = () => {
   const [total_atk, setTotal_atk] = useState(0);
   const [currentPosition, setCurrentPosition] = useState(0);
   const [shopflag, setShopflag] = useState(false);
+  const [cd, setCd] = useState(0);
 
   useEffect(() => {
     fetch("/get/game_data")
@@ -55,6 +56,7 @@ const Game = () => {
         .then((response) => response.json())
         .then((data) => {
           setBoss_hp(data.boss_hp);
+          setCd(data.cd);
         })
     }, 5000);
   }, []);
@@ -68,7 +70,7 @@ const Game = () => {
         <div className="player-name">{player_name}</div>
         <p style={{whiteSpace: "pre"}}>目前所在層數：{level}     Boss 血量：{boss_hp}      玩家累計傷害：{total_atk}</p>
         <ul className="player-attributes">
-          {Object.entries(player_attributes).map(([name,val]) => (
+          {Object.entries(player_attributes).map(([name,val]) => (!name.includes("FLAG")) && (
             <li key={name} className="player-attribute">
               {name}: {val}
             </li>
@@ -77,7 +79,7 @@ const Game = () => {
       </div>
       <div className="main-content">
         <div className="boardgen-container">
-            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag}/>
+            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag} cd={cd}/>
         </div>
         <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>

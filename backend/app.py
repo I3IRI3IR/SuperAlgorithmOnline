@@ -154,7 +154,10 @@ def get_battledict(id,mob,playerdict):
     damagetype="slash"
     directdamage = 0
     Def = db[id]["def"]
-    for i in playeritem:
+    # for i in playeritem: #164253flag 這裡要用 dict.values 才會跑到物品本身
+    for i in playeritem.values():
+        if i==None: #164253flag None 沒判掉
+            continue
         if i["name"]=="小劍":
             Atk+=10
         elif i["name"]=="青銅劍":
@@ -339,7 +342,6 @@ def get_game_data():
 
 @app.route('/get/rolldice')
 def get_rolldice():
-    
     id = session['user']['id']
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
@@ -449,7 +451,7 @@ def response_question():
         #do something
         pass
     
-    response = get_playerattribute(id)
+    response = {"attr":get_playerattribute(id), "msg":"question 測試訊息"} #164253flag 這裡隨便塞個 msg 讓他格式對上
     db[id]['questionflag'] = 0
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -477,7 +479,7 @@ def response_event():
             break
     
     
-    response = get_playerattribute(id)
+    response = {"attr":get_playerattribute(id), "msg":"event 測試訊息"} #164253flag 這裡隨便塞個 msg 讓他格式對上
     db[id]['eventflag'] = 0
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -563,7 +565,8 @@ def periodicUpdate():
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
     response = {
-        "bosshp":db["bosshp"],
+        # "bosshp":db["bosshp"], #164253flag 少打底線
+        "bosshp":db["boss_hp"],
         "cd":db[id]["cd"]
     }
     return jsonify(response)
