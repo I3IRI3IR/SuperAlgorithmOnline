@@ -1,4 +1,4 @@
 {
-    "1":{"ans":0,"result":[]},
-    "2":{"ans":3,"result":[]}
+    "1":{"ans":0,"msg":["msg1","msg2","msg3","msg4"]},
+    "2":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]}
 }
