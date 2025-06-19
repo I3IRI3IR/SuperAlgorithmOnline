@@ -5,6 +5,9 @@ import json
 import os
 from SECRET import CLIENT_SECRET
 from flask_cors import CORS
+import threading
+import time
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -20,7 +23,24 @@ API_BASE_URL = 'https://discord.com/api'
 SCOPE = 'identify'
 
 
+def reduce_cooldown():
+    id = session['user']['id'] 
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    for key, value in db.items():
+        if isinstance(value, dict):
+            value["cd"] = max(value["cd"]-1,0)
 
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
+def cooldown_monitor():
+    
+    while True:
+        now = datetime.now()
+        seconds_to_next_minute = 60 - now.second
+        time.sleep(seconds_to_next_minute)  # 等到整分鐘
+        reduce_cooldown()
 
 def get_playerattribute(id):
     id = session['user']['id'] #164253flag 這裡的 id 被變數覆蓋掉了，如果直接讀 session 就沒必要吃參數吧
@@ -213,7 +233,7 @@ def get_battledict(id,mob,playerdict):
         })
         turn+=1
     if db[id]["hp"]<=0:
-        db[id]["cd"]=3600
+        db[id]["cd"]=60
     else:
         db[id]["coin"]+=mob["coin"]
         db[id]["exp"]+=mob["exp"]
@@ -281,7 +301,7 @@ def bossfight(id,boss,playerdict):
             break
         turn+=1
     if db[id]["hp"]<=0:
-        db[id]["cd"]=3600
+        db[id]["cd"]=60
     elif boss["hp"]<=0:
         db[id]["coin"]+=boss["coin"]
         db[id]["exp"]+=boss["exp"]
@@ -795,6 +815,8 @@ def setItem():
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
+    cooldown_thread = threading.Thread(target=cooldown_monitor, daemon=True)
+    cooldown_thread.start()
 
 """
 session['user']
