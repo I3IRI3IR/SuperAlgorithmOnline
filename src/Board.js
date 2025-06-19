@@ -3,6 +3,7 @@ import "./Board.css";
 import diceImage from './image/dice.jpg';
 // import backpackImage from './image/backpack.jpg' //debugflag 之後要讓它活
 // import finalImage from './image/final.jpg' //debugflag 之後要讓它活
+import chessImage from './image/chess.png';
 
 const Equipment = ({equipments, doItem, usedItem}) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -96,7 +97,7 @@ const Backpack = ({items, isSell, sellItem, doItem, setUsedItem}) => {
   return (
     <ul className="backpack">
       {items.length ? items.map((item, index) => (
-          <Item index={index} item={item} isSell={isSell} doItem={doItem} setUsedItem={setUsedItem}></Item>
+          <Item index={index} item={item} isSell={isSell} doItem={isSell ? sellItem : doItem} setUsedItem={setUsedItem}></Item>
         )) : <p>背包為空</p> //debugflag 這裡之後要加一張沒東西的照片之類的
       }
     </ul>
@@ -136,7 +137,7 @@ const Shop = ({products, buyItem}) => {
   );
 };
 
-const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag}) => {
+const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd}) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [isMoving, setIsMoving] = useState(false);
@@ -152,6 +153,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [usedItem, setUsedItem] = useState({});
   const [eventResult, setEventResult] = useState(false);
   const [finallist, setFinallist] = useState([]);
+  const [stillBattle,setStillBattle] = useState(false);
+  const [enemyAttr,setEnemyAttr] = useState({});
+  const [playerAttr,setPlayerAttr] = useState({});
+  const [enemyName,setEnemyName] = ("");
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -174,11 +179,41 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "reward") {
           setPlayer_attributes(data.other_param);
         } else if (data.type === "battle") {
+          setStillBattle(true);
+          setPlayer_attributes(data.other_param['player_attributes']);
+          setEventParam(data.other_param['log']);
+          setPlayerAttr({
+            "HP":player_attributes["HP"],
+            "ATK":player_attributes["ATK"],
+            "DEF":player_attributes["DEF"]
+          });
+          setEnemyName(data.other_param['mob_attributes']['name']);
+          setEnemyAttr({
+            "HP":data.other_param['mob_attributes']["HP"],
+            "ATK":data.other_param['mob_attributes']["ATK"],
+            "DEF":data.other_param['mob_attributes']["DEF"]
+          });
+          const stepDelay = 500;
+          let idx=0,n=eventParam['log'].length;
+          
+          const interval = setInterval(() => {
+            if(eventParam[idx]['defender'] === "player"){
+              setPlayerAttr(playerAttr['HP']);
+            }
+            else{
+              // setEnemyAttr();
+            }
+            ++idx;
+            if (idx>=n) {
+              clearInterval(interval);
+              setStillBattle(false);
+            }
+          }, stepDelay);
 
         } else if (data.type === "shop") {
           setProducts(data.other_param['products']);
           setItems(data.other_param['items']);
-          setEquipment(data.other_param['equipment']);
+          setEquipments(data.other_param['equipment']);
           setShopflag(true);
         }
       });
@@ -186,23 +221,17 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   const movePiece = (step, pos) => {
     setIsMoving(true);
-
-    const stepDelay = 350; // 每步移動的延遲時間 (毫秒)
-    let currentIndex = currentPosition;
-
-    const interval = setInterval(() => {
+    const moveStep = (step,pos,stepDelay=350) => {
       pos = (pos + 1) % cells.length; // 下一格的位置
-      --step;
       setCurrentPosition(pos);
       if (step==1)stepDelay=300;
       else if(step==2)stepDelay=200;
-      else stepDelay=max(stepDelay-50,50);
-
-      if (step<=0) {
-        clearInterval(interval);
-        setIsMoving(false); // 移動完成
-      }
-    }, stepDelay);
+      else stepDelay=Math.max(stepDelay-50,100);
+      --step;
+      if (step<=0) setIsMoving(false);
+      else setTimeout(()=>moveStep(step,pos,stepDelay), stepDelay);
+    };
+    moveStep(step,pos);
   };
 
   const calculatePosition = (index) => {
@@ -309,14 +338,26 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   return (
     <div className="board-container">
-      {isEvent ? (
+      {isEvent ||
+      player_attributes['BATTLEFLAG'] ||
+      player_attributes['QUESTIONFLAG'] ||
+      player_attributes['EVENTFLAG'] ||
+      player_attributes['SHOPFLAG'] ? (
         <div className="event-box">
-          { eventResult ? (
+          { stillBattle ? (
             <>
-              <p>{eventMsg}</p>
-              <button className="close-event" onClick={() => { setIsEvent(false);setEventResult(false); }}>確定</button>
             </>
-          ) : eventType === "question" ? (
+          ) : eventResult ? (
+            <div className="eventResult">
+              <p>{eventMsg}</p>
+              <button className="close-event" onClick={() => { 
+                setIsEvent(false);setEventResult(false);
+                player_attributes['QUESTIONFLAG']=false;
+                player_attributes['EVENTFLAG']=false;
+                setPlayer_attributes(player_attributes);
+              }}>確定</button>
+            </div>
+          ) : eventType === "question" || player_attributes['QUESTIONFLAG'] ? (
             <ul className="question-options">
               <p>{eventMsg}</p>
               {eventParam.map((option, index) => (
@@ -325,13 +366,13 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                 </button>
               ))}
             </ul>
-          ) : eventType === "shop" ? (
+          ) : eventType === "shop" || player_attributes['SHOPFLAG'] ? (
             <div className="shop-box">
               <Shop products={products} buyItem={buyItem}></Shop>
               <Backpack items={items} isSell={() => true} doItem={sellItem} setUsedItem={setUsedItem}></Backpack>
               <button className="close-shop" onClick={() => leaveShop()}>離開商店</button>
             </div>
-          ) : eventType === "event" ? (
+          ) : eventType === "event" || player_attributes['EVENTFLAG'] ? (
             <div className="event-popup">
               <p style={{textAlign:"center"}}>{eventMsg}</p>
               <ul className="event-options">
@@ -348,11 +389,12 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
               <p style={{textAlign:"center"}}>{eventMsg}</p>
               <button className="close-event" onClick={() => setIsEvent(false)}>確定</button>
             </div>
-          ) : eventType === "battle" && (
+          ) : (eventType === "battle" || player_attributes['BATTLEFLAG']) && (
             <>
-              <button className="rest" onClick={() => setIsEvent(false)}>離開戰鬥</button>
+              <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>
               {/*上面只是暫時用來可以退出用的按鈕*/}
               {/*還沒做，要照 todo 做*/}
+              {/*這裡很可能可以棄用*/}
             </>
           )}
         </div>
@@ -372,7 +414,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                 <p key={index}>{team}</p>
               ))}
             </div>
-            <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出背包</button>
+            <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出決賽名單</button>
           </div>
         </div>
       )}
@@ -388,7 +430,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <div
           className="piece"
           style={calculatePosition(cells[currentPosition])}
-        ></div>
+        ><img className="piece" src={chessImage}></img></div>
       </div>
       <button className="dice-button" onClick={rollDice}>
         <img src={diceImage} alt="骰子" className="dice-image" />
