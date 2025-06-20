@@ -212,7 +212,7 @@ def get_battledict(id,mob,playerdict):
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": round((Atk-mob["atk"])*damagerate)+directdamage,
+            "damage": max(0,round((Atk-mob["atk"])*damagerate)+directdamage)
         })
         mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
         if mob["hp"]<=0:
@@ -220,7 +220,7 @@ def get_battledict(id,mob,playerdict):
         battlelist.append({
             "defender": "player",
             "damage_type": "slash",
-            "damage": round((mob["atk"]-Def)*sheildrate),
+            "damage": max(0,round((mob["atk"]-Def)*sheildrate))
         })
         db[id]["hp"]-=round((mob["atk"]-Def)*sheildrate)
         if db[id]["hp"]<=0:
@@ -286,7 +286,7 @@ def bossfight(id,boss,playerdict):
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": round((Atk-boss["atk"])*damagerate)+directdamage,
+            "damage": max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
         })
         boss["hp"]-=round((Atk-boss["atk"])*damagerate)+directdamage
         if boss["hp"]<=0:
@@ -294,7 +294,7 @@ def bossfight(id,boss,playerdict):
         battlelist.append({
             "defender": "player",
             "damage_type": "slash",
-            "damage": round((boss["atk"]-Def)*sheildrate),
+            "damage": max(0,round((boss["atk"]-Def)*sheildrate))
         })
         db[id]["hp"]-=round((boss["atk"]-Def)*sheildrate)
         if db[id]["hp"]<=0:
@@ -496,25 +496,32 @@ def get_rolldice():
             with open(mobdb_str, "r", encoding="utf-8") as file:
                 mobdb = json.load(file)
             
-            mob_key = random.choice(list(mobdb.keys()))
-            mob = mobdb[mob_key]
-            result = get_battledict(id,mob,db[id])
-            db[id] = result[1]
-            other_param = {
-                "log":result[0],
-                "player_attributes":get_playerattribute(id),
-                "mob_attributes":mob
-            }
+            if db[id]["cd"]==0:
+                mob_key = random.choice(list(mobdb.keys()))
+                mob = mobdb[mob_key]
+                result = get_battledict(id,mob,db[id])
+                db[id] = result[1]
+                other_param = {
+                    "log":result[0],
+                    "player_attributes":get_playerattribute(id),
+                    "mob_attributes":mob
+                }
         else:
             with open("Boss.json", "r", encoding="utf-8") as file:
                 bossdb = json.load(file)
-            boss_key = random.choice(list(bossdb.keys()))
-            boss = bossdb[boss_key]
-            result = bossfight(id,boss,db[id])
-            
-            if result[2]["hp"]<=0:
-                db["level"] = result[2]["nextlevel"]
-                db["bosshp"] = result[2]["nexthp"]
+            if db[id]["cd"]==0:
+                boss_key = random.choice(list(bossdb.keys()))
+                boss = bossdb[boss_key]
+                result = bossfight(id,boss,db[id])
+                other_param = {
+                    "log":result[0],
+                    "player_attributes":get_playerattribute(id),
+                    "mob_attributes":boss
+                }
+                
+                if result[2]["hp"]<=0:
+                    db["level"] = result[2]["nextlevel"]
+                    db["bosshp"] = result[2]["nexthp"]
 
             
 
