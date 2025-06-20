@@ -5,6 +5,9 @@ import json
 import os
 from SECRET import CLIENT_SECRET
 from flask_cors import CORS
+import threading
+import time
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -20,7 +23,24 @@ API_BASE_URL = 'https://discord.com/api'
 SCOPE = 'identify'
 
 
+def reduce_cooldown():
+    id = session['user']['id'] 
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    for key, value in db.items():
+        if isinstance(value, dict):
+            value["cd"] = max(value["cd"]-1,0)
 
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
+def cooldown_monitor():
+    
+    while True:
+        now = datetime.now()
+        seconds_to_next_minute = 60 - now.second
+        time.sleep(seconds_to_next_minute)  # 等到整分鐘
+        reduce_cooldown()
 
 def get_playerattribute(id):
     id = session['user']['id'] #164253flag 這裡的 id 被變數覆蓋掉了，如果直接讀 session 就沒必要吃參數吧
@@ -192,7 +212,7 @@ def get_battledict(id,mob,playerdict):
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": round((Atk-mob["atk"])*damagerate)+directdamage,
+            "damage": max(0,round((Atk-mob["atk"])*damagerate)+directdamage)
         })
         mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
         if mob["hp"]<=0:
@@ -200,7 +220,7 @@ def get_battledict(id,mob,playerdict):
         battlelist.append({
             "defender": "player",
             "damage_type": "slash",
-            "damage": round((mob["atk"]-Def)*sheildrate),
+            "damage": max(0,round((mob["atk"]-Def)*sheildrate))
         })
         db[id]["hp"]-=round((mob["atk"]-Def)*sheildrate)
         if db[id]["hp"]<=0:
@@ -213,7 +233,7 @@ def get_battledict(id,mob,playerdict):
         })
         turn+=1
     if db[id]["hp"]<=0:
-        db[id]["cd"]=3600
+        db[id]["cd"]=60
     else:
         db[id]["coin"]+=mob["coin"]
         db[id]["exp"]+=mob["exp"]
@@ -266,7 +286,7 @@ def bossfight(id,boss,playerdict):
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": round((Atk-boss["atk"])*damagerate)+directdamage,
+            "damage": max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
         })
         boss["hp"]-=round((Atk-boss["atk"])*damagerate)+directdamage
         if boss["hp"]<=0:
@@ -274,14 +294,14 @@ def bossfight(id,boss,playerdict):
         battlelist.append({
             "defender": "player",
             "damage_type": "slash",
-            "damage": round((boss["atk"]-Def)*sheildrate),
+            "damage": max(0,round((boss["atk"]-Def)*sheildrate))
         })
         db[id]["hp"]-=round((boss["atk"]-Def)*sheildrate)
         if db[id]["hp"]<=0:
             break
         turn+=1
     if db[id]["hp"]<=0:
-        db[id]["cd"]=3600
+        db[id]["cd"]=60
     elif boss["hp"]<=0:
         db[id]["coin"]+=boss["coin"]
         db[id]["exp"]+=boss["exp"]
@@ -476,25 +496,32 @@ def get_rolldice():
             with open(mobdb_str, "r", encoding="utf-8") as file:
                 mobdb = json.load(file)
             
-            mob_key = random.choice(list(mobdb.keys()))
-            mob = mobdb[mob_key]
-            result = get_battledict(id,mob,db[id])
-            db[id] = result[1]
-            other_param = {
-                "log":result[0],
-                "player_attributes":get_playerattribute(id),
-                "mob_attributes":mob
-            }
+            if db[id]["cd"]==0:
+                mob_key = random.choice(list(mobdb.keys()))
+                mob = mobdb[mob_key]
+                result = get_battledict(id,mob,db[id])
+                db[id] = result[1]
+                other_param = {
+                    "log":result[0],
+                    "player_attributes":get_playerattribute(id),
+                    "mob_attributes":mob
+                }
         else:
             with open("Boss.json", "r", encoding="utf-8") as file:
                 bossdb = json.load(file)
-            boss_key = random.choice(list(bossdb.keys()))
-            boss = bossdb[boss_key]
-            result = bossfight(id,boss,db[id])
-            
-            if result[2]["hp"]<=0:
-                db["level"] = result[2]["nextlevel"]
-                db["bosshp"] = result[2]["nexthp"]
+            if db[id]["cd"]==0:
+                boss_key = random.choice(list(bossdb.keys()))
+                boss = bossdb[boss_key]
+                result = bossfight(id,boss,db[id])
+                other_param = {
+                    "log":result[0],
+                    "player_attributes":get_playerattribute(id),
+                    "mob_attributes":boss
+                }
+                
+                if result[2]["hp"]<=0:
+                    db["level"] = result[2]["nextlevel"]
+                    db["bosshp"] = result[2]["nexthp"]
 
             
 
@@ -795,6 +822,8 @@ def setItem():
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
+    cooldown_thread = threading.Thread(target=cooldown_monitor, daemon=True)
+    cooldown_thread.start()
 
 """
 session['user']
