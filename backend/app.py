@@ -27,7 +27,7 @@ def reduce_cooldown():
     id = session['user']['id'] 
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
-    for key, value in db.items():
+    for value in db.values():
         if isinstance(value, dict):
             value["cd"] = max(value["cd"]-1,0)
 
@@ -135,12 +135,14 @@ def get_reward(r_num,player_attr):
     msg=""
     def num_0():
         #do
+        player_attr["coin"]+=2500
         #write msg
-        pass
+        msg = "金幣2500"
     def num_1():
-        #do reward
+        #do
+        player_attr["atk"]+=5
         #write msg
-        pass
+        msg = "攻擊+5卷軸"
     reward_list = [num_0,num_1]
     reward_list[r_num]()
     response = [player_attr,msg]
@@ -154,7 +156,7 @@ def get_equipment(id):
     }
     with open("GameControl.json", "r", encoding="utf-8") as file:
             db = json.load(file)
-    for i in db[id]["backpack"]:
+    for i in db[id]["backpack"].values():
         if i["equipped"] and i["type"]=="weapon":
             if response["weapon1"]==None:
                 response["weapon1"]=i
@@ -215,6 +217,7 @@ def get_battledict(id,mob,playerdict):
             "damage": max(0,round((Atk-mob["atk"])*damagerate)+directdamage)
         })
         mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
+        db[id]["damage"]+=round((Atk-mob["atk"])*damagerate)+directdamage
         if mob["hp"]<=0:
             break
         battlelist.append({
@@ -251,7 +254,7 @@ def bossfight(id,boss,playerdict):
     damagetype="slash"
     directdamage = 0
     Def = db[id]["def"]
-    for i in playeritem:
+    for i in playeritem.values():
         if i["name"]=="小劍":
             Atk+=10
         elif i["name"]=="青銅劍":
@@ -289,6 +292,7 @@ def bossfight(id,boss,playerdict):
             "damage": max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
         })
         boss["hp"]-=round((Atk-boss["atk"])*damagerate)+directdamage
+        db[id]["damage"]+=round((Atk-boss["atk"])*damagerate)+directdamage
         if boss["hp"]<=0:
             break
         battlelist.append({
@@ -528,7 +532,7 @@ def get_rolldice():
         
 
 
-
+    db[id]['dice']-=1
     response = {
         "dice": dice,
         "pos": db[id]['pos'],#起點
@@ -537,7 +541,7 @@ def get_rolldice():
         "other_param": other_param
     }
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
-    db[id]['dice']-=1
+    
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
