@@ -1,7 +1,5 @@
 import React, { useState, useRef } from "react";
 import "./Board.css";
-// import backpackImage from './image/backpack.jpg' //debugflag 之後要讓它活
-// import finalImage from './image/final.jpg' //debugflag 之後要讓它活
 
 const Equipment = ({equipments, doItem, usedItem}) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -351,6 +349,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   return (
     <div className="board-container">
+      <img src="/image/background.jpg" class="background" alt="背景" />
       {isEvent ||
       player_attributes['BATTLEFLAG'] ||
       player_attributes['QUESTIONFLAG'] ||
@@ -439,7 +438,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             key={index}
             className={cells.includes(index) ? "cell" : "empty-cell"}
           >
-            {cells.includes(index) && <span>{index}</span>}
+            {cells.includes(index) && <><img style={{width:'75px',height:'75px'}} src={"/image/"+Object.fromEntries([[0,"rest"],[1,"question"],[2,"question"],[3,"question"],[4,"question"],[5,"question"],[6,"reward"],[7,"reward"],[8,"reward"],
+        [9,"reward"],[19,"reward"],[29,"reward"],[39,"event"],[49,"event"],[59,"event"],[69,"event"],[79,"event"],[89,"event"],
+        [99,"shop"],[98,"shop"],[97,"shop"],[96,"shop"],[95,"shop"],[94,"shop"],[93,"rest"],[92,"rest"],[91,"rest"],
+        [90,"rest"],[80,"rest"],[70,"rest"],[60,"rest"],[50,"rest"],[40,"rest"],[30,"rest"],[20,"rest"],[10,"rest"]])[index]+".png"}></img></>}
           </div>
         ))}
         <div
@@ -451,14 +453,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <img src="/image/dice.jpg" alt="骰子" className="dice-image" />
       </button>
       <button className="backpack-button" onClick={() => setOpenBackpack(true)}>
-        {/* <img src={backpackImage} alt="背包" className="backpack-image" /> */}
-        {/*//debugflag 之後要讓它活*/}
-        <img alt="背包" className="backpack-image" />
+        <img src="/image/backpack.png" alt="背包" className="backpack-image" />
       </button>
       <button className="final-button" onClick={() => { setOpenFinal(true);getFinallist(); }}>
-        {/* <img src={finalImage} alt="決賽之碑" className="final-image" /> */}
-        {/*//debugflag 之後要讓它活*/}
-        <img alt="決賽之碑" className="final-image" />
+        <img src="/image/final.png" alt="決賽之碑" className="final-image" />
       </button>
     </div>
   );
