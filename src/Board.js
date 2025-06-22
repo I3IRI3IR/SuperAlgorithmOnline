@@ -135,7 +135,7 @@ const Shop = ({products, buyItem}) => {
   );
 };
 
-const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd}) => {
+const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd, player_name }) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [isMoving, setIsMoving] = useState(false);
@@ -187,14 +187,19 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "reward") {
           setPlayer_attributes(data.other_param);
         } else if (data.type === "battle") {
+          // if(Object.keys(data.other_param).length===0){
+            setIsEvent(false);
+          // }
+          // console.log(data);
+          return;
           setStillBattle(true);
-          setPlayer_attributes(data.other_param['player_attributes']);
           setEventParam(data.other_param['log']);
           setPlayerAttr({
             "HP":player_attributes["HP"],
             "ATK":player_attributes["ATK"],
             "DEF":player_attributes["DEF"]
           });
+          setPlayer_attributes(data.other_param['player_attributes']);
           setEnemyName(data.other_param['mob_attributes']['name']);
           setEnemyAttr({
             "HP":data.other_param['mob_attributes']["HP"],
@@ -401,7 +406,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </div>
           ) : (eventType === "battle" || player_attributes['BATTLEFLAG']) && (
             <>
-              <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>
+              {!stillBattle && <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>}
               {/*上面只是暫時用來可以退出用的按鈕*/}
               {/*還沒做，要照 todo 做*/}
               {/*這裡很可能可以棄用*/}
