@@ -79,7 +79,7 @@ const Game = () => {
       </div>
       <div className="main-content">
         <div className="boardgen-container">
-            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag} cd={cd}/>
+            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag} cd={cd} player_name={player_name}/>
         </div>
         <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>

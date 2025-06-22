@@ -1,7 +1,5 @@
 import React, { useState, useRef } from "react";
 import "./Board.css";
-// import backpackImage from './image/backpack.jpg' //debugflag 之後要讓它活
-// import finalImage from './image/final.jpg' //debugflag 之後要讓它活
 
 const Equipment = ({equipments, doItem, usedItem}) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -135,7 +133,7 @@ const Shop = ({products, buyItem}) => {
   );
 };
 
-const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd}) => {
+const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd, player_name }) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [isMoving, setIsMoving] = useState(false);
@@ -187,14 +185,19 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "reward") {
           setPlayer_attributes(data.other_param);
         } else if (data.type === "battle") {
+          // if(Object.keys(data.other_param).length===0){
+            setIsEvent(false);
+          // }
+          // console.log(data);
+          return;
           setStillBattle(true);
-          setPlayer_attributes(data.other_param['player_attributes']);
           setEventParam(data.other_param['log']);
           setPlayerAttr({
             "HP":player_attributes["HP"],
             "ATK":player_attributes["ATK"],
             "DEF":player_attributes["DEF"]
           });
+          setPlayer_attributes(data.other_param['player_attributes']);
           setEnemyName(data.other_param['mob_attributes']['name']);
           setEnemyAttr({
             "HP":data.other_param['mob_attributes']["HP"],
@@ -346,6 +349,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   return (
     <div className="board-container">
+      <img src="/image/background.jpg" class="background" alt="背景" />
       {isEvent ||
       player_attributes['BATTLEFLAG'] ||
       player_attributes['QUESTIONFLAG'] ||
@@ -401,7 +405,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </div>
           ) : (eventType === "battle" || player_attributes['BATTLEFLAG']) && (
             <>
-              <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>
+              {!stillBattle && <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>}
               {/*上面只是暫時用來可以退出用的按鈕*/}
               {/*還沒做，要照 todo 做*/}
               {/*這裡很可能可以棄用*/}
@@ -434,7 +438,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             key={index}
             className={cells.includes(index) ? "cell" : "empty-cell"}
           >
-            {cells.includes(index) && <span>{index}</span>}
+            {cells.includes(index) && <><img style={{width:'75px',height:'75px'}} src={"/image/"+Object.fromEntries([[0,"rest"],[1,"question"],[2,"question"],[3,"question"],[4,"question"],[5,"question"],[6,"reward"],[7,"reward"],[8,"reward"],
+        [9,"reward"],[19,"reward"],[29,"reward"],[39,"event"],[49,"event"],[59,"event"],[69,"event"],[79,"event"],[89,"event"],
+        [99,"shop"],[98,"shop"],[97,"shop"],[96,"shop"],[95,"shop"],[94,"shop"],[93,"rest"],[92,"rest"],[91,"rest"],
+        [90,"rest"],[80,"rest"],[70,"rest"],[60,"rest"],[50,"rest"],[40,"rest"],[30,"rest"],[20,"rest"],[10,"rest"]])[index]+".png"}></img></>}
           </div>
         ))}
         <div
@@ -446,14 +453,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <img src="/image/dice.jpg" alt="骰子" className="dice-image" />
       </button>
       <button className="backpack-button" onClick={() => setOpenBackpack(true)}>
-        {/* <img src={backpackImage} alt="背包" className="backpack-image" /> */}
-        {/*//debugflag 之後要讓它活*/}
-        <img alt="背包" className="backpack-image" />
+        <img src="/image/backpack.png" alt="背包" className="backpack-image" />
       </button>
       <button className="final-button" onClick={() => { setOpenFinal(true);getFinallist(); }}>
-        {/* <img src={finalImage} alt="決賽之碑" className="final-image" /> */}
-        {/*//debugflag 之後要讓它活*/}
-        <img alt="決賽之碑" className="final-image" />
+        <img src="/image/final.png" alt="決賽之碑" className="final-image" />
       </button>
     </div>
   );
