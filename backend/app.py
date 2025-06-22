@@ -532,7 +532,7 @@ def get_rolldice():
         
 
 
-
+    db[id]['dice']-=1
     response = {
         "dice": dice,
         "pos": db[id]['pos'],#起點
@@ -541,7 +541,7 @@ def get_rolldice():
         "other_param": other_param
     }
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
-    db[id]['dice']-=1
+    
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
