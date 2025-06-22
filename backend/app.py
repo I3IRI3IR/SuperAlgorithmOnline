@@ -5,6 +5,9 @@ import json
 import os
 from SECRET import CLIENT_SECRET
 from flask_cors import CORS
+import threading
+import time
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -20,7 +23,24 @@ API_BASE_URL = 'https://discord.com/api'
 SCOPE = 'identify'
 
 
+def reduce_cooldown():
+    id = session['user']['id'] 
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    for value in db.values():
+        if isinstance(value, dict):
+            value["cd"] = max(value["cd"]-1,0)
 
+    with open("GameControl.json", "w", encoding="utf-8") as file:
+            json.dump(db, file, ensure_ascii=False, indent=2)
+
+def cooldown_monitor():
+    
+    while True:
+        now = datetime.now()
+        seconds_to_next_minute = 60 - now.second
+        time.sleep(seconds_to_next_minute)  # 等到整分鐘
+        reduce_cooldown()
 
 def get_playerattribute(id):
     id = session['user']['id'] #164253flag 這裡的 id 被變數覆蓋掉了，如果直接讀 session 就沒必要吃參數吧
@@ -115,12 +135,14 @@ def get_reward(r_num,player_attr):
     msg=""
     def num_0():
         #do
+        player_attr["coin"]+=2500
         #write msg
-        pass
+        msg = "金幣2500"
     def num_1():
-        #do reward
+        #do
+        player_attr["atk"]+=5
         #write msg
-        pass
+        msg = "攻擊+5卷軸"
     reward_list = [num_0,num_1]
     reward_list[r_num]()
     response = [player_attr,msg]
@@ -134,7 +156,7 @@ def get_equipment(id):
     }
     with open("GameControl.json", "r", encoding="utf-8") as file:
             db = json.load(file)
-    for i in db[id]["backpack"]:
+    for i in db[id]["backpack"].values():
         if i["equipped"] and i["type"]=="weapon":
             if response["weapon1"]==None:
                 response["weapon1"]=i
@@ -192,15 +214,16 @@ def get_battledict(id,mob,playerdict):
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": round((Atk-mob["atk"])*damagerate)+directdamage,
+            "damage": max(0,round((Atk-mob["atk"])*damagerate)+directdamage)
         })
         mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
+        db[id]["damage"]+=round((Atk-mob["atk"])*damagerate)+directdamage
         if mob["hp"]<=0:
             break
         battlelist.append({
             "defender": "player",
             "damage_type": "slash",
-            "damage": round((mob["atk"]-Def)*sheildrate),
+            "damage": max(0,round((mob["atk"]-Def)*sheildrate))
         })
         db[id]["hp"]-=round((mob["atk"]-Def)*sheildrate)
         if db[id]["hp"]<=0:
@@ -211,15 +234,86 @@ def get_battledict(id,mob,playerdict):
             "damage_type": "fatigue",
             "damage": (turn - ((db[id]["lv"]*3)+10))**2,
         })
+        turn+=1
     if db[id]["hp"]<=0:
-        db[id]["cd"]=3600
+        db[id]["cd"]=60
     else:
         db[id]["coin"]+=mob["coin"]
         db[id]["exp"]+=mob["exp"]
+    
     playerdict = db[id]
     return [battlelist,playerdict]
         
-
+def bossfight(id,boss,playerdict):
+    with open("GameControl.json", "r", encoding="utf-8") as file:
+        db = json.load(file)
+    playeritem = get_equipment(id)
+    Atk = db[id]["atk"]
+    damagerate = 1
+    sheildrate = 1
+    damagetype="slash"
+    directdamage = 0
+    Def = db[id]["def"]
+    for i in playeritem.values():
+        if i["name"]=="小劍":
+            Atk+=10
+        elif i["name"]=="青銅劍":
+            Atk+=20
+        elif i["name"]=="韌煉之劍":
+            Atk+=20
+            boss["exp"] = round(boss["exp"]*1.15)
+        elif i["name"]=="漆黑短劍":
+            boss["hp"]-=150
+        elif i["name"]=="逐闇者":
+            Atk+=128763
+        elif i["name"]=="闇釋者":
+            damagerate += 15
+        elif i["name"]=="閃爍之光":
+            directdamage+=12345
+            Atk+=boss["def"]
+            damagetype="slash"
+        elif i["name"]=="疾風擊劍":
+            Atk+=123
+        elif i["name"]=="騎士輕劍":
+            directdamage+=1234
+        elif i["name"]=="銀線甲":
+            Def+=20
+        elif i["name"]=="午夜大衣":
+            Def+=8763
+            sheildrate-=0.5
+    Atk = round(Atk*db["atkbuff"]*0.01)
+    Def = round(Def*db["defbuff"]*0.01)
+    turn=0
+    battlelist=[]
+    while db[id]["hp"]>0 and boss["hp"]>0 and turn<=db[id]["lv"]+5:
+        battlelist.append({
+            "defender": "enemy",
+            "damage_type": damagetype,
+            "damage": max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
+        })
+        boss["hp"]-=round((Atk-boss["atk"])*damagerate)+directdamage
+        db[id]["damage"]+=round((Atk-boss["atk"])*damagerate)+directdamage
+        if boss["hp"]<=0:
+            break
+        battlelist.append({
+            "defender": "player",
+            "damage_type": "slash",
+            "damage": max(0,round((boss["atk"]-Def)*sheildrate))
+        })
+        db[id]["hp"]-=round((boss["atk"]-Def)*sheildrate)
+        if db[id]["hp"]<=0:
+            break
+        turn+=1
+    if db[id]["hp"]<=0:
+        db[id]["cd"]=60
+    elif boss["hp"]<=0:
+        db[id]["coin"]+=boss["coin"]
+        db[id]["exp"]+=boss["exp"]
+    else:
+        pass
+    playerdict = db[id]
+    bossdict = boss
+    return [battlelist,playerdict,bossdict]
 
 
 # 點登入時導向 Discord OAuth2
@@ -401,23 +495,44 @@ def get_rolldice():
             "equipped" : get_equipment(id)
         }
     elif type == "battle":
-        mobdb_str = "Mob_"+str(db["level"])+".json"
-        with open(mobdb_str, "r", encoding="utf-8") as file:
-            mobdb = json.load(file)
+        if mapdecode(map,db[id]['pos'],dice)[0]!=99:
+            mobdb_str = "Mob_"+str(db["level"])+".json"
+            with open(mobdb_str, "r", encoding="utf-8") as file:
+                mobdb = json.load(file)
+            
+            if db[id]["cd"]==0:
+                mob_key = random.choice(list(mobdb.keys()))
+                mob = mobdb[mob_key]
+                result = get_battledict(id,mob,db[id])
+                db[id] = result[1]
+                other_param = {
+                    "log":result[0],
+                    "player_attributes":get_playerattribute(id),
+                    "mob_attributes":mob
+                }
+        else:
+            with open("Boss.json", "r", encoding="utf-8") as file:
+                bossdb = json.load(file)
+            if db[id]["cd"]==0:
+                boss_key = random.choice(list(bossdb.keys()))
+                boss = bossdb[boss_key]
+                result = bossfight(id,boss,db[id])
+                other_param = {
+                    "log":result[0],
+                    "player_attributes":get_playerattribute(id),
+                    "mob_attributes":boss
+                }
+                
+                if result[2]["hp"]<=0:
+                    db["level"] = result[2]["nextlevel"]
+                    db["bosshp"] = result[2]["nexthp"]
+
+            
+
         
-        mob_key = random.choice(list(mobdb.keys()))
-        mob = mobdb[mob_key]
-        result = get_battledict(id,mob,db[id])
-        db[id] = result[1]
-        other_param = {
-            "log":result[0],
-            "player_attributes":get_playerattribute(id),
-            "mob_attributes":mob
-        }
-        
 
 
-
+    db[id]['dice']-=1
     response = {
         "dice": dice,
         "pos": db[id]['pos'],#起點
@@ -426,7 +541,7 @@ def get_rolldice():
         "other_param": other_param
     }
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
-    db[id]['dice']-=1
+    
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
@@ -451,7 +566,12 @@ def response_question():
         #do something
         pass
     
-    response = {"attr":get_playerattribute(id), "msg":"question 測試訊息"} #164253flag 這裡隨便塞個 msg 讓他格式對上
+
+    response = {
+        "attr":get_playerattribute(id),
+        "msg":ansdb[str(db[id]['questionflag'])]['msg'][data['select']]
+    }
+
     db[id]['questionflag'] = 0
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -479,7 +599,12 @@ def response_event():
             break
     
     
-    response = {"attr":get_playerattribute(id), "msg":"event 測試訊息"} #164253flag 這裡隨便塞個 msg 讓他格式對上
+
+    response = {
+        "attr":get_playerattribute(id),
+        "msg":ansdb[str(db[id]['eventflag'])]['msg'][data["select"]]
+    }
+
     db[id]['eventflag'] = 0
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -701,6 +826,8 @@ def setItem():
 
 if __name__ == '__main__':
     app.run(debug=True, port = 5000)
+    cooldown_thread = threading.Thread(target=cooldown_monitor, daemon=True)
+    cooldown_thread.start()
 
 """
 session['user']

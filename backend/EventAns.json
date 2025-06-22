@@ -1,4 +1,4 @@
 {
-    "1":{"nextevent":[2,2,2,2]},
-    "2":{"nextevent":[1,1,1,1]}
+    "1":{"nextevent":[2,2,2,2],"msg":["msg1","msg2","msg3","msg4"]},
+    "2":{"nextevent":[1,1,1,1],"msg":["msg1","msg2","msg3","msg4"]}
 }
