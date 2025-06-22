@@ -73,7 +73,7 @@ get/rolldice(){
 
 
     "other_param"=switch(type){
-        "reward": "player_attributes"
+        "reward": {"playerattr":player_attributes,"msg":str(寶箱內的東西，照著顯示就好)}
         "question": list[string](一堆選項字串的 list)
         "event": list[string](一堆選項字串的 list)
         "shop": {"products": dict{item}(商品們), "items": dict{item}(物品們), "equipment": dict{item}(裝備們)}
