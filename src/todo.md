@@ -10,8 +10,6 @@
 
     4. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
-    6. response/question||event 改成回傳 {"attr": player_attribute, "msg": 選擇後顯示的訊息} //bir:已完成
-
     7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list
     
     10. 怪物設計&事件設計 //bir:燒起來了，丟包給顏羅王

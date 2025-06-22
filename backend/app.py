@@ -88,7 +88,7 @@ def mapdecode(map, start, step):
         
 def getItemByName(name):
     item_list = [
-        {"name":"小劍","icon":"image/小劍.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+        {"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
         {"name":"青銅劍","icon":"","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
         {"name":"韌煉之劍","icon":"","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
         {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
@@ -103,7 +103,7 @@ def getItemByName(name):
         {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
         {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
         {"name":"防禦光環水晶","icon":"","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
-        {"name":"骰子包","icon":"image/骰子包.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+        {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
         ]
     for i in item_list:
         if i["name"]==name:
@@ -112,7 +112,7 @@ def getItemByName(name):
         
 def getRandItem():
     item_list = [
-        {"name":"小劍","icon":"image/小劍.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+        {"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
         {"name":"青銅劍","icon":"","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
         {"name":"韌煉之劍","icon":"","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
         {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
@@ -127,7 +127,7 @@ def getRandItem():
         {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
         {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
         {"name":"防禦光環水晶","icon":"","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
-        {"name":"骰子包","icon":"image/骰子包.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+        {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
         ]
     return random.choice(item_list)
         
@@ -381,8 +381,8 @@ def callback():
                 'spd': 6,
                 'exp': 0,
                 'backpack': {
-                    "0":{"name":"小劍","icon":"image/小劍.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
-                    "1":{"name":"骰子包","icon":"image/骰子包.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+                    "0":{"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+                    "1":{"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
                 },
                 'shop':["sword","sword","sword"],
                 'coin': 0,
