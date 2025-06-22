@@ -636,7 +636,7 @@ def restexit():
             json.dump(db, file, ensure_ascii=False, indent=2)
     return '',200
 
-@app.route('/buyItem')
+@app.route('/buyItem',methods=['POST'])
 def buyItem():
     data = request.get_json()
     id = session['user']['id']

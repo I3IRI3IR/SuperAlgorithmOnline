@@ -122,7 +122,9 @@
   z-index: 1001;
 }
 
-.shop-popup {
+.shop-popup, .backpack-popup {
+  border-radius: 8px;
+  background: white;
   display: flex;
 }
 

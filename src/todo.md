@@ -7,6 +7,8 @@
 
     1. get/rolldice 剩 battle 的 other_param 還沒好，格式照底下 //bir:已完成但很抖
 
+    2. 買東西沒反應，錢似乎還變多
+
     4. 如果請求亂丟東西server不能崩 //bir:還沒做，戒色別搞
 
     7. 生個 get/finallist 給我已公開的決賽名單，給我一個隊伍名單的字串之類的 list

@@ -90,6 +90,7 @@ const Item = ({index, item, isSell, doItem, setUsedItem}) => {
 }
 
 const Backpack = ({items, isSell, sellItem, doItem, setUsedItem}) => {
+  console.log(items);
   return (
     <ul className="backpack">
       {items.length ? items.map((item, index) => (
@@ -224,7 +225,8 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "shop") {
           setProducts(data.other_param['products']);
           setItems(data.other_param['items']);
-          setEquipments(data.other_param['equipment']);
+          console.log(data.other_param['equipped']);
+          setEquipments(Object.entries(data.other_param['equipped']));
           setShopflag(true);
         }
       });
@@ -327,8 +329,6 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       },
       body: JSON.stringify({"name": name}),
     })
-      .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data));
     getItems();
     getProducts();
   };
@@ -413,22 +413,26 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           )}
         </div>
       ) : openBackpack ? (
-        <div className="backpack-box">
-          <div className="backpack">
-            <Equipment equipments={equipments} doItem={doItem} usedItem={usedItem}></Equipment>
-            <Backpack items={items} isSell={() => false} doItem={doItem} setUsedItem={setUsedItem}></Backpack>
+        <div className="event-box">
+          <div className="backpack-box">
+            <div className="backpack-popup">
+              <Equipment equipments={equipments} doItem={doItem} usedItem={usedItem}></Equipment>
+              <Backpack items={items} isSell={() => false} doItem={doItem} setUsedItem={setUsedItem}></Backpack>
+            </div>
             <button className="close-backpack" onClick={() => { getItems();setOpenBackpack(false); }}>退出背包</button>
           </div>
         </div>
       ) : openFinal && (
-        <div className="final-box">
-          <div className="final">
-            <div className="finallist">
-              {finallist.map((team, index) => (
-                <p key={index}>{team}</p>
-              ))}
+        <div className="event-box">
+          <div className="final-box">
+            <div className="final">
+              <div className="finallist">
+                {finallist.map((team, index) => (
+                  <p key={index}>{team}</p>
+                ))}
+              </div>
+              <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出決賽名單</button>
             </div>
-            <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出決賽名單</button>
           </div>
         </div>
       )}
@@ -438,10 +442,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             key={index}
             className={cells.includes(index) ? "cell" : "empty-cell"}
           >
-            {cells.includes(index) && <><img style={{width:'75px',height:'75px'}} src={"/image/"+Object.fromEntries([[0,"rest"],[1,"question"],[2,"question"],[3,"question"],[4,"question"],[5,"question"],[6,"reward"],[7,"reward"],[8,"reward"],
-        [9,"reward"],[19,"reward"],[29,"reward"],[39,"event"],[49,"event"],[59,"event"],[69,"event"],[79,"event"],[89,"event"],
-        [99,"shop"],[98,"shop"],[97,"shop"],[96,"shop"],[95,"shop"],[94,"shop"],[93,"rest"],[92,"rest"],[91,"rest"],
-        [90,"rest"],[80,"rest"],[70,"rest"],[60,"rest"],[50,"rest"],[40,"rest"],[30,"rest"],[20,"rest"],[10,"rest"]])[index]+".png"}></img></>}
+            {cells.includes(index) && <><img style={{width:'75px',height:'75px'}} src={"/image/"+Object.fromEntries([[0, 'reward'], [1, 'shop'], [2, 'event'], [3, 'rest'], [4, 'question'], [5, 'shop'], [6, 'reward'], [7, 'event'], [8, 'rest'], [9, 'reward'], [19, 'shop'], [29, 'event'], [39, 'rest'], [49, 'question'], [59, 'reward'], [69, 'shop'], [79, 'event'], [89, 'question'], [99, 'rest'], [98, 'reward'], [97, 'shop'], [96, 'event'], [95, 'question'], [94, 'reward'], [93, 'rest'], [92, 'shop'], [91, 'question'], [90, 'event'], [80, 'rest'], [70, 'reward'], [60, 'shop'], [50, 'event'], [40, 'question'], [30, 'rest'], [20, 'reward'], [10, 'shop']])[index]+".png"}></img></>}
           </div>
         ))}
         <div
@@ -452,7 +453,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       <button className="dice-button" onClick={rollDice}>
         <img src="/image/dice.jpg" alt="骰子" className="dice-image" />
       </button>
-      <button className="backpack-button" onClick={() => setOpenBackpack(true)}>
+      <button className="backpack-button" onClick={() => {getItems();setOpenBackpack(true);}}>
         <img src="/image/backpack.png" alt="背包" className="backpack-image" />
       </button>
       <button className="final-button" onClick={() => { setOpenFinal(true);getFinallist(); }}>
