@@ -108,7 +108,9 @@ const Shop = ({products, buyItem}) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <ul className="shop" style={{ position: 'relative' }}>
-      {products.map((product, index) => (
+      {console.log(products)}
+      {
+      Object.values(products).map((product, index) => (
         <>
           <img key={index} src={product.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>
           {isHovered && (
@@ -162,8 +164,18 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
 
     fetch("get/rolldice")
-      .then((response) => response.json())
+      .then((response) => {
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+          return response.json();  // 是 JSON
+        } else {
+          return null;
+        }
+      })
       .then((data) => {
+        if(!data)return;
+        const updated = { ...player_attributes, DICE: player_attributes.DICE - 1 };
+        setPlayer_attributes(updated);
         setMsgList(msgList => [...msgList, `骰子點數: ${data.dice}, 起始位置: ${data.pos}, 事件類型: ${data.type}`]);
         movePiece(data.dice, data.pos);
 
