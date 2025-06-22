@@ -10,7 +10,7 @@
   left: calc(759px / 10);       /* 向右移動 759/9 */
   width: calc(759px / 10 * 8);  /* 設定寬度 */
   height: calc(759px / 10 * 8); /* 設定高度 */
-  z-index: 1002;               /* 疊在上面 */
+  z-index: 1;               /* 疊在上面 */
 }
 
 .board {
