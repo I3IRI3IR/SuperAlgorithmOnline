@@ -9,34 +9,43 @@
     "pos": 30,
     "lv": 1,
     "hp": 0,
-    "atk": 10,
+    "atk": 70,
     "def": 10,
-    "spd": 60,
+    "spd": 1,
     "exp": 0,
-    "backpack": [
-      {
-        "icon": "./image/小劍.png",
-        "descript": "測試用敘述",
-        "price": "998244353",
-        "type": "weapon",
+    "backpack": {
+      "0": {
         "name": "小劍",
-        "equipped": true
+        "icon": "image/littlesword.png",
+        "descript": "最基礎的武器,增加10點ATK",
+        "price": 10,
+        "type": "weapon",
+        "equipped": false
+      },
+      "1": {
+        "name": "骰子包",
+        "icon": "image/dicepack.png",
+        "descript": "使用後得到10顆骰子",
+        "price": 321,
+        "type": "item",
+        "equipped": false
       }
-    ],
+    },
     "shop": [
-      "小劍",
-      "小劍",
-      "小劍"
+      "防禦光環水晶",
+      "閃爍之光",
+      "骰子包"
     ],
-    "coin": 0,
-    "dice": 8e+18,
-    "eventcode": 1,
+    "coin": 55000,
+    "dice": 99999846.0,
+    "eventcode": 2,
     "battleflag": 0,
     "questionflag": 0,
     "eventflag": 0,
     "restflag": 0,
     "shopflag": 0,
-    "cd": 3600
+    "cd": 3600,
+    "shop_flag": 1
   },
   "852064504846352394": {
     "name": "BIR",
@@ -51,7 +60,7 @@
     "backpack": {
       "0": {
         "name": "小劍",
-        "icon": "image/小劍.png",
+        "icon": "image/littlesword.png",
         "descript": "最基礎的武器,增加10點ATK",
         "price": 10,
         "type": "weapon",
@@ -59,7 +68,7 @@
       },
       "1": {
         "name": "骰子包",
-        "icon": "image/骰子包.png",
+        "icon": "image/dicepack.png",
         "descript": "使用後得到10顆骰子",
         "price": 321,
         "type": "item",

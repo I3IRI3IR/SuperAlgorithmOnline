@@ -1,9 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./Board.css";
-import diceImage from './image/dice.jpg';
 // import backpackImage from './image/backpack.jpg' //debugflag 之後要讓它活
 // import finalImage from './image/final.jpg' //debugflag 之後要讓它活
-import chessImage from './image/chess.png';
 
 const Equipment = ({equipments, doItem, usedItem}) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -108,9 +106,9 @@ const Shop = ({products, buyItem}) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <ul className="shop" style={{ position: 'relative' }}>
-      {products.map((product, index) => (
-        <>
-          <img key={index} src={product.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>
+      {Object.entries(products).map(([key, product],index) => (
+        <div key={key}>
+          {product.icon!="" && <img src={"/"+product.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>}
           {isHovered && (
             <div
               style={{
@@ -131,7 +129,7 @@ const Shop = ({products, buyItem}) => {
               <p>物品描述：{product.descript}</p>
             </div>
           )}
-        </>
+        </div>
       ))}
     </ul>
   );
@@ -162,8 +160,18 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
 
     fetch("get/rolldice")
-      .then((response) => response.json())
+      .then((response) => {
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType.includes('application/json')) {
+          return response.json();  // 是 JSON
+        } else {
+          return null;
+        }
+      })
       .then((data) => {
+        if(!data)return;
+        const updated = { ...player_attributes, DICE: player_attributes.DICE - 1 };
+        setPlayer_attributes(updated);
         setMsgList(msgList => [...msgList, `骰子點數: ${data.dice}, 起始位置: ${data.pos}, 事件類型: ${data.type}`]);
         movePiece(data.dice, data.pos);
 
@@ -368,8 +376,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </ul>
           ) : eventType === "shop" || player_attributes['SHOPFLAG'] ? (
             <div className="shop-box">
-              <Shop products={products} buyItem={buyItem}></Shop>
-              <Backpack items={items} isSell={() => true} doItem={sellItem} setUsedItem={setUsedItem}></Backpack>
+              <div className="shop-popup">
+                <Shop products={products} buyItem={buyItem}></Shop>
+                <Backpack items={items} isSell={() => true} doItem={sellItem} setUsedItem={setUsedItem}></Backpack>
+              </div>
               <button className="close-shop" onClick={() => leaveShop()}>離開商店</button>
             </div>
           ) : eventType === "event" || player_attributes['EVENTFLAG'] ? (
@@ -430,10 +440,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <div
           className="piece"
           style={calculatePosition(cells[currentPosition])}
-        ><img className="piece" src={chessImage}></img></div>
+        ><img className="piece" src="/image/chess.png"></img></div>
       </div>
       <button className="dice-button" onClick={rollDice}>
-        <img src={diceImage} alt="骰子" className="dice-image" />
+        <img src="/image/dice.jpg" alt="骰子" className="dice-image" />
       </button>
       <button className="backpack-button" onClick={() => setOpenBackpack(true)}>
         {/* <img src={backpackImage} alt="背包" className="backpack-image" /> */}
