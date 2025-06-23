@@ -58,11 +58,11 @@
     "damage": 0,
     "pos": 1,
     "lv": 1,
-    "hp": 9365,
+    "hp": 9350,
     "atk": 25,
     "def": 10,
     "spd": 1,
-    "exp": 170,
+    "exp": 175,
     "backpack": {
       "0": {
         "name": "青銅劍",
@@ -78,8 +78,8 @@
       "還瑰之聖晶石",
       "小劍"
     ],
-    "coin": 11220,
-    "dice": 9955,
+    "coin": 11260,
+    "dice": 9954,
     "cd": 0,
     "eventcode": 2,
     "battleflag": 0,

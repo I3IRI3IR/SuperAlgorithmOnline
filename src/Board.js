@@ -423,14 +423,14 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <div className="event-box">
           { stillBattle ? (
             <>
-              <div className="battle-popup" style={{display:'flex'}}>
+              <div className="battle-popup" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                 <div>
                   <p>{player_name}</p>
                   <p>體力：{playerAttr['HP']}</p>
                   <p>攻擊力：{playerAttr['ATK']}</p>
                   <p>防禦力：{playerAttr['DEF']}</p>
                 </div>
-                <div>
+                <div >
                   <p>{enemyName}</p>
                   <p>體力：{enemyAttr['HP']}</p>
                   <p>攻擊力：{enemyAttr['ATK']}</p>
