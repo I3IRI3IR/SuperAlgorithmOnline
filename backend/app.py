@@ -111,8 +111,8 @@ def getItemByName(name):
     {"name":"午夜大衣","icon":"image/midnight_coat.png","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闡釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
     {"name":"治療水晶","icon":"image/healing_crystal.png","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
     {"name":"還瑰之聖晶石","icon":"image/holy_recovery_crystal.png","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
-    {"name":"攻擊光環水晶","icon":"image/attack_aura_crystal.png","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
-    {"name":"防禦光環水晶","icon":"image/defense_aura_crystal.png","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
+    {"name":"攻擊光環水晶","icon":"image/attack_aura_crystal.png","descript":"使用後全服玩家一小時內獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
+    {"name":"防禦光環水晶","icon":"image/defense_aura_crystal.png","descript":"使用後全服玩家一小時內獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
     {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
     ]
 
@@ -149,13 +149,15 @@ def get_reward(r_num,player_attr):
         player_attr["coin"]+=2500
         #write msg
         msg = "金幣2500"
+        return msg
     def num_1():
         #do
         player_attr["atk"]+=5
         #write msg
         msg = "攻擊+5卷軸"
+        return msg
     reward_list = [num_0,num_1]
-    reward_list[r_num]()
+    msg = reward_list[r_num]()
     response = [player_attr,msg]
     return response
 
@@ -441,7 +443,7 @@ def get_game_data():
     map = mapdb[str(db["level"])]
     map_ret = []
     for i in map:
-        map_ret.append(map[i][1])
+        map_ret.append(i[1])
 
     playerattribute = get_playerattribute(id)
     response = {
@@ -477,7 +479,7 @@ def get_rolldice():
 
     
     
-    dice = random.randint(5, db[id]['spd'])
+    dice = random.randint(1, db[id]['spd'])
     type = mapdecode(map,db[id]['pos'],dice)[1]
     msg=""
     other_param = {}
@@ -505,7 +507,7 @@ def get_rolldice():
             "3":getRandItem()
         }
         db[id]["shop"]=[products["1"]["name"],products["2"]["name"],products["3"]["name"]]
-        db[id]["shop_flag"]=1
+        db[id]["shopflag"]=1
         other_param = {
             "products" : products,
             "items" : db[id]["backpack"],
@@ -683,7 +685,7 @@ def buyItem():
 
     return '',200
 
-@app.route('/sellItem',methods="POST")
+@app.route('/sellItem',methods=["POST"])
 def sellItem():
     data = request.get_json()
     id = session['user']['id']
@@ -811,8 +813,8 @@ def setItem():
                 json.dump(db, file, ensure_ascii=False, indent=2)
 
     elif data["used"]["type"]=="item":
-        for i in db[id]["backpack"]:
-            if i["name"]==db["used"]["name"]:
+        for i in db[id]["backpack"].values():
+            if i["name"]==data["used"]["name"]:
                 if i["name"]=="治療水晶":
                     db[id]["hp"]+=(db[id]["lv"]**2)*100
                     last_key = str(len(db[id]['backpack']) - 1)

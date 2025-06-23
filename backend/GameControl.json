@@ -3,6 +3,13 @@
   "boss_hp": 5000,
   "atkbuff": 0,
   "defbuff": 0,
+  "aktlist": [],
+  "deflist": [],
+  "allteam": [
+    "team1",
+    "team2",
+    "team3"
+  ],
   "885795741170278400": {
     "name": "pudding164253",
     "damage": 865,
@@ -50,10 +57,10 @@
   "852064504846352394": {
     "name": "BIR",
     "damage": 0,
-    "pos": 5,
+    "pos": 31,
     "lv": 1,
     "hp": 1000,
-    "atk": 25,
+    "atk": 30,
     "def": 10,
     "spd": 6,
     "exp": 0,
@@ -80,8 +87,8 @@
       "闡釋者",
       "漆黑短劍"
     ],
-    "coin": 15000,
-    "dice": 9979,
+    "coin": 17500,
+    "dice": 9966,
     "cd": 60,
     "eventcode": 1,
     "battleflag": 0,
