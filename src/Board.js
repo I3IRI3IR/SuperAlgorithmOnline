@@ -5,8 +5,8 @@ const Equipment = ({equipments, doItem, usedItem}) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <ul className="equipment" style={{ position: 'relative' }}>
-      {equipments.map((equipment, index) => equipment ? (
-        <>
+      {Object.entries(equipments).map(([key, equipment], index) => equipment ? (
+        <div style={{display: 'flex'}}>
           <img key={index} src={equipment.icon} className="item" alt="裝備欄" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => { usedItem['change']={"name": equipment.name, "type": equipment.type}; doItem(usedItem); }}></img>
           {isHovered && (
             <div
@@ -22,33 +22,36 @@ const Equipment = ({equipments, doItem, usedItem}) => {
                 textAlign: 'center',
                 borderRadius: '4px',
                 pointerEvents: 'none', // 不阻擋滑鼠
+                zIndex: 1003
               }}
             >
               <p>價格：{equipment.price}</p>
               <p>物品描述：{equipment.descript}</p>
             </div>
           )}
-        </>
+        </div>
       ) : (
-        <img key={index} /*debugflag 這裡之後要加一張沒東西的照片之類的 src={equipment.icon}*/ className="item" alt="空裝備欄" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
+        <div style={{display: 'flex'}}>
+          <img key={index} /*debugflag 這裡之後要改一張沒東西的照片之類的*/ src="/image/question.png" className="item" alt="空裝備欄" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
+        </div>
       ))}
     </ul>
   );
 };
 
-const Item = ({index, item, isSell, doItem, setUsedItem}) => {
+const Item = ({item, isSell, doItem, setUsedItem}) => {
   const [showButton, setShowButton] = useState(false);
   const imgRef = useRef(null);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div style={{ position: 'relative' }}>
-      <img key={index} src={item.icon} className="item" alt="物品" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
+      <img src={item.icon} className="item" ref={isHovered ? imgRef : null} alt="物品" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
         if (imgRef.current) {
           const rect = imgRef.current.getBoundingClientRect();
           setButtonPosition({
-            top: rect.bottom + window.scrollY + 5, // 5px 下移一點點
-            left: rect.left + window.scrollX
+            top: window.scrollY + 5, // 5px 下移一點點
+            left: window.scrollX
           });
           setShowButton(!showButton);
         }
@@ -67,6 +70,7 @@ const Item = ({index, item, isSell, doItem, setUsedItem}) => {
             textAlign: 'center',
             borderRadius: '4px',
             pointerEvents: 'none', // 不阻擋滑鼠
+            zIndex: 1003
           }}
         >
           <p>價格：{item.price}</p>
@@ -89,12 +93,11 @@ const Item = ({index, item, isSell, doItem, setUsedItem}) => {
   )
 }
 
-const Backpack = ({items, isSell, sellItem, doItem, setUsedItem}) => {
-  console.log(items);
+const Backpack = ({items, isSell, doItem, setUsedItem}) => {
   return (
     <ul className="backpack">
-      {items.length ? items.map((item, index) => (
-          <Item index={index} item={item} isSell={isSell} doItem={isSell ? sellItem : doItem} setUsedItem={setUsedItem}></Item>
+      {Object.keys(items).length!==0 ? Object.entries(items).map(([key, item],index) => (
+          <Item key={index} item={item} isSell={isSell} doItem={doItem} setUsedItem={setUsedItem}></Item>
         )) : <p>背包為空</p> //debugflag 這裡之後要加一張沒東西的照片之類的
       }
     </ul>
@@ -102,18 +105,32 @@ const Backpack = ({items, isSell, sellItem, doItem, setUsedItem}) => {
 };
 
 const Shop = ({products, buyItem}) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null); // 儲存當前懸停的商品索引
+  const imgRef = useRef([]);
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+  const getPopupPosition = (index) => {
+    if (!imgRef.current[index]) return { left: 0, top: 0 };
+
+    const item = imgRef.current[index];
+    const rect = item.getBoundingClientRect();
+    
+    // 計算彈窗的位置（這裡是底部加一些距離）
+    return {
+      left: window.scrollX,  // 彈窗的左邊要與商品的左邊對齊
+      top: rect.top + window.scrollY + 10,  // 彈窗的頂部在商品底部下方一些距離
+    };
+  };
   return (
     <ul className="shop" style={{ position: 'relative' }}>
       {Object.entries(products).map(([key, product],index) => (
         <div key={key}>
-          {product.icon!=="" && <img src={"/"+product.icon} className="item" alt="商品" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>}
-          {isHovered && (
+          {product.icon!=="" && <img ref={(el) => (imgRef.current[index] = el)} src={"/"+product.icon} className="item" alt="商品" onMouseEnter={() => setHoveredIndex(index)} onMouseLeave={() => setHoveredIndex(null)} onClick={() => buyItem(product.name)}></img>}
+          {hoveredIndex === index && (
             <div
               style={{
                 position: 'absolute',
-                bottom: '-30px',
-                left: '0',
+                left: `${getPopupPosition(index).left}px`,  // 根據位置動態設定
+                top: `${getPopupPosition(index).top}px`,  // 根據位置動態設定
                 width: '100%',
                 backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 color: 'white',
@@ -122,6 +139,7 @@ const Shop = ({products, buyItem}) => {
                 textAlign: 'center',
                 borderRadius: '4px',
                 pointerEvents: 'none', // 不阻擋滑鼠
+                zIndex: 1003
               }}
             >
               <p>價格：{product.price}</p>
@@ -134,14 +152,14 @@ const Shop = ({products, buyItem}) => {
   );
 };
 
-const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd, player_name }) => {
+const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd, player_name, map, finallistName }) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [isMoving, setIsMoving] = useState(false);
   const [isEvent, setIsEvent] = useState(false);
   const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
-  const [equipments, setEquipments] = useState([]);
+  const [equipments, setEquipments] = useState({});
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
   const [eventParam, setEventParam] = useState("");
@@ -227,7 +245,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "shop") {
           setProducts(data.other_param['products']);
           setItems(data.other_param['items']);
-          setEquipments(Object.entries(data.other_param['equipped']));
+          setEquipments(data.other_param['equipped']);
           setShopflag(true);
         }
       });
@@ -296,8 +314,16 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       });
   };
 
+  const getEquipment = () => {
+    fetch("get/allEquipment")
+      .then((response) => response.json())
+      .then((data) => {
+        setEquipments(data);
+      });
+  };
+
   const doItem = (param) => {
-    fetch("setItem", {
+    fetch("get/setItem", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -317,8 +343,6 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       },
       body: JSON.stringify({"name": name}),
     })
-      .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data));
     getItems();
   };
 
@@ -347,6 +371,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         setFinallist(data);
       });
   };
+
+  const mapdecode = (index, cells) => {
+    for(let i=0;i<cells.length;++i)if(cells[i]==index)return i;
+  }
 
   return (
     <div className="board-container">
@@ -383,7 +411,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             <div className="shop-box">
               <div className="shop-popup">
                 <Shop products={products} buyItem={buyItem}></Shop>
-                <Backpack items={items} isSell={() => true} doItem={sellItem} setUsedItem={setUsedItem}></Backpack>
+                <Backpack items={items} isSell={true} doItem={sellItem} setUsedItem={setUsedItem}></Backpack>
               </div>
               <button className="close-shop" onClick={() => leaveShop()}>離開商店</button>
             </div>
@@ -432,9 +460,9 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           <div className="backpack-box">
             <div className="backpack-popup">
               <Equipment equipments={equipments} doItem={doItem} usedItem={usedItem}></Equipment>
-              <Backpack items={items} isSell={() => false} doItem={doItem} setUsedItem={setUsedItem}></Backpack>
+              <Backpack items={items} isSell={false} doItem={doItem} setUsedItem={setUsedItem}></Backpack>
             </div>
-            <button className="close-backpack" onClick={() => { getItems();setOpenBackpack(false); }}>退出背包</button>
+            <button className="close-backpack" onClick={() => { getItems();getEquipment();setOpenBackpack(false); }}>退出背包</button>
           </div>
         </div>
       ) : openFinal && (
@@ -442,7 +470,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           <div className="final-box">
             <div className="final">
               <div className="finallist">
-                {finallist.map((team, index) => (
+                {finallistName.map((team, index) => (
                   <p key={index}>{team}</p>
                 ))}
               </div>
@@ -457,7 +485,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             key={index}
             className={cells.includes(index) ? "cell" : "empty-cell"}
           >
-            {cells.includes(index) && <><img className="map-image" alt="地圖格" src={"/image/"+Object.fromEntries([[0, 'reward'], [1, 'shop'], [2, 'event'], [3, 'rest'], [4, 'question'], [5, 'shop'], [6, 'reward'], [7, 'event'], [8, 'rest'], [9, 'reward'], [19, 'shop'], [29, 'event'], [39, 'rest'], [49, 'question'], [59, 'reward'], [69, 'shop'], [79, 'event'], [89, 'question'], [99, 'rest'], [98, 'reward'], [97, 'shop'], [96, 'event'], [95, 'question'], [94, 'reward'], [93, 'rest'], [92, 'shop'], [91, 'question'], [90, 'event'], [80, 'rest'], [70, 'reward'], [60, 'shop'], [50, 'event'], [40, 'question'], [30, 'rest'], [20, 'reward'], [10, 'shop']])[index]+".png"}></img></>}
+            {cells.includes(index) && <><img className="map-image" alt="地圖格" src={"/image/"+map[mapdecode(index,cells)]+".png"}></img></>}
           </div>
         ))}
         <div
@@ -468,7 +496,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       <button className="dice-button" onClick={rollDice}>
         <img src="/image/dice.jpg" alt="骰子" className="dice-image" />
       </button>
-      <button className="backpack-button" onClick={() => {getItems();setOpenBackpack(true);}}>
+      <button className="backpack-button" onClick={() => {getItems();getEquipment();setOpenBackpack(true);}}>
         <img src="/image/backpack.png" alt="背包" className="backpack-image" />
       </button>
       <button className="final-button" onClick={() => { setOpenFinal(true);getFinallist(); }}>
