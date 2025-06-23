@@ -7,7 +7,7 @@ const Equipment = ({equipments, doItem, usedItem}) => {
     <ul className="equipment" style={{ position: 'relative' }}>
       {equipments.map((equipment, index) => equipment ? (
         <>
-          <img key={index} src={equipment.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => { usedItem['change']={"name": equipment.name, "type": equipment.type}; doItem(usedItem); }}></img>
+          <img key={index} src={equipment.icon} className="item" alt="裝備欄" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => { usedItem['change']={"name": equipment.name, "type": equipment.type}; doItem(usedItem); }}></img>
           {isHovered && (
             <div
               style={{
@@ -30,7 +30,7 @@ const Equipment = ({equipments, doItem, usedItem}) => {
           )}
         </>
       ) : (
-        <img key={index} /*debugflag 這裡之後要加一張沒東西的照片之類的 src={equipment.icon}*/ className="item" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
+        <img key={index} /*debugflag 這裡之後要加一張沒東西的照片之類的 src={equipment.icon}*/ className="item" alt="空裝備欄" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
       ))}
     </ul>
   );
@@ -43,7 +43,7 @@ const Item = ({index, item, isSell, doItem, setUsedItem}) => {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div style={{ position: 'relative' }}>
-      <img key={index} src={item.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
+      <img key={index} src={item.icon} className="item" alt="物品" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
         if (imgRef.current) {
           const rect = imgRef.current.getBoundingClientRect();
           setButtonPosition({
@@ -107,7 +107,7 @@ const Shop = ({products, buyItem}) => {
     <ul className="shop" style={{ position: 'relative' }}>
       {Object.entries(products).map(([key, product],index) => (
         <div key={key}>
-          {product.icon!="" && <img src={"/"+product.icon} className="item" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>}
+          {product.icon!=="" && <img src={"/"+product.icon} className="item" alt="商品" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => buyItem(product.name)}></img>}
           {isHovered && (
             <div
               style={{
@@ -153,7 +153,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [stillBattle,setStillBattle] = useState(false);
   const [enemyAttr,setEnemyAttr] = useState({});
   const [playerAttr,setPlayerAttr] = useState({});
-  const [enemyName,setEnemyName] = ("");
+  const [enemyName,setEnemyName] = useState("");
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -186,12 +186,12 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "reward") {
           setPlayer_attributes(data.other_param);
         } else if (data.type === "battle") {
-          // if(Object.keys(data.other_param).length===0){
+          if(Object.keys(data.other_param).length===0){
             setIsEvent(false);
-          // }
-          // console.log(data);
-          return;
-          setStillBattle(true);
+            return;
+          }
+          console.log(data);
+          // setStillBattle(true);
           setEventParam(data.other_param['log']);
           setPlayerAttr({
             "HP":player_attributes["HP"],
@@ -199,12 +199,14 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             "DEF":player_attributes["DEF"]
           });
           setPlayer_attributes(data.other_param['player_attributes']);
+          console.log(data.other_param['mob_attributes']['hp']);
           setEnemyName(data.other_param['mob_attributes']['name']);
           setEnemyAttr({
-            "HP":data.other_param['mob_attributes']["HP"],
-            "ATK":data.other_param['mob_attributes']["ATK"],
-            "DEF":data.other_param['mob_attributes']["DEF"]
+            "HP":data.other_param['mob_attributes']["hp"],
+            "ATK":data.other_param['mob_attributes']["atk"],
+            "DEF":data.other_param['mob_attributes']["def"]
           });
+          return;
           const stepDelay = 500;
           let idx=0,n=eventParam['log'].length;
           
@@ -225,7 +227,6 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         } else if (data.type === "shop") {
           setProducts(data.other_param['products']);
           setItems(data.other_param['items']);
-          console.log(data.other_param['equipped']);
           setEquipments(Object.entries(data.other_param['equipped']));
           setShopflag(true);
         }
@@ -237,8 +238,8 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
     const moveStep = (step,pos,stepDelay=350) => {
       pos = (pos + 1) % cells.length; // 下一格的位置
       setCurrentPosition(pos);
-      if (step==1)stepDelay=300;
-      else if(step==2)stepDelay=200;
+      if (step===1)stepDelay=300;
+      else if(step===2)stepDelay=200;
       else stepDelay=Math.max(stepDelay-50,100);
       --step;
       if (step<=0) setIsMoving(false);
@@ -250,7 +251,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const calculatePosition = (index) => {
     const row = Math.floor(index / boardSize);
     const col = index % boardSize;
-    return { top: `${row * 75}px`, left: `${col * 75}px` };
+    return { top: `${row * 61}px`, left: `${col * 61}px` };
   };
 
   const answerQuestion = (index) => {
@@ -349,7 +350,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
 
   return (
     <div className="board-container">
-      <img src="/image/background.jpg" class="background" alt="背景" />
+      <img src="/image/background.jpg" className="background" alt="背景" />
       {isEvent ||
       player_attributes['BATTLEFLAG'] ||
       player_attributes['QUESTIONFLAG'] ||
@@ -405,6 +406,20 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </div>
           ) : (eventType === "battle" || player_attributes['BATTLEFLAG']) && (
             <>
+              <div className="battle-popup" style={{display:'flex'}}>
+                <div>
+                  <p>{player_name}</p>
+                  <p>體力：{playerAttr['HP']}</p>
+                  <p>攻擊力：{playerAttr['ATK']}</p>
+                  <p>防禦力：{playerAttr['DEF']}</p>
+                </div>
+                <div>
+                  <p>{enemyName}</p>
+                  <p>體力：{enemyAttr['HP']}</p>
+                  <p>攻擊力：{enemyAttr['ATK']}</p>
+                  <p>防禦力：{enemyAttr['DEF']}</p>
+                </div>
+              </div>
               {!stillBattle && <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>}
               {/*上面只是暫時用來可以退出用的按鈕*/}
               {/*還沒做，要照 todo 做*/}
@@ -442,13 +457,13 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             key={index}
             className={cells.includes(index) ? "cell" : "empty-cell"}
           >
-            {cells.includes(index) && <><img style={{width:'75px',height:'75px'}} src={"/image/"+Object.fromEntries([[0, 'reward'], [1, 'shop'], [2, 'event'], [3, 'rest'], [4, 'question'], [5, 'shop'], [6, 'reward'], [7, 'event'], [8, 'rest'], [9, 'reward'], [19, 'shop'], [29, 'event'], [39, 'rest'], [49, 'question'], [59, 'reward'], [69, 'shop'], [79, 'event'], [89, 'question'], [99, 'rest'], [98, 'reward'], [97, 'shop'], [96, 'event'], [95, 'question'], [94, 'reward'], [93, 'rest'], [92, 'shop'], [91, 'question'], [90, 'event'], [80, 'rest'], [70, 'reward'], [60, 'shop'], [50, 'event'], [40, 'question'], [30, 'rest'], [20, 'reward'], [10, 'shop']])[index]+".png"}></img></>}
+            {cells.includes(index) && <><img className="map-image" alt="地圖格" src={"/image/"+Object.fromEntries([[0, 'reward'], [1, 'shop'], [2, 'event'], [3, 'rest'], [4, 'question'], [5, 'shop'], [6, 'reward'], [7, 'event'], [8, 'rest'], [9, 'reward'], [19, 'shop'], [29, 'event'], [39, 'rest'], [49, 'question'], [59, 'reward'], [69, 'shop'], [79, 'event'], [89, 'question'], [99, 'rest'], [98, 'reward'], [97, 'shop'], [96, 'event'], [95, 'question'], [94, 'reward'], [93, 'rest'], [92, 'shop'], [91, 'question'], [90, 'event'], [80, 'rest'], [70, 'reward'], [60, 'shop'], [50, 'event'], [40, 'question'], [30, 'rest'], [20, 'reward'], [10, 'shop']])[index]+".png"}></img></>}
           </div>
         ))}
         <div
           className="piece"
           style={calculatePosition(cells[currentPosition])}
-        ><img className="piece" src="/image/chess.png"></img></div>
+        ><img className="piece" alt="棋子" src="/image/chess.png"></img></div>
       </div>
       <button className="dice-button" onClick={rollDice}>
         <img src="/image/dice.jpg" alt="骰子" className="dice-image" />

@@ -5,13 +5,13 @@
   "defbuff": 0,
   "885795741170278400": {
     "name": "pudding164253",
-    "damage": -1005,
-    "pos": 1,
+    "damage": 865,
+    "pos": 14,
     "lv": 1,
-    "hp": 5,
-    "atk": 140,
+    "hp": -10,
+    "atk": 165,
     "def": 10,
-    "spd": 1,
+    "spd": 5,
     "exp": 0,
     "backpack": {
       "0": {
@@ -36,9 +36,9 @@
       "攻擊光環水晶",
       "疾風擊劍"
     ],
-    "coin": 105000,
-    "dice": 99999695.0,
-    "eventcode": 1,
+    "coin": 115000,
+    "dice": 99999643.0,
+    "eventcode": 2,
     "battleflag": 0,
     "questionflag": 0,
     "eventflag": 0,
