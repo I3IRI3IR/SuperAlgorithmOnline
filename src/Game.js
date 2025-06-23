@@ -38,6 +38,8 @@ const Game = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const [shopflag, setShopflag] = useState(false);
   const [cd, setCd] = useState(0);
+  const [map,setMap] = useState([])
+  const [finallistName,setFinallistName] = useState([])
 
   useEffect(() => {
     fetch("/get/game_data")
@@ -49,6 +51,8 @@ const Game = () => {
         setBoss_hp(data.boss_hp);
         setTotal_atk(data.total_atk);
         setCurrentPosition(data.pos);
+        setMap(data.map);
+        setFinallistName(data.allteam);
       })
       .catch((error) => console.error("Error loading game data:", error));
     const interval = setInterval(() => {
@@ -79,7 +83,7 @@ const Game = () => {
       </div>
       <div className="main-content">
         <div className="boardgen-container">
-            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag} cd={cd} player_name={player_name}/>
+            <Board setMsgList={setMsgList} player_attributes={player_attributes} setPlayer_attributes={setPlayer_attributes} currentPosition={currentPosition} setCurrentPosition={setCurrentPosition} shopflag={shopflag} setShopflag={setShopflag} cd={cd} player_name={player_name} map={map} finallistName={finallistName}/>
         </div>
         <Msgbox msgList={msgList} setMsgList={setMsgList} msg={msg} setMsg={setMsg}/>
       </div>

@@ -3,7 +3,7 @@
   "boss_hp": 5000,
   "atkbuff": 0,
   "defbuff": 0,
-  "aktlist": [],
+  "atklist": [],
   "deflist": [],
   "allteam": [
     "team1",
@@ -13,12 +13,12 @@
   "885795741170278400": {
     "name": "pudding164253",
     "damage": 865,
-    "pos": 14,
+    "pos": 10,
     "lv": 1,
     "hp": -10,
-    "atk": 165,
+    "atk": 180,
     "def": 10,
-    "spd": 5,
+    "spd": 1,
     "exp": 0,
     "backpack": {
       "0": {
@@ -39,13 +39,13 @@
       }
     },
     "shop": [
-      "銀線甲",
+      "治療水晶",
       "攻擊光環水晶",
-      "疾風擊劍"
+      "小劍"
     ],
-    "coin": 115000,
-    "dice": 99999643.0,
-    "eventcode": 2,
+    "coin": 142500,
+    "dice": 99999591.0,
+    "eventcode": 1,
     "battleflag": 0,
     "questionflag": 0,
     "eventflag": 0,
