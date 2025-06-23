@@ -141,6 +141,10 @@
   z-index: 1001;
 }
 
+.battle-popup {
+  width: 30vw;
+}
+
 .shop, .backpack, .equipment, .final, .eventResult {
   background: white;
   padding: 20px;
