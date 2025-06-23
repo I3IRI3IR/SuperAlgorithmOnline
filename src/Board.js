@@ -423,7 +423,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <div className="event-box">
           { stillBattle ? (
             <>
-              <div className="battle-popup" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <div className="battle-popup" style={{ display: 'flex', justifyContent: 'space-between'}}>
                 <div>
                   <p>{player_name}</p>
                   <p>體力：{playerAttr['HP']}</p>
@@ -484,7 +484,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             </div>
           ) : (eventType === "battle" || player_attributes['BATTLEFLAG']) && (
             <>
-              <div className="battle-popup" style={{display:'flex'}}>
+              <div className="battle-popup" style={{ display: 'flex', justifyContent: 'space-between'}}>
                 <div>
                   <p>{player_name}</p>
                   <p>體力：{playerAttr['HP']}</p>
@@ -499,9 +499,6 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                 </div>
               </div>
               {!stillBattle && <button className="close-battle" onClick={() => setIsEvent(false)}>離開戰鬥</button>}
-              {/*上面只是暫時用來可以退出用的按鈕*/}
-              {/*還沒做，要照 todo 做*/}
-              {/*這裡很可能可以棄用*/}
             </>
           )}
         </div>
