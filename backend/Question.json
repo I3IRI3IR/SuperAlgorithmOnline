@@ -9,7 +9,7 @@
     "若只需要搜尋一次，使用「線性搜尋法」會比「將陣列排序再作二分搜尋法」更有效率"]},
     
     "3":{"Statements":"以泡沫排序法(bubble sort)將下列七個數字 27, 16, 4, 98, 0, 56, 39 由小排到大,則需經過幾次的交換(interchange)動作?",
-    "Options":["8","9","10","11"]}
+    "Options":["8","9","10","11"]},
     
     "4":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
     "5":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
