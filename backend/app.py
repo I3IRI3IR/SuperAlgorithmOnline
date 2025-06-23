@@ -1,5 +1,6 @@
 from flask import Flask, redirect, request, session, url_for, jsonify
 import requests
+from filelock import FileLock
 import random
 import json
 import os
@@ -8,11 +9,22 @@ from flask_cors import CORS
 import threading
 import time
 from datetime import datetime
+import copy
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 CORS(app, supports_credentials=True)
+
+
+BossLock = FileLock("Boss.json.lock")
+EventLock = FileLock("Event.json.lock")
+EventAnsLock = FileLock("EventAns.json.lock")
+GameControlLock = FileLock("GameControl.json.lock")
+MapLock = FileLock("Map.json.lock")
+QuestionLock = FileLock("Question.json.lock")
+QuestionAnsLock = FileLock("QuestionAns.json.lock")
+
 
 
 
@@ -25,8 +37,9 @@ SCOPE = 'identify'
 
 def reduce_cooldown():
     id = session['user']['id'] 
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     for value in db.values():
         if isinstance(value, dict):
             value["cd"] = max(value["cd"]-1,0)
@@ -41,7 +54,8 @@ def reduce_cooldown():
             db["deflist"].pop(i)
             db["defbuff"] -= 1
 
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
 def cooldown_monitor():
@@ -54,8 +68,9 @@ def cooldown_monitor():
 
 def get_playerattribute(id):
     id = session['user']['id'] #164253flag 這裡的 id 被變數覆蓋掉了，如果直接讀 session 就沒必要吃參數吧
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
 
     response = {
             'LV'  : db[id]['lv'],
@@ -77,16 +92,18 @@ def get_playerattribute(id):
     return response
 
 def get_question():
-    with open("Question.json", "r", encoding="utf-8") as file:
-        question_db = json.load(file)
+    with QuestionLock:    
+        with open("Question.json", "r", encoding="utf-8") as file:
+            question_db = json.load(file)
     q_num = str(random.randint(1,2))
     response = question_db[q_num]
     response['q_num'] = q_num
     return response
 
 def get_event(e_num):
-    with open("Event.json", "r", encoding="utf-8") as file:
-        event_db = json.load(file)
+    with EventLock:
+        with open("Event.json", "r", encoding="utf-8") as file:
+            event_db = json.load(file)
     response = event_db[str(e_num)]
     response['e_num'] = e_num
     return response
@@ -167,7 +184,8 @@ def get_equipment(id):
         "weapon2":None,
         "chest":None
     }
-    with open("GameControl.json", "r", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
             db = json.load(file)
     for i in db[id]["backpack"].values():
         if i["equipped"] and i["type"]=="weapon":
@@ -180,8 +198,9 @@ def get_equipment(id):
     return response
     
 def get_battledict(id,mob,playerdict):
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     playeritem = get_equipment(id)
     Atk = db[id]["atk"]
     damagerate = 1
@@ -223,13 +242,17 @@ def get_battledict(id,mob,playerdict):
     Def = round(Def*(100+db["defbuff"])*0.01)
     turn=0
     battlelist=[]
+    real_attr={
+        "atk":Atk,
+        "def":Def
+    }
     while db[id]["hp"]>0 and mob["hp"]>0:
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": max(0,round((Atk-mob["atk"])*damagerate)+directdamage)
+            "damage": max(0,round((Atk-mob["def"])*damagerate)+directdamage)
         })
-        mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
+        mob["hp"]-=round((Atk-mob["def"])*damagerate)+directdamage
         #db[id]["damage"]+=round((Atk-mob["atk"])*damagerate)+directdamage
         if mob["hp"]<=0:
             break
@@ -250,17 +273,18 @@ def get_battledict(id,mob,playerdict):
         turn+=1
     if db[id]["hp"]<=0:
         db[id]["cd"]=60
-        db["hp"]=0
+        db[id]["hp"]=0
     else:
         db[id]["coin"]+=mob["coin"]
         db[id]["exp"]+=mob["exp"]
     
     playerdict = db[id]
-    return [battlelist,playerdict]
+    return [battlelist,playerdict,real_attr]
     
 def bossfight(id,boss,playerdict):
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     playeritem = get_equipment(id)
     Atk = db[id]["atk"]
     damagerate = 1
@@ -299,14 +323,18 @@ def bossfight(id,boss,playerdict):
     Def = round(Def*(100+db["defbuff"])*0.01)
     turn=0
     battlelist=[]
+    real_attr={
+        "atk":Atk,
+        "def":Def
+    }
     while db[id]["hp"]>0 and boss["hp"]>0 and turn<=db[id]["lv"]+5:
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
-            "damage": max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
+            "damage": max(0,round((Atk-boss["def"])*damagerate)+directdamage)
         })
-        boss["hp"]-=max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
-        db[id]["damage"]+=max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
+        boss["hp"]-=max(0,round((Atk-boss["def"])*damagerate)+directdamage)
+        db[id]["damage"]+=max(0,round((Atk-boss["def"])*damagerate)+directdamage)
         if boss["hp"]<=0:
             break
         battlelist.append({
@@ -328,7 +356,7 @@ def bossfight(id,boss,playerdict):
         pass
     playerdict = db[id]
     bossdict = boss
-    return [battlelist,playerdict,bossdict]
+    return [battlelist,playerdict,bossdict,boss,real_attr]
 
 
 # 點登入時導向 Discord OAuth2
@@ -380,8 +408,9 @@ def callback():
         session['user'] = user_info
 
         # 檢查或新增玩家資料
-        with open("GameControl.json", "r", encoding="utf-8") as file:
-            db = json.load(file)
+        with GameControlLock:
+            with open("GameControl.json", "r", encoding="utf-8") as file:
+                db = json.load(file)
 
         user_id = user_info['id']
         if user_id not in db:
@@ -415,8 +444,9 @@ def callback():
             db[user_id]['name'] = user_info['global_name']
 
         # 更新檔案
-        with open("GameControl.json", "w", encoding="utf-8") as file:
-            json.dump(db, file, ensure_ascii=False, indent=2)
+        with GameControlLock:
+            with open("GameControl.json", "w", encoding="utf-8") as file:
+                json.dump(db, file, ensure_ascii=False, indent=2)
 
         # 成功後重定向到遊戲頁面
         return redirect("http://localhost:3000")  # 假設前端應用的遊戲頁面 URL
@@ -435,11 +465,13 @@ def dashboard():
 @app.route('/get/game_data')
 def get_game_data():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
 
-    with open("Map.json", "r", encoding="utf-8") as file:
-        mapdb = json.load(file)
+    with MapLock:
+        with open("Map.json", "r", encoding="utf-8") as file:
+            mapdb = json.load(file)
     map = mapdb[str(db["level"])]
     map_ret = []
     for i in map:
@@ -461,14 +493,16 @@ def get_game_data():
 @app.route('/get/rolldice')
 def get_rolldice():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     
     if db[id]['dice']<=0:
         return '',200
 
-    with open("Map.json", "r", encoding="utf-8") as file:
-        mapdb = json.load(file)
+    with MapLock:
+        with open("Map.json", "r", encoding="utf-8") as file:
+            mapdb = json.load(file)
     map = mapdb[str(db["level"])]
     
     db[id]['battleflag']=0
@@ -521,30 +555,38 @@ def get_rolldice():
     elif type == "battle":
         if mapdecode(map,db[id]['pos'],dice)[0]!=99:
             mobdb_str = "Mob_"+str(db["level"])+".json"
-            with open(mobdb_str, "r", encoding="utf-8") as file:
-                mobdb = json.load(file)
+            mob_lock = FileLock(mobdb_str+".lock")
+            with mob_lock:
+                with open(mobdb_str, "r", encoding="utf-8") as file:
+                    mobdb = json.load(file)
             
             if db[id]["cd"]==0:
                 mob_key = random.choice(list(mobdb.keys()))
                 mob = mobdb[mob_key]
+                mob_copy = copy.deepcopy(mob)
                 result = get_battledict(id,mob,db[id])
                 db[id] = result[1]
                 other_param = {
                     "log":result[0],
                     "player_attributes":get_playerattribute(id),
-                    "mob_attributes":mob
+                    "mob_attributes":mob_copy,
+                    "real_attr":result[2]
                 }
         else:
-            with open("Boss.json", "r", encoding="utf-8") as file:
-                bossdb = json.load(file)
+            with BossLock:
+                with open("Boss.json", "r", encoding="utf-8") as file:
+                    bossdb = json.load(file)
             if db[id]["cd"]==0:
                 boss_key = random.choice(list(bossdb.keys()))
                 boss = bossdb[boss_key]
+                boss["hp"] = db["bosshp"]
+                bosscopy = copy.deepcopy(boss)
                 result = bossfight(id,boss,db[id])
                 other_param = {
                     "log":result[0],
                     "player_attributes":get_playerattribute(id),
-                    "mob_attributes":boss
+                    "mob_attributes":bosscopy,
+                    "real_attr":result[4]
                 }
                 
                 if result[2]["hp"]<=0:
@@ -566,7 +608,8 @@ def get_rolldice():
     }
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
     
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
     return jsonify(response)
@@ -575,12 +618,13 @@ def get_rolldice():
 def response_question():
     data = request.get_json()
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     
-
-    with open("QuestionAns.json", "r", encoding="utf-8") as file:
-        ansdb = json.load(file)
+    with QuestionAnsLock:
+        with open("QuestionAns.json", "r", encoding="utf-8") as file:
+            ansdb = json.load(file)
     
     
     if ansdb[str(db[id]['questionflag'])]['ans'] == data['select']: 
@@ -598,7 +642,8 @@ def response_question():
 
     db[id]['questionflag'] = 0
 
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
     
@@ -608,12 +653,14 @@ def response_question():
 def response_event():
     data = request.get_json()
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     
 
-    with open("EventAns.json", "r", encoding="utf-8") as file:
-        ansdb = json.load(file)
+    with EventAnsLock:
+        with open("EventAns.json", "r", encoding="utf-8") as file:
+            ansdb = json.load(file)
     
     
     for i in range(4):
@@ -631,7 +678,8 @@ def response_event():
 
     db[id]['eventflag'] = 0
 
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
     return jsonify(response) 
@@ -639,24 +687,28 @@ def response_event():
 @app.route('/shopexit')
 def shopexit():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
 
     db[id]["shopflag"]=0
 
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
     return '',200
 
 @app.route('/restexit')
 def restexit():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
 
     db[id]["restflag"]=0
 
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
     return '',200
 
@@ -665,8 +717,9 @@ def buyItem():
     data = request.get_json()
     id = session['user']['id']
     returnflag=0
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
 
     name = data["name"]
     item = getItemByName(name)
@@ -680,7 +733,8 @@ def buyItem():
                 
                 
 
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
 
     return '',200
@@ -690,8 +744,9 @@ def sellItem():
     data = request.get_json()
     id = session['user']['id']
     
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     
     name = data["name"]
     item = getItemByName(name)
@@ -704,7 +759,8 @@ def sellItem():
                 db[id]['backpack'].pop(last_key)
                 break
     
-    with open("GameControl.json", "w", encoding="utf-8") as file:
+    with GameControlLock:
+        with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
     
     return '',200
@@ -712,8 +768,9 @@ def sellItem():
 @app.route('/periodicUpdate')
 def periodicUpdate():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     response = {
         # "bosshp":db["bosshp"], #164253flag 少打底線
         "bosshp":db["boss_hp"],
@@ -725,8 +782,9 @@ def periodicUpdate():
 @app.route('/get/allItem')
 def getallItem():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     
     response = db[id]["backpack"]
     return jsonify(response)
@@ -734,8 +792,9 @@ def getallItem():
 @app.route('/get/allCommodity')
 def getallCommodity():
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
     
     response = {
         "1":getItemByName(db[id]["shop"][0]),
@@ -759,8 +818,9 @@ def setItem():
     """
     data = request.get_json()
     id = session['user']['id']
-    with open("GameControl.json", "r", encoding="utf-8") as file:
-        db = json.load(file)
+    with GameControlLock:
+        with open("GameControl.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
         
     
     if data["used"]['type'] == "weapon" or data["used"]["type"] == "chest":
@@ -811,8 +871,9 @@ def setItem():
             elif i["equipped"] and i["type"]=="chest":
                 chest+=1
         if weapon<=2 and chest<=1:
-            with open("GameControl.json", "w", encoding="utf-8") as file:
-                json.dump(db, file, ensure_ascii=False, indent=2)
+            with GameControlLock:
+                with open("GameControl.json", "w", encoding="utf-8") as file:
+                    json.dump(db, file, ensure_ascii=False, indent=2)
 
     elif data["used"]["type"]=="item":
         for j, i in db[id]["backpack"].items():
@@ -844,8 +905,9 @@ def setItem():
                     last_key = str(len(db[id]['backpack']) - 1)
                     db[id]['backpack'][j] = db[id]['backpack'][str(last_key)]
                     db[id]['backpack'].pop(last_key)
-                with open("GameControl.json", "w", encoding="utf-8") as file:
-                    json.dump(db, file, ensure_ascii=False, indent=2)
+                with GameControlLock:
+                    with open("GameControl.json", "w", encoding="utf-8") as file:
+                        json.dump(db, file, ensure_ascii=False, indent=2)
                 break
     return '',200
 

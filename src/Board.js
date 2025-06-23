@@ -185,7 +185,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [equipments, setEquipments] = useState({});
   const [eventType, setEventType] = useState("");
   const [eventMsg, setEventMsg] = useState("");
-  const [eventParam, setEventParam] = useState("");
+  const [eventParam, setEventParam] = useState([]);
   const [openBackpack, setOpenBackpack] = useState(false);
   const [openFinal, setOpenFinal] = useState(false);
   const [usedItem, setUsedItem] = useState({});
@@ -232,31 +232,43 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             return;
           }
           console.log(data);
-          // setStillBattle(true);
-          setEventParam(data.other_param['log']);
+          setStillBattle(true);
           setPlayerAttr({
             "HP":player_attributes["HP"],
             "ATK":player_attributes["ATK"],
             "DEF":player_attributes["DEF"]
           });
           setPlayer_attributes(data.other_param['player_attributes']);
-          console.log(data.other_param['mob_attributes']['hp']);
           setEnemyName(data.other_param['mob_attributes']['name']);
           setEnemyAttr({
             "HP":data.other_param['mob_attributes']["hp"],
             "ATK":data.other_param['mob_attributes']["atk"],
             "DEF":data.other_param['mob_attributes']["def"]
           });
-          return;
+          let currentPlayerAttr = {
+            "HP":player_attributes["HP"],
+            "ATK":data.other_param['real_attr']["atk"],
+            "DEF":data.other_param['real_attr']["def"]
+          };
+          let currentEnemyAttr = {
+            "HP":data.other_param['mob_attributes']["hp"],
+            "ATK":data.other_param['mob_attributes']["atk"],
+            "DEF":data.other_param['mob_attributes']["def"]
+          };
           const stepDelay = 500;
-          let idx=0,n=eventParam['log'].length;
+          let idx=0,n=data.other_param['log'].length;
           
           const interval = setInterval(() => {
-            if(eventParam[idx]['defender'] === "player"){
-              setPlayerAttr(playerAttr['HP']);
+            console.log(currentPlayerAttr.HP);
+            if(data.other_param['log'][idx]['defender'] === "player"){
+              const updated = { ...currentPlayerAttr, HP: currentPlayerAttr.HP - data.other_param['log'][idx]['damage'] };
+              setPlayerAttr(updated);
+              currentPlayerAttr.HP-=data.other_param['log'][idx]['damage'];
             }
             else{
-              // setEnemyAttr();
+              const updated = { ...currentEnemyAttr, HP: currentEnemyAttr.HP - data.other_param['log'][idx]['damage'] };
+              setEnemyAttr(updated);
+              currentEnemyAttr.HP-=data.other_param['log'][idx]['damage'];
             }
             ++idx;
             if (idx>=n) {
@@ -411,6 +423,20 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         <div className="event-box">
           { stillBattle ? (
             <>
+              <div className="battle-popup" style={{display:'flex'}}>
+                <div>
+                  <p>{player_name}</p>
+                  <p>體力：{playerAttr['HP']}</p>
+                  <p>攻擊力：{playerAttr['ATK']}</p>
+                  <p>防禦力：{playerAttr['DEF']}</p>
+                </div>
+                <div>
+                  <p>{enemyName}</p>
+                  <p>體力：{enemyAttr['HP']}</p>
+                  <p>攻擊力：{enemyAttr['ATK']}</p>
+                  <p>防禦力：{enemyAttr['DEF']}</p>
+                </div>
+              </div>
             </>
           ) : eventResult ? (
             <div className="eventResult">

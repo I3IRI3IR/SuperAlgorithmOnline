@@ -6,16 +6,16 @@
     "陣列中的數值必須已依大小排序，否則不保證搜尋結果正確",
     "二分搜尋法不能處理資料不存在的狀況",
     "若陣列大小擴增為 N 倍，線性搜尋法 (linear search) 所需計算量平均擴增 N 倍，但二分搜尋法只會擴增 N倍",
-    "若只需要搜尋一次，使用「線性搜尋法」會比「將陣列排序再作二分搜尋法」更有效率"]}
+    "若只需要搜尋一次，使用「線性搜尋法」會比「將陣列排序再作二分搜尋法」更有效率"]},
     
     "3":{"Statements":"以泡沫排序法(bubble sort)將下列七個數字 27, 16, 4, 98, 0, 56, 39 由小排到大,則需經過幾次的交換(interchange)動作?",
     "Options":["8","9","10","11"]}
     
-    "4":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
-    "5":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
-    "6":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
-    "7":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
-    "8":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
-    "9":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
+    "4":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
+    "5":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
+    "6":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
+    "7":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
+    "8":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
+    "9":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]},
     "10":{"Statements":"測試用","Options":["pAparty","pBsort","pCpaint","pDlordrush"]}
 }
