@@ -30,6 +30,16 @@ def reduce_cooldown():
     for value in db.values():
         if isinstance(value, dict):
             value["cd"] = max(value["cd"]-1,0)
+    for i in range(len(db["atklist"])-1,-1,-1):
+        db["atklist"][i] -= 1
+        if db["atklist"][i]==0:
+            db["atklist"].pop(i)
+            db["atkbuff"] -= 1
+    for i in range(len(db["deflist"])-1,-1,-1):
+        db["deflist"][i] -= 1
+        if db["deflist"][i]==0:
+            db["deflist"].pop(i)
+            db["defbuff"] -= 1
 
     with open("GameControl.json", "w", encoding="utf-8") as file:
             json.dump(db, file, ensure_ascii=False, indent=2)
@@ -88,23 +98,24 @@ def mapdecode(map, start, step):
         
 def getItemByName(name):
     item_list = [
-        {"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
-        {"name":"青銅劍","icon":"","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
-        {"name":"韌煉之劍","icon":"","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
-        {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
-        {"name":"逐闇者","icon":"","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
-        {"name":"闡釋者","icon":"","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
-        {"name":"閃爍之光","icon":"","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,使你的攻擊無視敵方防禦","price":99999,"type":"weapon","equipped":False},
-        {"name":"疾風擊劍","icon":"","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
-        {"name":"騎士輕劍","icon":"","descript":"由疾風擊劍融煉而成的武器,有5%的機會再攻擊一次","price":5678,"type":"weapon","equipped":False},
-        {"name":"銀線甲","icon":"","descript":"","price":100,"type":"chest","equipped":False},
-        {"name":"午夜大衣","icon":"","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闇釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
-        {"name":"治療水晶","icon":"","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
-        {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
-        {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
-        {"name":"防禦光環水晶","icon":"","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
-        {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
-        ]
+    {"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+    {"name":"青銅劍","icon":"image/ironsword.png","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
+    {"name":"韌煉之劍","icon":"image/tempered_sword.png","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
+    {"name":"漆黑短劍","icon":"image/dark_dagger.png","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
+    {"name":"逐闇者","icon":"image/black_sword.png","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
+    {"name":"闡釋者","icon":"image/interpreter_sword.png","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
+    {"name":"閃爍之光","icon":"image/bright_light.png","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,使你的攻擊無視敵方防禦","price":99999,"type":"weapon","equipped":False},
+#   {"name":"疾風擊劍","icon":"image/gale_strike_sword.png","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
+#   {"name":"騎士輕劍","icon":"image/knight_sword.png","descript":"由疾風擊劍融煉而成的武器,有5%的機會再攻擊一次","price":5678,"type":"weapon","equipped":False},
+#   {"name":"銀線甲","icon":"image/silver_armor.png","descript":"","price":100,"type":"chest","equipped":False},
+    {"name":"午夜大衣","icon":"image/midnight_coat.png","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闡釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
+    {"name":"治療水晶","icon":"image/healing_crystal.png","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
+    {"name":"還瑰之聖晶石","icon":"image/holy_recovery_crystal.png","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
+    {"name":"攻擊光環水晶","icon":"image/attack_aura_crystal.png","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
+    {"name":"防禦光環水晶","icon":"image/defense_aura_crystal.png","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
+    {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+    ]
+
     for i in item_list:
         if i["name"]==name:
             return i
@@ -112,23 +123,23 @@ def getItemByName(name):
         
 def getRandItem():
     item_list = [
-        {"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
-        {"name":"青銅劍","icon":"","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
-        {"name":"韌煉之劍","icon":"","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
-        {"name":"漆黑短劍","icon":"","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
-        {"name":"逐闇者","icon":"","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
-        {"name":"闡釋者","icon":"","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
-        {"name":"閃爍之光","icon":"","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,增加(敵方DEF)點ATK","price":99999,"type":"weapon","equipped":False},
-        {"name":"疾風擊劍","icon":"","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
-        {"name":"騎士輕劍","icon":"","descript":"由疾風擊劍融煉而成的武器,使你的攻擊造成的傷害增加1234","price":5678,"type":"weapon","equipped":False},
-        {"name":"銀線甲","icon":"","descript":"只能起到微弱的效果,增加20點DEF","price":100,"type":"chest","equipped":False},
-        {"name":"午夜大衣","icon":"","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闇釋者,增加8763點def,使受到的傷害-50%","price":128463,"type":"chest","equipped":False},
-        {"name":"治療水晶","icon":"","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
-        {"name":"還瑰之聖晶石","icon":"","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
-        {"name":"攻擊光環水晶","icon":"","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
-        {"name":"防禦光環水晶","icon":"","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
-        {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
-        ]
+    {"name":"小劍","icon":"image/littlesword.png","descript":"最基礎的武器,增加10點ATK","price":10,"type":"weapon","equipped":False},
+    {"name":"青銅劍","icon":"image/ironsword.png","descript":"無課玩家的好選擇,增加20點ATK","price":50,"type":"weapon","equipped":False},
+    {"name":"韌煉之劍","icon":"image/tempered_sword.png","descript":"修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%","price":200,"type":"weapon","equipped":False},
+    {"name":"漆黑短劍","icon":"image/dark_dagger.png","descript":"暗器,在戰鬥開始前先對敵人造成150點傷害","price":100,"type":"weapon","equipped":False},
+    {"name":"逐闇者","icon":"image/black_sword.png","descript":"傳說中黑色劍士的專武,增加128463點ATK","price":128463,"type":"weapon","equipped":False},
+    {"name":"闡釋者","icon":"image/interpreter_sword.png","descript":"傳說中黑色劍士的專武,使你的攻擊造成的傷害+1500%","price":128463,"type":"weapon","equipped":False},
+    {"name":"閃爍之光","icon":"image/bright_light.png","descript":"細劍使的專武,使你的攻擊造成的傷害增加12345,使你的攻擊無視敵方防禦","price":99999,"type":"weapon","equipped":False},
+#    {"name":"疾風擊劍","icon":"image/gale_strike_sword.png","descript":"細劍使的初始武器,增加123點ATK","price":1234,"type":"weapon","equipped":False},
+#    {"name":"騎士輕劍","icon":"image/knight_sword.png","descript":"由疾風擊劍融煉而成的武器,有5%的機會再攻擊一次","price":5678,"type":"weapon","equipped":False},
+#    {"name":"銀線甲","icon":"image/silver_armor.png","descript":"","price":100,"type":"chest","equipped":False},
+    {"name":"午夜大衣","icon":"image/midnight_coat.png","descript":"傳說中黑色劍士的衣裝,使你可以裝備逐闇者與闡釋者,使受到的傷害-5%","price":128463,"type":"chest","equipped":False},
+    {"name":"治療水晶","icon":"image/healing_crystal.png","descript":"使用後可回復50%最大HP值","price":500,"type":"item","equipped":False},
+    {"name":"還瑰之聖晶石","icon":"image/holy_recovery_crystal.png","descript":"使用後可立即解除戰鬥CD限制","price":1000,"type":"item","equipped":False},
+    {"name":"攻擊光環水晶","icon":"image/attack_aura_crystal.png","descript":"使用後全服玩家獲得ATK+1%的增益","price":5000,"type":"item","equipped":False},
+    {"name":"防禦光環水晶","icon":"image/defense_aura_crystal.png","descript":"使用後全服玩家獲得DEF+1%的增益","price":5000,"type":"item","equipped":False},
+    {"name":"骰子包","icon":"image/dicepack.png","descript":"使用後得到10顆骰子","price":321,"type":"item","equipped":False}
+    ]
     return random.choice(item_list)
         
 def get_reward(r_num,player_attr):
@@ -206,8 +217,8 @@ def get_battledict(id,mob,playerdict):
         elif i["name"]=="午夜大衣":
             Def+=8763
             sheildrate-=0.5
-    Atk = round(Atk*db["atkbuff"]*0.01)
-    Def = round(Def*db["defbuff"]*0.01)
+    Atk = round(Atk*(100+db["atkbuff"])*0.01)
+    Def = round(Def*(100+db["defbuff"])*0.01)
     turn=0
     battlelist=[]
     while db[id]["hp"]>0 and mob["hp"]>0:
@@ -217,7 +228,7 @@ def get_battledict(id,mob,playerdict):
             "damage": max(0,round((Atk-mob["atk"])*damagerate)+directdamage)
         })
         mob["hp"]-=round((Atk-mob["atk"])*damagerate)+directdamage
-        db[id]["damage"]+=round((Atk-mob["atk"])*damagerate)+directdamage
+        #db[id]["damage"]+=round((Atk-mob["atk"])*damagerate)+directdamage
         if mob["hp"]<=0:
             break
         battlelist.append({
@@ -237,13 +248,14 @@ def get_battledict(id,mob,playerdict):
         turn+=1
     if db[id]["hp"]<=0:
         db[id]["cd"]=60
+        db["hp"]=0
     else:
         db[id]["coin"]+=mob["coin"]
         db[id]["exp"]+=mob["exp"]
     
     playerdict = db[id]
     return [battlelist,playerdict]
-        
+    
 def bossfight(id,boss,playerdict):
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
@@ -281,8 +293,8 @@ def bossfight(id,boss,playerdict):
         elif i["name"]=="午夜大衣":
             Def+=8763
             sheildrate-=0.5
-    Atk = round(Atk*db["atkbuff"]*0.01)
-    Def = round(Def*db["defbuff"]*0.01)
+    Atk = round(Atk*(100+db["atkbuff"])*0.01)
+    Def = round(Def*(100+db["defbuff"])*0.01)
     turn=0
     battlelist=[]
     while db[id]["hp"]>0 and boss["hp"]>0 and turn<=db[id]["lv"]+5:
@@ -291,8 +303,8 @@ def bossfight(id,boss,playerdict):
             "damage_type": damagetype,
             "damage": max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
         })
-        boss["hp"]-=round((Atk-boss["atk"])*damagerate)+directdamage
-        db[id]["damage"]+=round((Atk-boss["atk"])*damagerate)+directdamage
+        boss["hp"]-=max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
+        db[id]["damage"]+=max(0,round((Atk-boss["atk"])*damagerate)+directdamage)
         if boss["hp"]<=0:
             break
         battlelist.append({
@@ -300,12 +312,13 @@ def bossfight(id,boss,playerdict):
             "damage_type": "slash",
             "damage": max(0,round((boss["atk"]-Def)*sheildrate))
         })
-        db[id]["hp"]-=round((boss["atk"]-Def)*sheildrate)
+        db[id]["hp"]-=round((boss["atk"]-Def)*(100+sheildrate)*0.01)
         if db[id]["hp"]<=0:
             break
         turn+=1
     if db[id]["hp"]<=0:
         db[id]["cd"]=60
+        db[id]["hp"]=0
     elif boss["hp"]<=0:
         db[id]["coin"]+=boss["coin"]
         db[id]["exp"]+=boss["exp"]
@@ -423,6 +436,13 @@ def get_game_data():
     with open("GameControl.json", "r", encoding="utf-8") as file:
         db = json.load(file)
 
+    with open("Map.json", "r", encoding="utf-8") as file:
+        mapdb = json.load(file)
+    map = mapdb[str(db["level"])]
+    map_ret = []
+    for i in map:
+        map_ret.append(map[i][1])
+
     playerattribute = get_playerattribute(id)
     response = {
         "player_name":db[id]['name'],
@@ -430,7 +450,9 @@ def get_game_data():
         "level":db['level'],
         "boss_hp":db['boss_hp'],
         "total_atk":db[id]['damage'], 
-        "pos":db[id]['pos'] 
+        "pos":db[id]['pos'],
+        "map":map_ret,
+        "allteam":db["allteam"]
     }
     return jsonify(response)
 
@@ -661,7 +683,7 @@ def buyItem():
 
     return '',200
 
-@app.route('/sellItem')
+@app.route('/sellItem',methods="POST")
 def sellItem():
     data = request.get_json()
     id = session['user']['id']
@@ -806,11 +828,13 @@ def setItem():
                     last_key = str(len(db[id]['backpack']) - 1)
                     db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
                     db[id]['backpack'].pop(last_key)
+                    db["atklist"].append(60)
                 elif i["name"]=="防禦光環水晶":
                     db["defbuff"]+=1
                     last_key = str(len(db[id]['backpack']) - 1)
                     db[id]['backpack'][str(i)] = db[id]['backpack'][str(last_key)]
                     db[id]['backpack'].pop(last_key)
+                    db["deflist"].append(60)
                 elif i["name"]=="骰子包":
                     db[id]["dice"]+=10
                     last_key = str(len(db[id]['backpack']) - 1)
