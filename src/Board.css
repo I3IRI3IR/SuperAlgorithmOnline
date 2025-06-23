@@ -1,30 +1,30 @@
 .board-container {
   position: relative;
-  width: 759px; /* 棋盤總寬度 */
-  height: 759px; /* 棋盤總高度 */
+  width: 609px; /* 棋盤總寬度 */
+  height: 609px; /* 棋盤總高度 */
 }
 
 .background {
   position: absolute;          /* 改成 absolute */
-  top: calc(759px / 10);        /* 向下移動 759/9 */
-  left: calc(759px / 10);       /* 向右移動 759/9 */
-  width: calc(759px / 10 * 8);  /* 設定寬度 */
-  height: calc(759px / 10 * 8); /* 設定高度 */
+  top: calc(609px / 10);        /* 向下移動 759/9 */
+  left: calc(609px / 10);       /* 向右移動 759/9 */
+  width: calc(609px / 10 * 8);  /* 設定寬度 */
+  height: calc(609px / 10 * 8); /* 設定高度 */
   z-index: 1;               /* 疊在上面 */
 }
 
 .board {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(10, 75px); /* 格子寬度 */
-  grid-template-rows: repeat(10, 75px); /* 格子高度 */
+  grid-template-columns: repeat(10, 60px); /* 格子寬度 */
+  grid-template-rows: repeat(10, 60px); /* 格子高度 */
   gap: 1px;
   background-color: #821515;
 }
 
 .cell {
-  width: 75px;
-  height: 75px;
+  width: 60px;
+  height: 60px;
   background-color: #6c757d; 
   display: flex;
   justify-content: center;
@@ -33,15 +33,15 @@
 }
 
 .empty-cell {
-  width: 75px;
-  height: 75px;
+  width: 60px;
+  height: 60px;
   background-color: #000000; 
 }
 
 .piece {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   transition: top 0.5s ease, left 0.5s ease; /* 平滑移動效果 */
 }
@@ -94,9 +94,15 @@
   justify-content: center; /* 垂直置中圖片 */
 }
 
+.map-image {
+  width: 100%; /* 圖片最大寬度為按鈕寬度 */
+  height: 100%; /* 圖片最大高度為按鈕高度 */
+  object-fit: cover; /* 確保圖片內容被裁剪適配按鈕 */
+}
+
 .backpack-image, .dice-image, .final-image {
-  max-width: 100%; /* 圖片最大寬度為按鈕寬度 */
-  max-height: 100%; /* 圖片最大高度為按鈕高度 */
+  width: 100%; /* 圖片最大寬度為按鈕寬度 */
+  height: 100%; /* 圖片最大高度為按鈕高度 */
   object-fit: cover; /* 確保圖片內容被裁剪適配按鈕 */
   border-radius: 50%; /* 確保圖片形狀與按鈕一致 */
 }
@@ -122,11 +128,13 @@
   z-index: 1001;
 }
 
-.shop-popup {
+.shop-popup, .backpack-popup {
+  border-radius: 8px;
+  background: white;
   display: flex;
 }
 
-.question-options, .question-option, .event-options, .event-option, .event-popup, .shop-popup {
+.question-options, .question-option, .event-options, .event-option, .event-popup, .shop-popup, .battle-popup {
   background: white;
   padding: 20px;
   border-radius: 8px;

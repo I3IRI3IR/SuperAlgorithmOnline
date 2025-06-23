@@ -477,7 +477,7 @@ def get_rolldice():
 
     
     
-    dice = random.randint(1, db[id]['spd'])
+    dice = random.randint(5, db[id]['spd'])
     type = mapdecode(map,db[id]['pos'],dice)[1]
     msg=""
     other_param = {}

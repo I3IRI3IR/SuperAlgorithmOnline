@@ -3,7 +3,92 @@
   "boss_hp": 5000,
   "atkbuff": 0,
   "defbuff": 0,
-  "atklist": [],
-  "deflist": [],
-  "allteam": ["team1","team2","team3"]
+  "885795741170278400": {
+    "name": "pudding164253",
+    "damage": 865,
+    "pos": 14,
+    "lv": 1,
+    "hp": -10,
+    "atk": 165,
+    "def": 10,
+    "spd": 5,
+    "exp": 0,
+    "backpack": {
+      "0": {
+        "name": "小劍",
+        "icon": "image/littlesword.png",
+        "descript": "最基礎的武器,增加10點ATK",
+        "price": 10,
+        "type": "weapon",
+        "equipped": false
+      },
+      "1": {
+        "name": "骰子包",
+        "icon": "image/dicepack.png",
+        "descript": "使用後得到10顆骰子",
+        "price": 321,
+        "type": "item",
+        "equipped": false
+      }
+    },
+    "shop": [
+      "銀線甲",
+      "攻擊光環水晶",
+      "疾風擊劍"
+    ],
+    "coin": 115000,
+    "dice": 99999643.0,
+    "eventcode": 2,
+    "battleflag": 0,
+    "questionflag": 0,
+    "eventflag": 0,
+    "restflag": 0,
+    "shopflag": 0,
+    "cd": 60,
+    "shop_flag": 1
+  },
+  "852064504846352394": {
+    "name": "BIR",
+    "damage": 0,
+    "pos": 5,
+    "lv": 1,
+    "hp": 1000,
+    "atk": 25,
+    "def": 10,
+    "spd": 6,
+    "exp": 0,
+    "backpack": {
+      "0": {
+        "name": "小劍",
+        "icon": "image/littlesword.png",
+        "descript": "最基礎的武器,增加10點ATK",
+        "price": 10,
+        "type": "weapon",
+        "equipped": false
+      },
+      "1": {
+        "name": "骰子包",
+        "icon": "image/dicepack.png",
+        "descript": "使用後得到10顆骰子",
+        "price": 321,
+        "type": "item",
+        "equipped": false
+      }
+    },
+    "shop": [
+      "攻擊光環水晶",
+      "闡釋者",
+      "漆黑短劍"
+    ],
+    "coin": 15000,
+    "dice": 9979,
+    "cd": 60,
+    "eventcode": 1,
+    "battleflag": 0,
+    "questionflag": 0,
+    "eventflag": 0,
+    "restflag": 0,
+    "shopflag": 0,
+    "shop_flag": 1
+  }
 }
