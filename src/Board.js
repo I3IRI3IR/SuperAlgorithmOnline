@@ -243,7 +243,8 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           setEnemyAttr({
             "HP":data.other_param['mob_attributes']["hp"],
             "ATK":data.other_param['mob_attributes']["atk"],
-            "DEF":data.other_param['mob_attributes']["def"]
+            "DEF":data.other_param['mob_attributes']["def"],
+            "img":data.other_param['mob_attributes']["img"]
           });
           let currentPlayerAttr = {
             "HP":player_attributes["HP"],
@@ -253,7 +254,8 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           let currentEnemyAttr = {
             "HP":data.other_param['mob_attributes']["hp"],
             "ATK":data.other_param['mob_attributes']["atk"],
-            "DEF":data.other_param['mob_attributes']["def"]
+            "DEF":data.other_param['mob_attributes']["def"],
+            "img":data.other_param['mob_attributes']["img"]
           };
           const stepDelay = 500;
           let idx=0,n=data.other_param['log'].length;
@@ -431,7 +433,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                   <p>防禦力：{playerAttr['DEF']}</p>
                 </div>
                 <div >
-                  <p>{enemyName}</p>
+                  <div style={{display: 'flex'}}>
+                    <p>{enemyName}</p>
+                    <img src={enemyAttr['img']} alt="敵人圖片" style={{height:'75px'}}></img>
+                  </div>
                   <p>體力：{enemyAttr['HP']}</p>
                   <p>攻擊力：{enemyAttr['ATK']}</p>
                   <p>防禦力：{enemyAttr['DEF']}</p>
@@ -492,7 +497,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                   <p>防禦力：{playerAttr['DEF']}</p>
                 </div>
                 <div>
-                  <p>{enemyName}</p>
+                  <div style={{display: 'flex'}}>
+                    <p>{enemyName}</p>
+                    <img src={enemyAttr['img']} alt="敵人圖片" style={{height:'75px'}}></img>
+                  </div>
                   <p>體力：{enemyAttr['HP']}</p>
                   <p>攻擊力：{enemyAttr['ATK']}</p>
                   <p>防禦力：{enemyAttr['DEF']}</p>
