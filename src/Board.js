@@ -2,18 +2,32 @@ import React, { useState, useRef } from "react";
 import "./Board.css";
 
 const Equipment = ({equipments, doItem, usedItem}) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null); // 儲存當前懸停的商品索引
+  const imgRef = useRef([]);
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+  const getPopupPosition = (index) => {
+    if (!imgRef.current[index]) return { left: 0, top: 0 };
+
+    const item = imgRef.current[index];
+    const rect = item.getBoundingClientRect();
+    
+    // 計算彈窗的位置（這裡是底部加一些距離）
+    return {
+      left: window.scrollX,  // 彈窗的左邊要與商品的左邊對齊
+      top: rect.top + window.scrollY + 10,  // 彈窗的頂部在商品底部下方一些距離
+    };
+  };
   return (
     <ul className="equipment" style={{ position: 'relative' }}>
       {Object.entries(equipments).map(([key, equipment], index) => equipment ? (
-        <div style={{display: 'flex'}}>
-          <img key={index} src={equipment.icon} className="item" alt="裝備欄" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => { usedItem['change']={"name": equipment.name, "type": equipment.type}; doItem(usedItem); }}></img>
-          {isHovered && (
+        <div style={{display: 'flex'}} key={index}>
+          {<img ref={(el) => (imgRef.current[index] = el)} src={equipment.icon} className="item" alt="裝備欄" onMouseEnter={() => setHoveredIndex(index)} onMouseLeave={() => setHoveredIndex(null)} onClick={() => { usedItem[Object.keys(usedItem).length===0?'used':'change']={"name": equipment.name, "type": equipment.type, "equip": equipment.equipped}; doItem(usedItem); }}></img>}
+          {hoveredIndex === index && (
             <div
               style={{
                 position: 'absolute',
-                bottom: '-30px',
-                left: '0',
+                left: `${getPopupPosition(index).left}px`,  // 根據位置動態設定
+                top: `${getPopupPosition(index).top}px`,  // 根據位置動態設定
                 width: '100%',
                 backgroundColor: 'rgba(0, 0, 0, 0.7)',
                 color: 'white',
@@ -31,8 +45,8 @@ const Equipment = ({equipments, doItem, usedItem}) => {
           )}
         </div>
       ) : (
-        <div style={{display: 'flex'}}>
-          <img key={index} /*debugflag 這裡之後要改一張沒東西的照片之類的*/ src="/image/question.png" className="item" alt="空裝備欄" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
+        <div style={{display: 'flex'}} key={index}>
+          <img /*debugflag 這裡之後要改一張沒東西的照片之類的*/ src="/image/question.png" className="item" alt="空裝備欄" onClick={() => { usedItem['change']={"name": null, "type": null}; doItem(usedItem); }}></img>
         </div>
       ))}
     </ul>
@@ -44,15 +58,20 @@ const Item = ({item, isSell, doItem, setUsedItem}) => {
   const imgRef = useRef(null);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const imgStyle = {
+    border: item.equipped ? '3px solid gold' : 'none',  // 如果 item.equip 為 true，設置金色邊框
+    cursor: 'pointer'
+  };
   return (
     <div style={{ position: 'relative' }}>
-      <img src={item.icon} className="item" ref={isHovered ? imgRef : null} alt="物品" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
+      <img src={item.icon} className="item" ref={isHovered ? imgRef : null} alt="物品" style={imgStyle} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => {
         if (imgRef.current) {
           const rect = imgRef.current.getBoundingClientRect();
           setButtonPosition({
             top: window.scrollY + 5, // 5px 下移一點點
             left: window.scrollX
           });
+          console.log(item.equipped);
           setShowButton(!showButton);
         }
       }}></img>
@@ -122,9 +141,9 @@ const Shop = ({products, buyItem}) => {
   };
   return (
     <ul className="shop" style={{ position: 'relative' }}>
-      {Object.entries(products).map(([key, product],index) => (
+      {Object.entries(products).map(([key, product],index) => product ? (
         <div key={key}>
-          {product.icon!=="" && <img ref={(el) => (imgRef.current[index] = el)} src={"/"+product.icon} className="item" alt="商品" onMouseEnter={() => setHoveredIndex(index)} onMouseLeave={() => setHoveredIndex(null)} onClick={() => buyItem(product.name)}></img>}
+          {<img ref={(el) => (imgRef.current[index] = el)} src={"/"+product.icon} className="item" alt="商品" onMouseEnter={() => setHoveredIndex(index)} onMouseLeave={() => setHoveredIndex(null)} onClick={() => buyItem(product.name)}></img>}
           {hoveredIndex === index && (
             <div
               style={{
@@ -146,8 +165,12 @@ const Shop = ({products, buyItem}) => {
               <p>物品描述：{product.descript}</p>
             </div>
           )}
-        </div>
-      ))}
+        </div>) : (
+          <div style={{display: 'flex'}}>
+            <img key={index} /*debugflag 這裡之後要改一張沒東西的照片之類的*/ src="/image/question.png" className="item" alt="空商品欄"></img>
+          </div>
+        )
+      )}
     </ul>
   );
 };
@@ -323,6 +346,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   };
 
   const doItem = (param) => {
+    console.log(param);
     fetch("get/setItem", {
       method: 'POST',
       headers: {
@@ -330,9 +354,9 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       },
       body: JSON.stringify(param),
     })
-      .then((response) => response.json())
-      .then((data) => setPlayer_attributes(data));
+    setUsedItem({});
     getItems();
+    getEquipment();
   };
 
   const sellItem = (name) => {
