@@ -10,50 +10,6 @@
     "team2",
     "team3"
   ],
-  "885795741170278400": {
-    "name": "pudding164253",
-    "damage": 865,
-    "pos": 10,
-    "lv": 1,
-    "hp": -10,
-    "atk": 180,
-    "def": 10,
-    "spd": 1,
-    "exp": 0,
-    "backpack": {
-      "0": {
-        "name": "小劍",
-        "icon": "image/littlesword.png",
-        "descript": "最基礎的武器,增加10點ATK",
-        "price": 10,
-        "type": "weapon",
-        "equipped": false
-      },
-      "1": {
-        "name": "骰子包",
-        "icon": "image/dicepack.png",
-        "descript": "使用後得到10顆骰子",
-        "price": 321,
-        "type": "item",
-        "equipped": false
-      }
-    },
-    "shop": [
-      "治療水晶",
-      "攻擊光環水晶",
-      "小劍"
-    ],
-    "coin": 142500,
-    "dice": 99999591.0,
-    "eventcode": 1,
-    "battleflag": 0,
-    "questionflag": 0,
-    "eventflag": 0,
-    "restflag": 0,
-    "shopflag": 0,
-    "cd": 60,
-    "shop_flag": 1
-  },
   "852064504846352394": {
     "name": "BIR",
     "damage": 0,
@@ -95,7 +51,49 @@
     "questionflag": 0,
     "eventflag": 0,
     "restflag": 0,
-    "shopflag": 0,
-    "shop_flag": 1
+    "shopflag": 0
+  },
+  "885795741170278400": {
+    "name": "pudding164253",
+    "damage": 0,
+    "pos": 30,
+    "lv": 1,
+    "hp": 200,
+    "atk": 15,
+    "def": 10,
+    "spd": 6,
+    "exp": 0,
+    "backpack": {
+      "0": {
+        "name": "小劍",
+        "icon": "image/littlesword.png",
+        "descript": "最基礎的武器,增加10點ATK",
+        "price": 10,
+        "type": "weapon",
+        "equipped": false
+      },
+      "1": {
+        "name": "小劍",
+        "icon": "image/littlesword.png",
+        "descript": "最基礎的武器,增加10點ATK",
+        "price": 10,
+        "type": "weapon",
+        "equipped": false
+      }
+    },
+    "shop": [
+      "漆黑短劍",
+      "治療水晶",
+      "empty"
+    ],
+    "coin": 1990,
+    "dice": 30,
+    "cd": 0,
+    "eventcode": 1,
+    "battleflag": 0,
+    "questionflag": 0,
+    "eventflag": 0,
+    "restflag": 0,
+    "shopflag": 0
   }
 }

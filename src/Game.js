@@ -59,6 +59,7 @@ const Game = () => {
       fetch("/periodicUpdate")
         .then((response) => response.json())
         .then((data) => {
+          // setPlayer_attributes(data.playerattr);
           setBoss_hp(data.bosshp);
           setCd(data.cd);
         })
