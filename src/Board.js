@@ -195,6 +195,8 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [enemyAttr,setEnemyAttr] = useState({});
   const [playerAttr,setPlayerAttr] = useState({});
   const [enemyName,setEnemyName] = useState("");
+  const [defender,setDefender] = useState("");
+  const [vfximg,setVfximg] = useState("");
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -263,15 +265,19 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           const interval = setInterval(() => {
             console.log(currentPlayerAttr.HP);
             if(data.other_param['log'][idx]['defender'] === "player"){
+              setDefender('player');
               const updated = { ...currentPlayerAttr, HP: currentPlayerAttr.HP - data.other_param['log'][idx]['damage'] };
               setPlayerAttr(updated);
               currentPlayerAttr.HP-=data.other_param['log'][idx]['damage'];
             }
             else{
+              setDefender('enemy');
               const updated = { ...currentEnemyAttr, HP: currentEnemyAttr.HP - data.other_param['log'][idx]['damage'] };
               setEnemyAttr(updated);
               currentEnemyAttr.HP-=data.other_param['log'][idx]['damage'];
             }
+            // setVfximg(`/image/${data.other_param['log'][idx]['damage_type']}.png`);//debugflag 這裡之後要改動畫圖片
+            setVfximg('/image/question.png');
             ++idx;
             if (idx>=n) {
               clearInterval(interval);
@@ -407,6 +413,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       .then((response) => response.json())
       .then((data) => {
         setFinallist(data);
+        setFinallist(['0','0','0']);//debugflag 把這行註解掉會改用正確版的名單
       });
   };
 
@@ -427,15 +434,46 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             <>
               <div className="battle-popup" style={{ display: 'flex', justifyContent: 'space-between'}}>
                 <div>
-                  <p>{player_name}</p>
+                  <div style={{display: 'flex'}}>
+                    <p>{player_name}</p>
+                    <div style={{position: 'relative'}}>
+                      <img src='/image/event.png' alt="玩家圖片" style={{height:'75px'}}></img>
+                      {defender==='player' && <img
+                        src={vfximg}
+                        alt="傷害特效"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: '75px', // 調整與主圖片的大小一致
+                          width: '75px', // 調整寬度
+                          pointerEvents: 'none', // 防止疊加圖片干擾點擊事件
+                        }}
+                      />}
+                    </div>
+                  </div>
                   <p>體力：{playerAttr['HP']}</p>
                   <p>攻擊力：{playerAttr['ATK']}</p>
                   <p>防禦力：{playerAttr['DEF']}</p>
                 </div>
-                <div >
+                <div>
                   <div style={{display: 'flex'}}>
                     <p>{enemyName}</p>
-                    <img src={enemyAttr['img']} alt="敵人圖片" style={{height:'75px'}}></img>
+                    <div style={{position: 'relative'}}>
+                      <img src={enemyAttr['img']} alt="敵人圖片" style={{height:'75px'}}></img>
+                      {defender==='enemy' && <img
+                        src={vfximg}
+                        alt="傷害特效"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: '75px', // 調整與主圖片的大小一致
+                          width: '75px', // 調整寬度
+                          pointerEvents: 'none', // 防止疊加圖片干擾點擊事件
+                        }}
+                      />}
+                    </div>
                   </div>
                   <p>體力：{enemyAttr['HP']}</p>
                   <p>攻擊力：{enemyAttr['ATK']}</p>
@@ -491,7 +529,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
             <>
               <div className="battle-popup" style={{ display: 'flex', justifyContent: 'space-between'}}>
                 <div>
+                  <div style={{display: 'flex'}}>
                   <p>{player_name}</p>
+                    <img src='/image/event.png' alt="玩家圖片" style={{height:'75px'}}></img>
+                  </div>
                   <p>體力：{playerAttr['HP']}</p>
                   <p>攻擊力：{playerAttr['ATK']}</p>
                   <p>防禦力：{playerAttr['DEF']}</p>
@@ -525,9 +566,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           <div className="final-box">
             <div className="final">
               <div className="finallist">
-                {finallistName.map((team, index) => (
-                  <p key={index}>{team}</p>
-                ))}
+                {finallistName.map((team, index) => finallist[index] === '1' ? <p key={index}>{team}</p> : <del key={index} style={{display:'block'}}>{team}</del>)}
               </div>
               <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出決賽名單</button>
             </div>
