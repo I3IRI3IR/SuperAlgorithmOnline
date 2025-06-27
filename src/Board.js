@@ -276,8 +276,10 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
               setEnemyAttr(updated);
               currentEnemyAttr.HP-=data.other_param['log'][idx]['damage'];
             }
-            // setVfximg(`/image/${data.other_param['log'][idx]['damage_type']}.png`);//debugflag 這裡之後要改動畫圖片
-            setVfximg('/image/question.png');
+            console.log(`/image/${data.other_param['log'][idx]['damage_type']}_1.png`);
+            let type=data.other_param['log'][idx]['damage_type'];
+            setVfximg(`/image/${type}_1.png`);
+            setTimeout(()=>setVfximg(`/image/${type}_2.png`), 150);
             ++idx;
             if (idx>=n) {
               clearInterval(interval);
