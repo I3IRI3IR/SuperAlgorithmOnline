@@ -331,6 +331,7 @@ def bossfight(id,boss,playerdict):
             boss["exp"] = round(boss["exp"]*1.15)
         elif i["name"]=="漆黑短劍":
             boss["hp"]-=150
+            db[id]["damage"]+=min(boss["hp"],150)
         elif i["name"]=="逐闇者":
             Atk+=128763
         elif i["name"]=="闇釋者":
@@ -356,7 +357,7 @@ def bossfight(id,boss,playerdict):
         "atk":Atk,
         "def":Def
     }
-    while db[id]["hp"]>0 and boss["hp"]>0 and turn<=db[id]["lv"]+5:
+    while db[id]["hp"]>0 and boss["hp"]>0 and turn<db[id]["lv"]+5:
         battlelist.append({
             "defender": "enemy",
             "damage_type": damagetype,
@@ -617,13 +618,18 @@ def get_rolldice():
             with mob_lock:
                 with open(mobdb_str, "r", encoding="utf-8") as file:
                     mobdb = json.load(file)
-            
             if db[id]["cd"]==0:
                 mob_key = random.choice(list(mobdb.keys()))
                 mob = mobdb[mob_key]
                 mob_copy = copy.deepcopy(mob)
                 result = get_battledict(id,mob,db[id])
                 db[id] = result[1]
+                playeritem = get_equipment(id)
+                for i in playeritem.values():
+                    if i==None:
+                        continue
+                    elif i["name"]=="漆黑短劍" and i["equipped"]:
+                        mob_copy["hp"]-=150
                 other_param = {
                     "log":result[0],
                     "player_attributes":get_playerattribute(id),
@@ -641,6 +647,12 @@ def get_rolldice():
                 bosscopy = copy.deepcopy(boss)
                 result = bossfight(id,boss,db[id])
                 db[id] = result[1]
+                playeritem = get_equipment(id)
+                for i in playeritem.values():
+                    if i==None:
+                        continue
+                    elif i["name"]=="漆黑短劍" and i["equipped"]:
+                        bosscopy["hp"]-=150
                 other_param = {
                     "log":result[0],
                     "player_attributes":get_playerattribute(id),
@@ -666,12 +678,12 @@ def get_rolldice():
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
 
     if db[id]["exp"] >= (db[id]["lv"]**2) * 100:
-        db["hp"] += (db[id]["lv"]**2) * 2000
-        db["atk"] += db[id]["lv"] * 20
-        db["def"] += db[id]["lv"] * 20
-        db["spd"] += 2
-        db["exp"] -= (db[id]["lv"]**2) * 100
-        db["lv"] += 1
+        db[id]["hp"] += (db[id]["lv"]**2) * 2000
+        db[id]["atk"] += db[id]["lv"] * 20
+        db[id]["def"] += db[id]["lv"] * 20
+        db[id]["spd"] += 2
+        db[id]["exp"] -= (db[id]["lv"]**2) * 100
+        db[id]["lv"] += 1
     
     with GameControlLock:
         with open("GameControl.json", "w", encoding="utf-8") as file:
