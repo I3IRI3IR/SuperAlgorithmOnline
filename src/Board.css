@@ -162,10 +162,11 @@
 .finallist {
   flex: 1;
   margin-bottom: 10px;
+  max-height: 70vh; /* 限制最大高度，可以依需求調整 */
   overflow-y: auto; 
   overflow-x: hidden; 
   word-wrap: break-word; 
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
 }
 
 .item {

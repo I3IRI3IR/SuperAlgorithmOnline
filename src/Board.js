@@ -175,7 +175,7 @@ const Shop = ({products, buyItem}) => {
   );
 };
 
-const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd, player_name, map, finallistName }) => {
+const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCurrentPosition, shopflag, setShopflag, cd, player_name, map, avatar }) => {
   const boardSize = 10; // 棋盤尺寸
   const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 29, 39, 49, 59, 69, 79, 89, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 80, 70, 60, 50, 40, 30, 20, 10];
   const [isMoving, setIsMoving] = useState(false);
@@ -197,6 +197,150 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
   const [enemyName,setEnemyName] = useState("");
   const [defender,setDefender] = useState("");
   const [vfximg,setVfximg] = useState("");
+  const [finallistName,setFinallistName] = useState(["NO ERROR NO PAIN",
+"一輩子的競程",
+"還沒想好",
+"义煞氣a斜咖高中生义",
+"成屍設計",
+"我從不覺得打競程開心過",
+"掛號下放code就會隊",
+"嗯嗯嗯對對對",
+"成雙全對",
+"黃偉紅橙黃綠藍靛紫超強 鄭宸翔出國",
+"PTHS",
+"diaobwoah",
+"成大已保送此隊的所有人",
+"ShadowVortex",
+"你高幾啊？我高師大",
+"廢物",
+"清明碼畜群",
+"怪阿祖",
+"想蹭飯的菜雞",
+"無界塾",
+"佾然",
+"fast but no bug",
+"pmshOWO",
+"小皮帶飛",
+"未命名",
+"有本事葬送我嗎?",
+"製作鎳不可活",
+"松鼠被壓扁是鬆餅還是薯餅",
+"略懂蔥碎",
+"w9079r",
+"火箭隊",
+"想去台南玩一天",
+"SHCH104",
+"從來不覺得debug開心過",
+"成功大學舞萌太少、、、",
+"staback",
+"KLD",
+"嘉義高中",
+"轉生C++適應不良，回歸py卻成為世界最強",
+"我們隊沒人上成大資工qq",
+"邦邦邦邦",
+"不要狗叫",
+"pmπ隊",
+"5e3 剛好吃屋馬",
+"Who’s your daddy",
+"啊~啊~啊咦↑啊咦↑啊→啊↑啊↓啊~啊~",
+"我R值拼到萬五了",
+"高能之低智商",
+"贏了還不是沒女朋友",
+"是又怎樣",
+"戰機洗白軍團",
+"要被當了",
+"Not error",
+"好險有大學",
+"while(true){tle;}",
+"你竟敢無視燈",
+"火鍋不會加芋頭",
+"Kabigon",
+"程式貓AC小隊",
+"左右觀察隨便進決賽⚡🥵❤️",
+"西格瑪都只寫pA",
+"程式三劍客",
+"交給你了",
+"寫不出來對不隊",
+"我怎麼會知道",
+"Fantasy 謙",
+"我寫的都隊",
+"都碼隊",
+"綠檸檬",
+"mice_in_wall",
+"冠儒這一隊",
+"L.F.C.",
+"唐狗針模擬退火爆砸TLE滅台題帥到飛起",
+"麵包機",
+"完蛋了忘記今天有比賽",
+"das war ein befeh！",
+"py_cpp",
+"卷毛程式",
+"Thunderbyte",
+"314別狗叫",
+"小丑馬戲團🤡",
+"GPT 1.0 Users",
+"BOB",
+"X-211OXO",
+"蔡到家",
+"Jeopardy大字囉",
+"我步偉啦",
+"紛至沓來",
+"dp好難啊",
+"好ㄟ的小隊",
+"404 Not Found AC",
+"超py",
+"我們學校有359萬的鐵球",
+"O(k ㏒²n ㏒㏒n ㏒㏒㏒n)",
+"alan評分3.0",
+"曹氏宗親會",
+"絕對是冠軍",
+"就叫不知道",
+"恩恩餓甲雞",
+"你開心就好",
+"Super idol der 笑容",
+"新興革命軍",
+"建均要用重補修統治世界",
+"潘潘子統治世界",
+"ㄏㄚˊㄇㄚˋ",
+"大雄中帝國",
+"聯合國教邱科文組織",
+"超級瑪利歐派",
+"大安地頭蛇",
+"白熊",
+"陽光宅男隊",
+"大江大海江大海",
+"APCS帶我飛",
+"TKUP",
+"温力翰會與我們同在的!!11!",
+"鍵結電子隊",
+"桃子不吃竹筍",
+"堆滿 Bug 也 AC",
+"薇閣碼農",
+"404 Not Found",
+"laugoat",
+"阿對對對",
+"成大邀請賽第 808 隊",
+"Fang",
+"這隊只有兩個人",
+"USACO為什麼cutoff是850",
+"Rookie",
+"龍貓龍貓",
+"想就隊",
+"Tralalero Tralala",
+"我是參賽選手，這就是隊伍名稱",
+"港未來",
+"仁武高中代表隊",
+"Exception1688",
+"兼職中的爆肝高中生",
+"meowmeowmeow",
+"絨貓",
+"有看頭",
+"Oreo",
+"嗚嗚嗚我要沒有大學了",
+"終焉監域",
+"戒色別搞",
+"陳威任真打競程的電神的吉吉加上倘分的mingyee",
+"2^31-1"])
 
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
@@ -214,7 +358,6 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
         if(!data)return;
         const updated = { ...player_attributes, DICE: player_attributes.DICE - 1 };
         setPlayer_attributes(updated);
-        setMsgList(msgList => [...msgList, `骰子點數: ${data.dice}, 起始位置: ${data.pos}, 事件類型: ${data.type}`]);
         movePiece(data.dice, data.pos);
 
         // 根據事件類型處理邏輯
@@ -415,7 +558,6 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
       .then((response) => response.json())
       .then((data) => {
         setFinallist(data);
-        setFinallist(['0','0','0']);//debugflag 把這行註解掉會改用正確版的名單
       });
   };
 
@@ -439,7 +581,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                   <div style={{display: 'flex'}}>
                     <p>{player_name}</p>
                     <div style={{position: 'relative'}}>
-                      <img src='/image/event.png' alt="玩家圖片" style={{height:'75px'}}></img>
+                      <img src={avatar} alt="玩家圖片" style={{height:'75px'}}></img>
                       {defender==='player' && <img
                         src={vfximg}
                         alt="傷害特效"
@@ -533,7 +675,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
                 <div>
                   <div style={{display: 'flex'}}>
                   <p>{player_name}</p>
-                    <img src='/image/event.png' alt="玩家圖片" style={{height:'75px'}}></img>
+                    <img src={avatar} alt="玩家圖片" style={{height:'75px'}}></img>
                   </div>
                   <p>體力：{playerAttr['HP']}</p>
                   <p>攻擊力：{playerAttr['ATK']}</p>
@@ -568,7 +710,7 @@ const Board = ({ setMsgList, player_attributes, setPlayer_attributes, currentPos
           <div className="final-box">
             <div className="final">
               <div className="finallist">
-                {finallistName.map((team, index) => finallist[index] === '1' ? <p key={index}>{team}</p> : <del key={index} style={{display:'block'}}>{team}</del>)}
+                {finallistName.map((team, index) => finallist[index] === 0 ? <p key={index} style={{margin: '0'}}>{team}</p> : <del key={index} style={{display:'block', margin: '0'}}>{team}</del>)}
               </div>
               <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出決賽名單</button>
             </div>
