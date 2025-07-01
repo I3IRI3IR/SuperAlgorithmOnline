@@ -9,6 +9,6 @@
         [27, "event"], [28, "rest"], [29, "reward"], [30, "shop"], [31, "event"], [32, "question"], [33, "rest"], [34, "reward"], [35, "shop"]],
     "1":[[0,"rest"],[1,"question"],[2,"question"],[3,"question"],[4,"question"],[5,"question"],[6,"reward"],[7,"reward"],[8,"reward"],
         [9,"reward"],[10,"reward"],[11,"reward"],[12,"event"],[13,"event"],[14,"event"],[15,"event"],[16,"event"],[17,"event"],
-        [18,"battle"],[19,"shop"],[20,"shop"],[21,"shop"],[22,"shop"],[23,"shop"],[24,"rest"],[25,"rest"],[26,"rest"],
+        [18,"battle"],[19,"shop"],[20,"battle"],[21,"shop"],[22,"shop"],[23,"shop"],[24,"rest"],[25,"rest"],[26,"rest"],
         [27,"rest"],[28,"rest"],[29,"rest"],[30,"rest"],[31,"rest"],[32,"rest"],[33,"rest"],[34,"rest"],[35,"rest"]]
 }
