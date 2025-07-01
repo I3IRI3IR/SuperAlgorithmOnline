@@ -1,7 +1,7 @@
 {
-  "level": 1,
-  "boss_hp": 500,
-  "boss_fullhp": 500,
+  "level": "74",
+  "boss_hp": 15000,
+  "boss_fullhp": 15000,
   "atkbuff": 0,
   "defbuff": 0,
   "atklist": [],
@@ -13,16 +13,40 @@
   ],
   "885795741170278400": {
     "name": "pudding164253",
-    "damage": 0,
-    "pos": 18,
-    "lv": 1,
-    "hp": 580,
-    "atk": 15,
+    "damage": 15047,
+    "pos": 33,
+    "lv": 5,
+    "hp": 0,
+    "atk": 0,
     "def": 10,
     "spd": 1,
-    "exp": 80,
+    "exp": 1685,
     "backpack": {
       "0": {
+        "name": "治療水晶",
+        "icon": "image/healing_crystal.png",
+        "descript": "使用後可回復50%最大HP值",
+        "price": 500,
+        "type": "item",
+        "equipped": false
+      },
+      "1": {
+        "name": "韌煉之劍",
+        "icon": "image/tempered_sword.png",
+        "descript": "修行路上的第一把劍,增加20點ATK,戰鬥得到的exp+15%",
+        "price": 200,
+        "type": "weapon",
+        "equipped": true
+      },
+      "2": {
+        "name": "漆黑短劍",
+        "icon": "image/dark_dagger.png",
+        "descript": "暗器,在戰鬥開始前先對敵人造成150點傷害",
+        "price": 100,
+        "type": "weapon",
+        "equipped": true
+      },
+      "3": {
         "name": "小劍",
         "icon": "image/littlesword.png",
         "descript": "最基礎的武器,增加10點ATK",
@@ -30,23 +54,23 @@
         "type": "weapon",
         "equipped": false
       },
-      "1": {
-        "name": "小劍",
-        "icon": "image/littlesword.png",
-        "descript": "最基礎的武器,增加10點ATK",
-        "price": 10,
-        "type": "weapon",
+      "4": {
+        "name": "骰子包",
+        "icon": "image/dicepack.png",
+        "descript": "使用後得到10顆骰子",
+        "price": 321,
+        "type": "item",
         "equipped": false
       }
     },
     "shop": [
-      "韌煉之劍",
-      "治療水晶",
-      "閃爍之光"
+      "防禦光環水晶",
+      "闡釋者",
+      "午夜大衣"
     ],
-    "coin": 2490,
-    "dice": 9,
-    "cd": 0,
+    "coin": 1659,
+    "dice": 47,
+    "cd": 30,
     "eventcode": 2,
     "battleflag": 0,
     "questionflag": 0,
@@ -58,7 +82,7 @@
     "name": "BIR",
     "damage": 0,
     "pos": 20,
-    "lv": 1,
+    "lv": 2,
     "hp": 90,
     "atk": 25,
     "def": 10,
