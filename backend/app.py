@@ -24,6 +24,8 @@ GameControlLock = FileLock("GameControl.json.lock")
 MapLock = FileLock("Map.json.lock")
 QuestionLock = FileLock("Question.json.lock")
 QuestionAnsLock = FileLock("QuestionAns.json.lock")
+FinallsitLock = FileLock("Finallist.json.lock")
+TruelsitLock = FileLock("Truelist.json.lock")
 
 
 
@@ -291,6 +293,7 @@ def bossfight(id,boss,playerdict):
     sheildrate = 1
     damagetype="slash"
     directdamage = 0
+    start_hp = boss["hp"]
     Def = db[id]["def"]
     for i in playeritem.values():
         if i["name"]=="小劍":
@@ -354,6 +357,27 @@ def bossfight(id,boss,playerdict):
         db[id]["exp"]+=boss["exp"]
     else:
         pass
+    li = [0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0]
+    
+    with TruelsitLock:
+        with open("Truelist.json", "r", encoding="utf-8") as file:
+            truelist = json.load(file)
+    with FinallsitLock:
+        with open("Finallist.json", "r", encoding="utf-8") as file:
+            final = json.load(file)
+            for i in li:
+                if start_hp >= round(db["boss_fullhp"]*i) and boss["hp"] < round(db["boss_fullhp"]*i):
+                    for j in range(10):
+                        final[random.choice(truelist)] = 1
+        
+                    
+    with FinallsitLock:
+        with open("Fianllist.json", "w", encoding="utf-8") as file:
+            json.dump(final, file, ensure_ascii=False, indent=2)
+        
+
+
+
     playerdict = db[id]
     bossdict = boss
     return [battlelist,playerdict,bossdict,boss,real_attr]
@@ -462,6 +486,14 @@ def dashboard():
         return redirect(url_for('login'))
     return jsonify(user)
 
+@app.route('/get/finallist')
+def getfinallist():
+    with FinallsitLock:
+        with open("Finallist.json", "r", encoding="utf-8") as file:
+            db = json.load(file)
+    return jsonify(db)
+
+
 @app.route('/get/game_data')
 def get_game_data():
     id = session['user']['id']
@@ -486,7 +518,8 @@ def get_game_data():
         "total_atk":db[id]['damage'], 
         "pos":db[id]['pos'],
         "map":map_ret,
-        "allteam":db["allteam"]
+        "allteam":db["allteam"],
+        "icon":"https://cdn.discordapp.com/avatars/"+id+"/"+session['user']['avatar']+".png"
     }
     return jsonify(response)
 
@@ -553,7 +586,7 @@ def get_rolldice():
             "equipped" : get_equipment(id)
         }
     elif type == "battle":
-        if mapdecode(map,db[id]['pos'],dice)[0]!=99:
+        if mapdecode(map,db[id]['pos'],dice)[0]!=18:
             mobdb_str = "Mob_"+str(db["level"])+".json"
             mob_lock = FileLock(mobdb_str+".lock")
             with mob_lock:
@@ -592,11 +625,9 @@ def get_rolldice():
                 if result[2]["hp"]<=0:
                     db["level"] = result[2]["nextlevel"]
                     db["boss_hp"] = result[2]["nexthp"]
+                    db["boss_fullhp"] = db["boss_hp"]
 
             
-
-        
-
 
     db[id]['dice']-=1
     response = {

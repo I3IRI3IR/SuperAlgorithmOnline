@@ -1,6 +1,7 @@
 {
-  "level": 0,
-  "boss_hp": 5000,
+  "level": 1,
+  "boss_hp": 500,
+  "boss_fullhp":500,
   "atkbuff": 0,
   "defbuff": 0,
   "atklist": [],
@@ -56,20 +57,28 @@
   "852064504846352394": {
     "name": "BIR",
     "damage": 0,
-    "pos": 1,
+    "pos": 19,
     "lv": 1,
-    "hp": 9350,
-    "atk": 25,
+    "hp": 100,
+    "atk": 15,
     "def": 10,
-    "spd": 1,
-    "exp": 175,
+    "spd": 6,
+    "exp": 0,
     "backpack": {
       "0": {
-        "name": "青銅劍",
-        "icon": "image/ironsword.png",
-        "descript": "無課玩家的好選擇,增加20點ATK",
-        "price": 50,
+        "name": "小劍",
+        "icon": "image/littlesword.png",
+        "descript": "最基礎的武器,增加10點ATK",
+        "price": 10,
         "type": "weapon",
+        "equipped": true
+      },
+      "1": {
+        "name": "骰子包",
+        "icon": "image/dicepack.png",
+        "descript": "使用後得到10顆骰子",
+        "price": 321,
+        "type": "item",
         "equipped": false
       }
     },
@@ -81,7 +90,7 @@
     "coin": 11260,
     "dice": 9954,
     "cd": 0,
-    "eventcode": 2,
+    "eventcode": 1,
     "battleflag": 0,
     "questionflag": 0,
     "eventflag": 0,
