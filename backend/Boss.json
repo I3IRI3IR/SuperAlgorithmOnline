@@ -1,5 +1,5 @@
 {
-    "1":{"name":"狗頭人","hp":500,"atk":99,"def":3,"coin":200,"exp":50,"nextlevel":"74","nexthp":5000},
-    "74":{"name":"閃耀魔眼","hp":5000,"atk":99,"def":3,"coin":200,"exp":50,"nextlevel":"75","nexthp":15000},
-    "75":{"name":"希茲克利夫","hp":15000,"atk":350,"def":3,"coin":1200,"exp":300,"nextlevel":"75","nexthp":15000}
+    "1":{"name":"狗頭人","hp":500,"atk":99,"def":3,"coin":200,"exp":50,"nextlevel":"74","nexthp":5000,"img":"/image/kobold.png"},
+    "74":{"name":"閃耀魔眼","hp":5000,"atk":99,"def":3,"coin":200,"exp":50,"nextlevel":"75","nexthp":15000,"img":"/image/gleameyes.png"},
+    "75":{"name":"希茲克利夫","hp":15000,"atk":350,"def":3,"coin":1200,"exp":300,"nextlevel":"75","nexthp":15000,"img":"/image/heathcliff.png"}
 }
