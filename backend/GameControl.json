@@ -57,13 +57,13 @@
   "852064504846352394": {
     "name": "BIR",
     "damage": 0,
-    "pos": 19,
+    "pos": 20,
     "lv": 1,
-    "hp": 100,
-    "atk": 15,
+    "hp": 90,
+    "atk": 25,
     "def": 10,
-    "spd": 6,
-    "exp": 0,
+    "spd": 1,
+    "exp": 15,
     "backpack": {
       "0": {
         "name": "小劍",
@@ -74,21 +74,21 @@
         "equipped": true
       },
       "1": {
-        "name": "骰子包",
-        "icon": "image/dicepack.png",
-        "descript": "使用後得到10顆骰子",
-        "price": 321,
+        "name": "防禦光環水晶",
+        "icon": "image/defense_aura_crystal.png",
+        "descript": "使用後全服玩家一小時內獲得DEF+1%的增益",
+        "price": 5000,
         "type": "item",
         "equipped": false
       }
     },
     "shop": [
-      "治療水晶",
-      "還瑰之聖晶石",
-      "小劍"
+      "閃爍之光",
+      "午夜大衣",
+      "青銅劍"
     ],
-    "coin": 11260,
-    "dice": 9954,
+    "coin": 6039,
+    "dice": 9961,
     "cd": 0,
     "eventcode": 1,
     "battleflag": 0,

@@ -274,7 +274,7 @@ def get_battledict(id,mob,playerdict):
         })
         turn+=1
     if db[id]["hp"]<=0:
-        db[id]["cd"]=60
+        db[id]["cd"]=30
         db[id]["hp"]=0
     else:
         db[id]["coin"]+=mob["coin"]
@@ -617,6 +617,7 @@ def get_rolldice():
                 boss["hp"] = db["boss_hp"]
                 bosscopy = copy.deepcopy(boss)
                 result = bossfight(id,boss,db[id])
+                db[id] = result[1]
                 other_param = {
                     "log":result[0],
                     "player_attributes":get_playerattribute(id),
