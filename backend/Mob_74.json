@@ -1,0 +1,5 @@
+{
+    "綠史萊姆":{"name":"綠史萊姆","hp":50,"atk":20,"def":3,"coin":20,"exp":5,"img":"/image/greenmob.png"},
+    "紅史萊姆":{"name":"紅史萊姆","hp":70,"atk":15,"def":5,"coin":40,"exp":5,"img":"/image/redmob.png"},
+    "小蝙蝠":{"name":"小蝙蝠","hp":30,"atk":100,"def":0,"coin":80,"exp":10,"img":"/image/smallbat.png"}
+}
