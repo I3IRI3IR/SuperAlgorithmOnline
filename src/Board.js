@@ -71,7 +71,6 @@ const Item = ({item, isSell, doItem, setUsedItem}) => {
             top: window.scrollY + 5, // 5px 下移一點點
             left: window.scrollX
           });
-          console.log(item.equipped);
           setShowButton(!showButton);
         }
       }}></img>
@@ -376,7 +375,6 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
             setIsEvent(false);
             return;
           }
-          console.log(data);
           setStillBattle(true);
           setPlayerAttr({
             "HP":player_attributes["HP"],
@@ -406,7 +404,10 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
           let idx=0,n=data.other_param['log'].length;
           
           const interval = setInterval(() => {
-            console.log(currentPlayerAttr.HP);
+            if (idx>=n) {
+              clearInterval(interval);
+              setStillBattle(false);
+            }
             if(data.other_param['log'][idx]['defender'] === "player"){
               setDefender('player');
               const updated = { ...currentPlayerAttr, HP: currentPlayerAttr.HP - data.other_param['log'][idx]['damage'] };
@@ -419,7 +420,6 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
               setEnemyAttr(updated);
               currentEnemyAttr.HP-=data.other_param['log'][idx]['damage'];
             }
-            console.log(`/image/${data.other_param['log'][idx]['damage_type']}_1.png`);
             let type=data.other_param['log'][idx]['damage_type'];
             setVfximg(`/image/${type}_1.png`);
             setTimeout(()=>setVfximg(`/image/${type}_2.png`), 150);
@@ -511,7 +511,6 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
   };
 
   const doItem = (param) => {
-    console.log(param);
     fetch("get/setItem", {
       method: 'POST',
       headers: {
@@ -710,7 +709,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
           <div className="final-box">
             <div className="final">
               <div className="finallist">
-                {finallistName.map((team, index) => finallist[index] === 0 ? <p key={index} style={{margin: '0'}}>{team}</p> : <del key={index} style={{display:'block', margin: '0'}}>{team}</del>)}
+                {finallistName.map((team, index) => <p key={index} style={{margin: 3, border: finallist[index] === 1 ? '3px solid gold' : 'none'}}>{team}</p>)}
               </div>
               <button className="close-final" onClick={() => { setOpenFinal(false); }}>退出決賽名單</button>
             </div>
