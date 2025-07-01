@@ -1,12 +1,6 @@
 {
-    "1":{"ans":0,"msg":["msg1","msg2","msg3","msg4"]},
-    "2":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "3":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "4":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "5":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "6":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "7":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "8":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "9":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]},
-    "10":{"ans":3,"msg":["msg1","msg2","msg3","msg4"]}
+    "1":{"ans":2,"msg":["QQ答錯了","QQ答錯了","答對了!恭喜","QQ答錯了"]},
+    "2":{"ans":2,"msg":["QQ答錯了","QQ答錯了","答對了!恭喜","QQ答錯了"]},
+    "3":{"ans":2,"msg":["QQ答錯了","QQ答錯了","答對了!恭喜","QQ答錯了"]},
+    "4":{"ans":1,"msg":["QQ答錯了","答對了!恭喜","QQ答錯了","QQ答錯了"]}
 }

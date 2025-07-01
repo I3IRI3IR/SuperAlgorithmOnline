@@ -10,5 +10,13 @@
     "1":[[0,"rest"],[1,"question"],[2,"question"],[3,"question"],[4,"question"],[5,"question"],[6,"reward"],[7,"reward"],[8,"reward"],
         [9,"reward"],[10,"reward"],[11,"reward"],[12,"event"],[13,"event"],[14,"event"],[15,"event"],[16,"event"],[17,"event"],
         [18,"battle"],[19,"shop"],[20,"battle"],[21,"shop"],[22,"shop"],[23,"shop"],[24,"rest"],[25,"rest"],[26,"rest"],
+        [27,"rest"],[28,"rest"],[29,"rest"],[30,"rest"],[31,"rest"],[32,"rest"],[33,"rest"],[34,"rest"],[35,"rest"]],
+    "74":[[0,"rest"],[1,"question"],[2,"shop"],[3,"reward"],[4,"question"],[5,"rest"],[6,"reward"],[7,"battle"],[8,"reward"],
+        [9,"battle"],[10,"battle"],[11,"reward"],[12,"shop"],[13,"rest"],[14,"question"],[15,"rest"],[16,"battle"],[17,"battle"],
+        [18,"battle"],[19,"battle"],[20,"reward"],[21,"shop"],[22,"rest"],[23,"shop"],[24,"battle"],[25,"reward"],[26,"rest"],
+        [27,"reward"],[28,"question"],[29,"rest"],[30,"rest"],[31,"reward"],[32,"battle"],[33,"shop"],[34,"battle"],[35,"reward"]],
+    "75":[[0,"rest"],[1,"question"],[2,"question"],[3,"question"],[4,"question"],[5,"question"],[6,"reward"],[7,"reward"],[8,"reward"],
+        [9,"reward"],[10,"reward"],[11,"reward"],[12,"event"],[13,"event"],[14,"event"],[15,"event"],[16,"event"],[17,"event"],
+        [18,"battle"],[19,"shop"],[20,"battle"],[21,"shop"],[22,"shop"],[23,"shop"],[24,"rest"],[25,"rest"],[26,"rest"],
         [27,"rest"],[28,"rest"],[29,"rest"],[30,"rest"],[31,"rest"],[32,"rest"],[33,"rest"],[34,"rest"],[35,"rest"]]
 }

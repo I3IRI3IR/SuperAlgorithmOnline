@@ -175,7 +175,31 @@ def get_reward(r_num,player_attr):
         #write msg
         msg = "攻擊+5卷軸"
         return msg
-    reward_list = [num_0,num_1]
+    def num_2():
+        #do
+        player_attr["def"]+=5
+        #write msg
+        msg = "防禦+5卷軸"
+        return msg
+    def num_3():
+        #do
+        player_attr["dice"]+=10
+        #write msg
+        msg = "骰子十顆"
+        return msg
+    def num_4():
+        #do
+        player_attr["exp"]+= 50*player_attr["lv"]
+        #write msg
+        msg = "經驗瓶"
+        return msg
+    def num_5():
+        #do
+        player_attr["hp"]+=4000
+        #write msg
+        msg = "高級傷藥"
+        return msg
+    reward_list = [num_0,num_1,num_2,num_3,num_4,num_5]
     msg = reward_list[r_num]()
     response = [player_attr,msg]
     return response
@@ -369,12 +393,12 @@ def bossfight(id,boss,playerdict):
             final = json.load(file)
             for i in li:
                 if start_hp >= round(db["boss_fullhp"]*i) and boss["hp"] < round(db["boss_fullhp"]*i):
-                    for j in range(10):
+                    for j in range(5):
                         final[random.choice(truelist)] = 1
         
                     
     with FinallsitLock:
-        with open("Fianllist.json", "w", encoding="utf-8") as file:
+        with open("Finallist.json", "w", encoding="utf-8") as file:
             json.dump(final, file, ensure_ascii=False, indent=2)
         
 
@@ -445,7 +469,7 @@ def callback():
                 'damage': 0,
                 'pos': 0,
                 'lv': 1,
-                'hp': 100,
+                'hp': 1000,
                 'atk': 10,
                 'def': 10,
                 'spd': 6,
@@ -456,7 +480,7 @@ def callback():
                 },
                 'shop':["sword","sword","sword"],
                 'coin': 0,
-                'dice': 10,
+                'dice': 50,
                 'cd':0,
                 'eventcode': 1,
                 'battleflag': 0,
@@ -494,7 +518,6 @@ def getfinallist():
         with open("Finallist.json", "r", encoding="utf-8") as file:
             db = json.load(file)
     return jsonify(db)
-
 
 @app.route('/get/game_data')
 def get_game_data():
@@ -554,7 +577,7 @@ def get_rolldice():
     other_param = {}
 
     if type == "reward":
-        r_num = random.randint(0,1)
+        r_num = random.randint(0,5)
         res = get_reward(r_num,db[id])
         db[id] = res[0]
         msg = res[1]
@@ -641,6 +664,14 @@ def get_rolldice():
         "other_param": other_param
     }
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
+
+    if db[id]["exp"] >= (db[id]["lv"]**2) * 100:
+        db["hp"] += (db[id]["lv"]**2) * 2000
+        db["atk"] += db[id]["lv"] * 20
+        db["def"] += db[id]["lv"] * 20
+        db["spd"] += 2
+        db["exp"] -= (db[id]["lv"]**2) * 100
+        db["lv"] += 1
     
     with GameControlLock:
         with open("GameControl.json", "w", encoding="utf-8") as file:
@@ -662,10 +693,8 @@ def response_question():
     
     
     if ansdb[str(db[id]['questionflag'])]['ans'] == data['select']: 
-        #do something
-        pass
+        db[id]["exp"]+=40
     else:
-        #do something
         pass
     
 
