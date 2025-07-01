@@ -175,7 +175,31 @@ def get_reward(r_num,player_attr):
         #write msg
         msg = "攻擊+5卷軸"
         return msg
-    reward_list = [num_0,num_1]
+    def num_2():
+        #do
+        player_attr["def"]+=5
+        #write msg
+        msg = "防禦+5卷軸"
+        return msg
+    def num_3():
+        #do
+        player_attr["dice"]+=10
+        #write msg
+        msg = "骰子十顆"
+        return msg
+    def num_4():
+        #do
+        player_attr["exp"]+= 50*player_attr["lv"]
+        #write msg
+        msg = "經驗瓶"
+        return msg
+    def num_5():
+        #do
+        player_attr["hp"]+=4000
+        #write msg
+        msg = "高級傷藥"
+        return msg
+    reward_list = [num_0,num_1,num_2,num_3,num_4,num_5]
     msg = reward_list[r_num]()
     response = [player_attr,msg]
     return response
@@ -553,7 +577,7 @@ def get_rolldice():
     other_param = {}
 
     if type == "reward":
-        r_num = random.randint(0,1)
+        r_num = random.randint(0,5)
         res = get_reward(r_num,db[id])
         db[id] = res[0]
         msg = res[1]
