@@ -152,6 +152,16 @@
   z-index: 1001;
 }
 
+.backpack {
+  flex: 1;
+  margin-bottom: 10px;
+  max-height: 70vh; /* 限制最大高度，可以依需求調整 */
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  word-wrap: break-word; 
+  white-space: pre-wrap;
+}
+
 .close-shop, .rest, .close-backpack, .close-event, .close-final, .close-battle {
   background: white;
   padding: 20px;
