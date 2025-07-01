@@ -296,6 +296,8 @@ def bossfight(id,boss,playerdict):
     start_hp = boss["hp"]
     Def = db[id]["def"]
     for i in playeritem.values():
+        if i==None: #164253flag None 沒判掉
+            continue
         if i["name"]=="小劍":
             Atk+=10
         elif i["name"]=="青銅劍":
@@ -612,7 +614,7 @@ def get_rolldice():
             if db[id]["cd"]==0:
                 boss_key = random.choice(list(bossdb.keys()))
                 boss = bossdb[boss_key]
-                boss["hp"] = db["bosshp"]
+                boss["hp"] = db["boss_hp"]
                 bosscopy = copy.deepcopy(boss)
                 result = bossfight(id,boss,db[id])
                 other_param = {
