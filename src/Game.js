@@ -15,7 +15,7 @@ const Game = () => {
   const [avatar,setAvatar] = useState("");
 
   useEffect(() => {
-    fetch("/get/game_data")
+    fetch("/get/game_data",{credentials: 'include'})
       .then((response) => response.json())
       .then((data) => {
         setPlayer_name(data.player_name);
@@ -29,7 +29,7 @@ const Game = () => {
       })
       .catch((error) => console.error("Error loading game data:", error));
     const interval = setInterval(() => {
-      fetch("/periodicUpdate")
+      fetch("/periodicUpdate",{credentials: 'include'})
         .then((response) => response.json())
         .then((data) => {
           setPlayer_attributes(data.playerattr);
