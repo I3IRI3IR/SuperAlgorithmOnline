@@ -691,7 +691,7 @@ def get_rolldice():
     }
     db[id]['pos'] = mapdecode(map,db[id]['pos'],dice)[0]
 
-    if db[id]["exp"] >= (db[id]["lv"]**2) * 100:
+    while db[id]["exp"] >= (db[id]["lv"]**2) * 100:
         db[id]["hp"] += (db[id]["lv"]**2) * 2000
         db[id]["atk"] += db[id]["lv"] * 20
         db[id]["def"] += db[id]["lv"] * 20

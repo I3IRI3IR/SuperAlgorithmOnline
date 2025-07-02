@@ -83,13 +83,13 @@
   "852064504846352394": {
     "name": "BIR",
     "damage": 0,
-    "pos": 21,
+    "pos": 3,
     "lv": 2,
-    "hp": 90,
-    "atk": 25,
+    "hp": 8345,
+    "atk": 30,
     "def": 10,
     "spd": 1,
-    "exp": 15,
+    "exp": 135,
     "backpack": {
       "0": {
         "name": "小劍",
@@ -105,24 +105,16 @@
         "descript": "暗器,在戰鬥開始前先對敵人造成150點傷害",
         "price": 100,
         "type": "weapon",
-        "equipped": false
-      },
-      "2": {
-        "name": "治療水晶",
-        "icon": "image/healing_crystal.png",
-        "descript": "使用後可回復50%最大HP值",
-        "price": 500,
-        "type": "item",
-        "equipped": false
+        "equipped": true
       }
     },
     "shop": [
-      "防禦光環水晶",
-      "empty",
-      "empty"
+      "午夜大衣",
+      "午夜大衣",
+      "骰子包"
     ],
-    "coin": 5439,
-    "dice": 9960,
+    "coin": 5278,
+    "dice": 9962,
     "cd": 0,
     "eventcode": 1,
     "battleflag": 0,
