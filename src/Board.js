@@ -344,7 +344,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
   const rollDice = () => {
     if (isMoving || isEvent) return; // 防止在移動期間或顯示事件觸發新的骰子事件
 
-    fetch("get/rolldice")
+    fetch("get/rolldice",{credentials: 'include'})
       .then((response) => {
         const contentType = response.headers.get('Content-Type');
         if (contentType && contentType.includes('application/json')) {
@@ -467,6 +467,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
@@ -480,6 +481,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({"select": index}),
     })
       .then((response) => response.json())
@@ -487,7 +489,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
   };
 
   const getItems = () => {
-    fetch("get/allItem")
+    fetch("get/allItem",{credentials: 'include'})
       .then((response) => response.json())
       .then((data) => {
         setItems(data);
@@ -495,7 +497,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
   };
 
   const getProducts = () => {
-    fetch("get/allCommodity")
+    fetch("get/allCommodity",{credentials: 'include'})
       .then((response) => response.json())
       .then((data) => {
         setProducts(data);
@@ -503,7 +505,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
   };
 
   const getEquipment = () => {
-    fetch("get/allEquipment")
+    fetch("get/allEquipment",{credentials: 'include'})
       .then((response) => response.json())
       .then((data) => {
         setEquipments(data);
@@ -516,6 +518,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(param),
     })
     setUsedItem({});
@@ -529,6 +532,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({"name": name}),
     })
     getItems();
@@ -540,6 +544,7 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({"name": name}),
     })
     getItems();
@@ -547,13 +552,13 @@ const Board = ({ player_attributes, setPlayer_attributes, currentPosition, setCu
   };
 
   const leaveShop = (name) => {
-    fetch("shopexit");
+    fetch("shopexit",{credentials: 'include'});
     setShopflag(false);
     setIsEvent(false);
   };
 
   const getFinallist = () => {
-    fetch("get/finallist")
+    fetch("get/finallist",{credentials: 'include'})
       .then((response) => response.json())
       .then((data) => {
         setFinallist(data);
