@@ -16,11 +16,11 @@
   "885795741170278400": {
     "name": "pudding164253",
     "damage": 15047,
-    "pos": 33,
+    "pos": 35,
     "lv": 5,
     "hp": 0,
     "atk": 0,
-    "def": 10,
+    "def": 15,
     "spd": 1,
     "exp": 1685,
     "backpack": {
@@ -71,7 +71,7 @@
       "午夜大衣"
     ],
     "coin": 1659,
-    "dice": 47,
+    "dice": 45,
     "cd": 30,
     "eventcode": 2,
     "battleflag": 0,

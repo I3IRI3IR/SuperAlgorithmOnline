@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, session, url_for, jsonify
+from flask import Flask, redirect, request, session, url_for, jsonify, send_from_directory
 import requests
 from filelock import FileLock
 import random
@@ -11,9 +11,8 @@ import time
 from datetime import datetime
 import copy
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
-
+app = Flask(__name__, static_folder='../build', static_url_path='')
+app.secret_key = CLIENT_SECRET
 CORS(app, supports_credentials=True)
 
 
@@ -35,7 +34,21 @@ CLIENT_ID = '1366650439910821888'
 REDIRECT_URI = 'http://localhost:5000/callback'
 API_BASE_URL = 'https://discord.com/api'
 SCOPE = 'identify'
+@app.route('/<path:path>')
+def serve_react(path):
+    full_path = os.path.join(app.static_folder, path)
+    if os.path.exists(full_path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/game')
+def serve_game():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/index.html')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
 
 def reduce_cooldown():
     id = session['user']['id'] 
@@ -411,6 +424,7 @@ def bossfight(id,boss,playerdict):
 
 
 # 點登入時導向 Discord OAuth2
+@app.route('/')
 @app.route('/auth/discord')
 def login():
     return redirect(
@@ -500,7 +514,7 @@ def callback():
                 json.dump(db, file, ensure_ascii=False, indent=2)
 
         # 成功後重定向到遊戲頁面
-        return redirect("http://localhost:3000")  # 假設前端應用的遊戲頁面 URL
+        return redirect("/game")  # 假設前端應用的遊戲頁面 URL
 
     except requests.exceptions.RequestException as e:
         print(f"登入過程中出現錯誤: {e}")
